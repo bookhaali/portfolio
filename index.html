@@ -102,7 +102,11 @@
     .price-items { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
     .price-items li { font-size: 0.82rem; color: var(--text-muted); padding-left: 1rem; position: relative; }
     .price-items li::before { content: '+'; position: absolute; left: 0; color: var(--accent); font-size: 0.75rem; top: 1px; }
-    .price-note { margin-top: 2rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
+    .price-note { margin-top: 1.2rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
+    .collab-note { display: flex; gap: 1.2rem; align-items: flex-start; margin-top: 2.5rem; background: var(--bg); border: 1.5px solid var(--accent); border-radius: 10px; padding: 1.4rem 1.6rem; }
+    .collab-icon { font-size: 1.6rem; line-height: 1; flex-shrink: 0; color: var(--accent); margin-top: 0.1rem; }
+    .collab-title { font-family: var(--serif); font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text); }
+    .collab-body { font-size: 0.85rem; color: var(--text-muted); line-height: 1.65; }
 
     /* GALLERY */
     #gallery { background: var(--bg); }
@@ -401,6 +405,19 @@
         </ul>
       </div>
 
+    </div>
+    <div class="collab-note">
+      <div class="collab-icon">&#9697;</div>
+      <div>
+        <div class="collab-title">
+          <span class="en">Open to research collaboration</span>
+          <span class="zh">開放學術研究合作</span>
+        </div>
+        <div class="collab-body">
+          <span class="en">Not every project needs a fee. If our research interests align — in epidemiology, cancer burden, obesity trends, or related areas — I am open to unpaid collaboration with no strings attached. Any contribution will be made in full accordance with ICMJE authorship guidelines, ensuring transparent and ethical attribution for all parties.</span>
+          <span class="zh">並非每個合作都需要收費。若我們的研究興趣相符——涵蓋流行病學、癌症負擔、肥胖趨勢或相關領域——歡迎洽談無償學術合作。所有貢獻將嚴格遵循ICMJE著作權準則，確保各方貢獻的透明與公正認定。</span>
+        </div>
+      </div>
     </div>
     <p class="price-note">
       <span class="en">All prices are negotiable. Large or complex projects (systematic reviews, multi-country GBD analyses, Shiny dashboards) are quoted individually. Get in touch to discuss.</span>
