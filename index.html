@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Epidemiological Data Analysis &amp; Visualization · Taipei, Taiwan</title>
+  <meta name="description" content="PhD-level epidemiological analysis, publication-ready R visualizations, and manuscript support. Based in Taipei, Taiwan, available worldwide.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #F6F5F1;
+      --bg-card:     #FFFFFF;
+      --text:        #1A1A18;
+      --text-muted:  #6A6A65;
+      --accent:      #1C3D6B;
+      --accent-light:#E6EDF6;
+      --border:      #E0DFD9;
+      --radius:      3px;
+      --serif:       Georgia, 'Times New Roman', serif;
+      --sans:        -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+    [data-lang="zh"] .en { display: none !important; }
+    [data-lang="en"] .zh { display: none !important; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 3rem; height: 54px;
+      background: rgba(246,245,241,0.93);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: var(--serif); font-size: 1rem; color: var(--text); text-decoration: none; }
+    .nav-links { display: flex; gap: 1.8rem; list-style: none; }
+    .nav-links a { font-size: 0.77rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color .18s; }
+    .nav-links a:hover { color: var(--accent); }
+    .lang-toggle { display: flex; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
+    .lang-btn { background: none; border: none; cursor: pointer; padding: 4px 13px; font-size: 0.75rem; letter-spacing: 0.04em; color: var(--text-muted); transition: all .18s; font-family: var(--sans); }
+    .lang-btn.active { background: var(--accent); color: #fff; }
+
+    /* SECTIONS */
+    section { padding: 5.5rem 3rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* HERO */
+    #hero { min-height: 92vh; display: flex; align-items: center; padding-top: 130px; padding-bottom: 4rem; }
+    .hero-label { display: flex; align-items: center; gap: 0.7rem; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.4rem; }
+    .hero-label::before { content: ''; display: block; width: 28px; height: 1px; background: var(--accent); }
+    h1.hero-title { font-family: var(--serif); font-weight: 400; font-size: clamp(2.1rem, 4.2vw, 3.4rem); line-height: 1.13; letter-spacing: -0.01em; color: var(--text); margin-bottom: 1.5rem; max-width: 680px; }
+    .hero-sub { font-size: 1rem; color: var(--text-muted); line-height: 1.75; max-width: 560px; margin-bottom: 2.8rem; }
+    .hero-actions { display: flex; gap: 0.9rem; flex-wrap: wrap; }
+    .btn { display: inline-block; text-decoration: none; padding: 11px 26px; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; border-radius: var(--radius); transition: all .2s; cursor: pointer; border: 1px solid transparent; font-family: var(--sans); }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary:hover { opacity: 0.82; }
+    .btn-outline { background: transparent; color: var(--text); border-color: var(--border); }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* SECTION HEADERS */
+    .sh-label { font-size: 0.71rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.55rem; }
+    .sh-title { font-family: var(--serif); font-weight: 400; font-size: clamp(1.55rem, 3vw, 2.15rem); line-height: 1.18; margin-bottom: 1rem; color: var(--text); }
+    .sh-body { font-size: 0.93rem; color: var(--text-muted); line-height: 1.78; max-width: 680px; }
+
+    /* ABOUT */
+    #about { background: var(--bg-card); }
+    .about-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 4rem; align-items: start; }
+    .ds-row { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.5rem; }
+    .ds-badge { font-size: 0.73rem; padding: 4px 11px; border: 1px solid var(--border); border-radius: 20px; color: var(--text-muted); background: var(--bg); }
+    .stats-block { display: flex; flex-direction: column; gap: 0; }
+    .stat-row { display: flex; gap: 2rem; padding: 1.6rem 0; border-bottom: 1px solid var(--border); }
+    .stat-row:first-child { padding-top: 0; }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-num { font-family: var(--serif); font-size: 2.2rem; color: var(--accent); line-height: 1; margin-bottom: 0.2rem; }
+    .stat-lbl { font-size: 0.77rem; color: var(--text-muted); }
+
+    /* SERVICES */
+    #services { background: var(--bg); }
+    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 3rem; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .svc { padding: 2rem 1.8rem; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); transition: background .2s; }
+    .svc:hover { background: var(--accent-light); }
+    .svc:nth-child(3n) { border-right: none; }
+    .svc:nth-child(n+4) { border-bottom: none; }
+    .svc-num { font-family: var(--serif); font-size: 1.9rem; color: var(--border); line-height: 1; margin-bottom: 1rem; }
+    .svc-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.55rem; }
+    .svc-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.65; }
+
+    /* PRICING */
+    #pricing { background: var(--bg-card); }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-top: 3rem; }
+    .price-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem 1.8rem; background: var(--bg-card); transition: border-color .2s; }
+    .price-card:hover { border-color: var(--accent); }
+    .price-card.featured { border-color: var(--accent); background: var(--accent-light); }
+    .price-tier { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.7rem; }
+    .price-amount { font-family: var(--serif); font-size: 1.9rem; color: var(--text); line-height: 1.1; margin-bottom: 0.3rem; }
+    .price-ntd { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    .price-divider { height: 1px; background: var(--border); margin-bottom: 1.2rem; }
+    .price-items { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+    .price-items li { font-size: 0.82rem; color: var(--text-muted); padding-left: 1rem; position: relative; }
+    .price-items li::before { content: '+'; position: absolute; left: 0; color: var(--accent); font-size: 0.75rem; top: 1px; }
+    .price-note { margin-top: 2rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* GALLERY */
+    #gallery { background: var(--bg); }
+    .filter-bar { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 2.2rem 0 2rem; }
+    .fp { padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border); background: none; font-size: 0.77rem; color: var(--text-muted); cursor: pointer; letter-spacing: 0.03em; transition: all .18s; font-family: var(--sans); }
+    .fp.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .fp:not(.active):hover { border-color: var(--accent); color: var(--accent); }
+
+    .gallery-grid { columns: 3 300px; gap: 10px; }
+    .gi { break-inside: avoid; margin-bottom: 10px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; background: var(--bg-card); transition: transform .22s, box-shadow .22s; }
+    .gi:hover { transform: translateY(-4px); box-shadow: 0 10px 36px rgba(0,0,0,0.08); }
+    .gi img { display: block; width: 100%; height: auto; }
+    .gi-cap { padding: 9px 13px; font-size: 0.74rem; color: var(--text-muted); line-height: 1.45; border-top: 1px solid var(--border); }
+    .gi-tag { display: inline-block; margin-top: 4px; font-size: 0.67rem; padding: 2px 8px; border-radius: 10px; background: var(--accent-light); color: var(--accent); letter-spacing: 0.04em; }
+
+    /* LIGHTBOX */
+    #lightbox { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(10,10,10,0.91); align-items: center; justify-content: center; }
+    #lightbox.open { display: flex; }
+    .lb-inner { position: relative; display: flex; flex-direction: column; align-items: center; max-width: 92vw; }
+    .lb-img { max-width: 100%; max-height: 82vh; object-fit: contain; border-radius: var(--radius); }
+    .lb-cap { color: rgba(255,255,255,0.62); font-size: 0.8rem; margin-top: 1rem; text-align: center; max-width: 600px; line-height: 1.5; }
+    .lb-x { position: fixed; top: 1.4rem; right: 1.8rem; background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; opacity: 0.6; line-height: 1; }
+    .lb-x:hover { opacity: 1; }
+    .lb-nav { position: fixed; top: 50%; transform: translateY(-50%); background: none; border: none; color: #fff; font-size: 2.4rem; cursor: pointer; padding: 1rem; opacity: 0.45; transition: opacity .18s; }
+    .lb-nav:hover { opacity: 1; }
+    #lb-prev { left: 0.8rem; }
+    #lb-next { right: 0.8rem; }
+
+    /* PUBLICATIONS */
+    #publications { background: var(--bg-card); }
+    .pub-list { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1rem; }
+    .pub { display: flex; gap: 1.4rem; align-items: flex-start; padding: 1.4rem 1.5rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-card); transition: border-color .18s; }
+    .pub:hover { border-color: var(--accent); }
+    .pub-n { font-family: var(--serif); font-size: 1.25rem; color: var(--border); flex-shrink: 0; min-width: 26px; }
+    .pub-title { font-size: 0.88rem; font-weight: 500; line-height: 1.45; margin-bottom: 0.35rem; }
+    .pub-meta { font-size: 0.77rem; color: var(--text-muted); }
+    .pub-link { display: inline-block; margin-top: 0.45rem; font-size: 0.76rem; color: var(--accent); text-decoration: none; }
+    .pub-link:hover { text-decoration: underline; }
+
+    /* CONTACT */
+    #contact { background: var(--accent); text-align: center; }
+    #contact .sh-label { color: rgba(255,255,255,0.55); }
+    #contact .sh-title { color: #fff; }
+    #contact .sh-body { color: rgba(255,255,255,0.68); margin: 0 auto; }
+    .contact-grid { display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; margin-top: 2.5rem; }
+    .contact-item { text-align: center; }
+    .contact-item-label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 0.4rem; }
+    .contact-link { font-size: 0.95rem; color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.25); padding-bottom: 2px; transition: border-color .18s; }
+    .contact-link:hover { border-color: #fff; }
+    .contact-note { margin-top: 2.5rem; font-size: 0.77rem; color: rgba(255,255,255,0.38); }
+
+    footer { background: #101010; color: rgba(255,255,255,0.28); text-align: center; padding: 1.4rem 2rem; font-size: 0.73rem; letter-spacing: 0.04em; }
+
+    /* RESPONSIVE */
+    @media (max-width: 860px) {
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .services-grid { grid-template-columns: 1fr 1fr; }
+      .svc:nth-child(2n) { border-right: none; }
+      .svc:nth-child(3n) { border-right: 1px solid var(--border); }
+      .pricing-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      nav { padding: 0 1.2rem; }
+      section { padding: 3.5rem 1.2rem; }
+      .nav-links { display: none; }
+      .services-grid { grid-template-columns: 1fr; }
+      .svc { border-right: none !important; }
+      .gallery-grid { columns: 1; }
+      .stat-row { flex-wrap: wrap; gap: 1.5rem; }
+      .contact-grid { gap: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <span class="en">Data Analysis</span>
+    <span class="zh">數據分析服務</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about"><span class="en">About</span><span class="zh">關於</span></a></li>
+    <li><a href="#services"><span class="en">Services</span><span class="zh">服務</span></a></li>
+    <li><a href="#pricing"><span class="en">Pricing</span><span class="zh">費用</span></a></li>
+    <li><a href="#gallery"><span class="en">Gallery</span><span class="zh">作品集</span></a></li>
+    <li><a href="#publications"><span class="en">Publications</span><span class="zh">文獻</span></a></li>
+    <li><a href="#contact"><span class="en">Contact</span><span class="zh">聯絡</span></a></li>
+  </ul>
+  <div class="lang-toggle">
+    <button class="lang-btn active" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="zh">繁中</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-label">
+      <span class="en">Epidemiology · Biostatistics · R · Stata</span>
+      <span class="zh">流行病學 · 生物統計 · R · Stata</span>
+    </div>
+    <h1 class="hero-title">
+      <span class="en">Large datasets.<br>Clean analysis.<br>Figures that hold up.</span>
+      <span class="zh">大型資料集。<br>嚴謹分析。<br>經得起審查的圖表。</span>
+    </h1>
+    <p class="hero-sub">
+      <span class="en">Doctoral student at NYCU, Taiwan. I work with international epidemiological data at scale and produce the kind of analysis and figures that go straight into manuscripts. Available for consultations worldwide.</span>
+      <span class="zh">國立陽明交通大學博士生，駐台灣。我處理大規模國際流行病學資料，產出可直接用於論文的分析與圖表。全球接受諮詢委託。</span>
+    </p>
+    <div class="hero-actions">
+      <a href="#gallery" class="btn btn-primary">
+        <span class="en">View Work</span>
+        <span class="zh">查看作品</span>
+      </a>
+      <a href="#contact" class="btn btn-outline">
+        <span class="en">Get in Touch</span>
+        <span class="zh">聯絡合作</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div>
+        <p class="sh-label"><span class="en">Background</span><span class="zh">背景介紹</span></p>
+        <h2 class="sh-title">
+          <span class="en">Who I am<br>and what I do</span>
+          <span class="zh">我是誰<br>以及我的專長</span>
+        </h2>
+        <p class="sh-body">
+          <span class="en">I am a doctoral student at National Yang Ming Chiao Tung University (NYCU), Taipei, Taiwan. My research focuses on global cancer epidemiology, obesity and non-communicable disease trends, and burden-of-disease analysis. I have worked as a data analyst with hospitals and cancer centers in Taiwan.</span>
+          <span class="zh">我是國立陽明交通大學（NYCU）的博士生，研究聚焦於全球癌症流行病學、肥胖與非傳染性疾病趨勢，以及疾病負擔分析。我曾在台灣多家醫院及癌症中心擔任資料分析師。</span>
+        </p>
+        <p class="sh-body" style="margin-top:0.9rem;">
+          <span class="en">I handle datasets from GBD, GLOBOCAN, NCD Risk Factor Collaboration, and WHO indicators. I have processed a single dataset with over 18 million rows. Analysis is done in R, Stata, and Joinpoint software. I also support manuscript drafting and can work in SPSS for clients who need it.</span>
+          <span class="zh">我處理來自GBD、GLOBOCAN、NCD Risk Factor Collaboration及WHO指標的資料集，曾處理單一超過1,800萬筆的資料集。分析使用R、Stata及Joinpoint軟體，同時提供論文撰寫支援，也可配合客戶需求使用SPSS。</span>
+        </p>
+        <div class="ds-row">
+          <span class="ds-badge">GBD</span>
+          <span class="ds-badge">GLOBOCAN</span>
+          <span class="ds-badge">NCD-RisC</span>
+          <span class="ds-badge">WHO</span>
+          <span class="ds-badge">UN WPP</span>
+          <span class="ds-badge">R</span>
+          <span class="ds-badge">Stata</span>
+          <span class="ds-badge">Joinpoint</span>
+          <span class="ds-badge">SPSS</span>
+        </div>
+      </div>
+      <div class="stats-block">
+        <div class="stat-row">
+          <div>
+            <div class="stat-num">18M+</div>
+            <div class="stat-lbl"><span class="en">Rows in a single dataset</span><span class="zh">單一資料集最大處理行數</span></div>
+          </div>
+          <div>
+            <div class="stat-num">204</div>
+            <div class="stat-lbl"><span class="en">Countries in global analyses</span><span class="zh">全球分析覆蓋國家數</span></div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div>
+            <div class="stat-num">2</div>
+            <div class="stat-lbl"><span class="en">Peer-reviewed publications</span><span class="zh">同行評審發表文章</span></div>
+          </div>
+          <div>
+            <div class="stat-num">4</div>
+            <div class="stat-lbl"><span class="en">Analysis tools (R, Stata, Joinpoint, SPSS)</span><span class="zh">分析工具（R、Stata、Joinpoint、SPSS）</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <p class="sh-label"><span class="en">Services</span><span class="zh">服務項目</span></p>
+    <h2 class="sh-title">
+      <span class="en">What I offer</span>
+      <span class="zh">服務內容</span>
+    </h2>
+    <div class="services-grid">
+
+      <div class="svc">
+        <div class="svc-num">01</div>
+        <div class="svc-title"><span class="en">Statistical Analysis</span><span class="zh">統計分析</span></div>
+        <div class="svc-desc">
+          <span class="en">Regression (linear, logistic, Poisson), joinpoint regression, time-series, survival analysis, mixed models. I work in R, Stata, and Joinpoint depending on what the method requires.</span>
+          <span class="zh">迴歸分析（線性、邏輯斯、卜瓦松）、接合點迴歸、時間序列、存活分析、混合模型。依方法需求使用R、Stata或Joinpoint。</span>
+        </div>
+      </div>
+
+      <div class="svc">
+        <div class="svc-num">02</div>
+        <div class="svc-title"><span class="en">Figure Production (R)</span><span class="zh">圖表製作（R）</span></div>
+        <div class="svc-desc">
+          <span class="en">Choropleth maps, heatmaps, spaghetti plots, dumbbell charts, lollipop plots, scatter composites, stacked bars, faceted panels. Built in ggplot2, sf, and tmap to journal specifications.</span>
+          <span class="zh">等值地圖、熱圖、折線圖、啞鈴圖、棒棒糖圖、散點複合圖、堆疊長條圖、分面圖。以ggplot2、sf及tmap依期刊規格製作。</span>
+        </div>
+      </div>
+
+      <div class="svc">
+        <div class="svc-num">03</div>
+        <div class="svc-title"><span class="en">Epidemiological Analysis</span><span class="zh">流行病學分析</span></div>
+        <div class="svc-desc">
+          <span class="en">Global burden of disease, AAPC computation, age-period-cohort analysis, SDI stratification, sex-disaggregated comparisons, cross-country trend analysis using GBD, GLOBOCAN, and WHO datasets.</span>
+          <span class="zh">全球疾病負擔、AAPC計算、年齡-時期-世代分析、SDI分層、性別分層比較、使用GBD、GLOBOCAN及WHO資料的跨國趨勢分析。</span>
+        </div>
+      </div>
+
+      <div class="svc">
+        <div class="svc-num">04</div>
+        <div class="svc-title"><span class="en">Large Dataset Processing</span><span class="zh">大型資料集處理</span></div>
+        <div class="svc-desc">
+          <span class="en">Data cleaning, restructuring, and analysis at scale. Familiar with GBD, GLOBOCAN, NCD-RisC, UN WPP, and WHO indicator formats. Handled a single dataset with over 18 million rows.</span>
+          <span class="zh">大規模資料清理、重組與分析。熟悉GBD、GLOBOCAN、NCD-RisC、聯合國WPP及WHO指標格式，曾處理超過1,800萬筆的單一資料集。</span>
+        </div>
+      </div>
+
+      <div class="svc">
+        <div class="svc-num">05</div>
+        <div class="svc-title"><span class="en">Manuscript Support</span><span class="zh">論文撰寫支援</span></div>
+        <div class="svc-desc">
+          <span class="en">Methods sections, results drafting, statistical reporting, table formatting, and figure preparation for journal submission. I can also help with revision responses.</span>
+          <span class="zh">方法學撰寫、結果陳述、統計報告、表格排版及圖形準備，協助投稿期刊。也可協助回應審查意見。</span>
+        </div>
+      </div>
+
+      <div class="svc">
+        <div class="svc-num">06</div>
+        <div class="svc-title"><span class="en">Reports and Presentations</span><span class="zh">報告與簡報</span></div>
+        <div class="svc-desc">
+          <span class="en">Slide decks for conferences, clinical summaries, policy briefs, and reports with embedded figures. Can produce in R Markdown, PowerPoint, or HTML format.</span>
+          <span class="zh">學術會議簡報、臨床摘要、政策報告及嵌入圖表的研究報告。可用R Markdown、PowerPoint或HTML格式產出。</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <p class="sh-label"><span class="en">Pricing</span><span class="zh">費用說明</span></p>
+    <h2 class="sh-title">
+      <span class="en">Transparent rates</span>
+      <span class="zh">明確收費標準</span>
+    </h2>
+    <p class="sh-body">
+      <span class="en">Rates reflect doctoral-level work with international dataset expertise. All prices are negotiable depending on project scope, budget, and context. Get in touch to discuss.</span>
+      <span class="zh">費用反映博士級專業及國際資料集操作能力。所有價格可依專案範圍、預算與情況協商調整。歡迎聯絡討論。</span>
+    </p>
+    <div class="pricing-grid">
+
+      <div class="price-card">
+        <div class="price-tier"><span class="en">Hourly Rate</span><span class="zh">計時收費</span></div>
+        <div class="price-amount">NT$900 <span style="font-size:1rem;font-family:var(--sans);color:var(--text-muted)">/ ~$28 USD</span></div>
+        <div class="price-ntd"><span class="en">Professionals &nbsp;·&nbsp; NT$500 / ~$16 USD for students</span><span class="zh">一般委託 &nbsp;·&nbsp; 學生優惠價 NT$500 / ~$16 USD</span></div>
+        <div class="price-divider"></div>
+        <ul class="price-items">
+          <li><span class="en">Consultation and statistical advice</span><span class="zh">統計諮詢與建議</span></li>
+          <li><span class="en">Code review or debugging</span><span class="zh">程式碼審查或除錯</span></li>
+          <li><span class="en">Figure revisions</span><span class="zh">圖表修改</span></li>
+          <li><span class="en">Manuscript statistics check</span><span class="zh">論文統計審查</span></li>
+        </ul>
+      </div>
+
+      <div class="price-card featured">
+        <div class="price-tier"><span class="en">Project Package</span><span class="zh">專案套餐</span></div>
+        <div class="price-amount">from $400 <span style="font-size:1rem;font-family:var(--sans)">USD</span></div>
+        <div class="price-ntd"><span class="en">from NT$12,800 &nbsp;·&nbsp; scope-dependent</span><span class="zh">起價新台幣12,800元 &nbsp;·&nbsp; 依專案規模調整</span></div>
+        <div class="price-divider"></div>
+        <ul class="price-items">
+          <li><span class="en">Data cleaning and preparation</span><span class="zh">資料清理與整備</span></li>
+          <li><span class="en">Full statistical analysis</span><span class="zh">完整統計分析</span></li>
+          <li><span class="en">All figures (publication-ready)</span><span class="zh">所有圖表（達發表水準）</span></li>
+          <li><span class="en">Methods draft or summary report</span><span class="zh">方法學初稿或分析摘要</span></li>
+          <li><span class="en">Two rounds of revisions</span><span class="zh">兩輪修改</span></li>
+        </ul>
+      </div>
+
+      <div class="price-card">
+        <div class="price-tier"><span class="en">Per Figure</span><span class="zh">單圖收費</span></div>
+        <div class="price-amount">NT$700 <span style="font-size:1rem;font-family:var(--sans);color:var(--text-muted)">/ ~$22 USD</span></div>
+        <div class="price-ntd"><span class="en">Professionals &nbsp;·&nbsp; NT$400 / ~$12 USD for students</span><span class="zh">一般委託 &nbsp;·&nbsp; 學生優惠價 NT$400 / ~$12 USD</span></div>
+        <div class="price-divider"></div>
+        <ul class="price-items">
+          <li><span class="en">Choropleth and regional maps</span><span class="zh">等值與區域地圖</span></li>
+          <li><span class="en">Heatmaps and trend plots</span><span class="zh">熱圖與趨勢圖</span></li>
+          <li><span class="en">Scatter and correlation panels</span><span class="zh">散點與相關分析面板</span></li>
+          <li><span class="en">Dumbbell, lollipop, stacked bar</span><span class="zh">啞鈴圖、棒棒糖圖、堆疊圖</span></li>
+          <li><span class="en">Print and journal-ready export</span><span class="zh">可列印及符合期刊規格的輸出</span></li>
+        </ul>
+      </div>
+
+    </div>
+    <p class="price-note">
+      <span class="en">All prices are negotiable. Large or complex projects (systematic reviews, multi-country GBD analyses, Shiny dashboards) are quoted individually. Get in touch to discuss.</span>
+      <span class="zh">所有價格均可協商。大型或複雜專案（系統性文獻回顧、多國GBD分析、Shiny儀表板）另行報價。歡迎聯絡討論。</span>
+    </p>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="container">
+    <p class="sh-label"><span class="en">Figure Gallery</span><span class="zh">圖表作品集</span></p>
+    <h2 class="sh-title">
+      <span class="en">The work speaks for itself.</span>
+      <span class="zh">作品自己說話。</span>
+    </h2>
+    <p class="sh-body">
+      <span class="en">All figures below were produced in R using ggplot2, sf, tmap, and related packages. They come from real analyses on GBD, GLOBOCAN, NCD-RisC, and WHO datasets, covering up to 204 countries.</span>
+      <span class="zh">以下所有圖表均使用R語言（ggplot2、sf、tmap及相關套件）製作，來自GBD、GLOBOCAN、NCD-RisC及WHO等真實資料集的分析，涵蓋多達204個國家。</span>
+    </p>
+    <div class="filter-bar" id="filter-bar">
+      <button class="fp active" data-filter="all"><span class="en">All</span><span class="zh">全部</span></button>
+      <button class="fp" data-filter="map"><span class="en">Maps</span><span class="zh">地圖</span></button>
+      <button class="fp" data-filter="trend"><span class="en">Trends</span><span class="zh">趨勢</span></button>
+      <button class="fp" data-filter="reg"><span class="en">Regression</span><span class="zh">迴歸分析</span></button>
+      <button class="fp" data-filter="corr"><span class="en">Correlations</span><span class="zh">相關分析</span></button>
+      <button class="fp" data-filter="dist"><span class="en">Heatmaps &amp; Ranking</span><span class="zh">熱圖與排序</span></button>
+      <button class="fp" data-filter="agesex"><span class="en">Age &amp; Sex Patterns</span><span class="zh">年齡與性別分析</span></button>
+      <button class="fp" data-filter="comp"><span class="en">Comparative</span><span class="zh">比較分析</span></button>
+    </div>
+    <div class="gallery-grid" id="gallery-grid"></div>
+  </div>
+</section>
+
+<!-- PUBLICATIONS -->
+<section id="publications">
+  <div class="container">
+    <p class="sh-label"><span class="en">Publications</span><span class="zh">發表文獻</span></p>
+    <h2 class="sh-title">
+      <span class="en">Peer-reviewed work</span>
+      <span class="zh">同行評審文獻</span>
+    </h2>
+    <div class="pub-list">
+      <div class="pub">
+        <div class="pub-n">1</div>
+        <div>
+          <div class="pub-title">
+            <span class="en">Khat chewing and its association with oral/esophageal squamous cell carcinoma and oral white lesions: A systematic review and meta-analysis</span>
+            <span class="zh">嚼食卡特草與口腔/食道鱗狀細胞癌及口腔白色病變之關聯：系統性文獻回顧與統合分析</span>
+          </div>
+          <div class="pub-meta">ecancer Medical Science</div>
+          <a href="https://ecancer.org/en/journal/article/2094-erratum-relationship-between-khat-chewing-and-upper-digestive-tract-cancers-among-male-patients-in-hargeisa-a-preliminary-case-control-study" target="_blank" rel="noopener" class="pub-link">
+            <span class="en">View publication</span><span class="zh">查看文獻</span>
+          </a>
+        </div>
+      </div>
+      <div class="pub">
+        <div class="pub-n">2</div>
+        <div>
+          <div class="pub-title">
+            <span class="en">Relationship between khat chewing and upper digestive tract cancers among male patients in Hargeisa: a preliminary case-control study</span>
+            <span class="zh">嚼食卡特草與哈爾格薩男性上消化道癌症之關係：初步病例對照研究</span>
+          </div>
+          <div class="pub-meta">Public Health · 2026 · doi:10.1016/j.puhe.2026.106177</div>
+          <a href="https://doi.org/10.1016/j.puhe.2026.106177" target="_blank" rel="noopener" class="pub-link">
+            <span class="en">View publication</span><span class="zh">查看文獻</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <p class="sh-label"><span class="en">Contact</span><span class="zh">聯絡方式</span></p>
+    <h2 class="sh-title">
+      <span class="en">Available for consultations</span>
+      <span class="zh">開放接受諮詢委託</span>
+    </h2>
+    <p class="sh-body">
+      <span class="en">Students, professors, clinicians, hospitals, and independent researchers are all welcome. Project-based or hourly. Based in Taipei, Taiwan, working with clients anywhere.</span>
+      <span class="zh">歡迎學生、教授、臨床醫師、醫院及獨立研究員委託。可接專案或計時合作。駐台灣，接受全球客戶。</span>
+    </p>
+    <div class="contact-grid">
+      <div class="contact-item">
+        <div class="contact-item-label"><span class="en">Email (General)</span><span class="zh">電子郵件（一般）</span></div>
+        <a href="mailto:Bookhaali@gmail.com" class="contact-link">Bookhaali@gmail.com</a>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-label"><span class="en">Email (NYCU)</span><span class="zh">電子郵件（陽明交大）</span></div>
+        <a href="mailto:abdiwahab.md13@nycu.edu.tw" class="contact-link">abdiwahab.md13@nycu.edu.tw</a>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-label"><span class="en">Phone (Taiwan)</span><span class="zh">電話（台灣）</span></div>
+        <a href="tel:+886910922220" class="contact-link">+886 910 922 220</a>
+      </div>
+    </div>
+    <p class="contact-note">
+      <span class="en">Based in Taipei, Taiwan &nbsp;·&nbsp; Available worldwide &nbsp;·&nbsp; Confidentiality assured</span>
+      <span class="zh">駐台灣台北 &nbsp;·&nbsp; 全球接案 &nbsp;·&nbsp; 保密保證</span>
+    </p>
+  </div>
+</section>
+
+<footer>
+  <span class="en">2025 &nbsp;·&nbsp; Epidemiological Data Analysis &nbsp;·&nbsp; Taipei, Taiwan</span>
+  <span class="zh">2025 &nbsp;·&nbsp; 流行病學數據分析 &nbsp;·&nbsp; 台灣台北</span>
+</footer>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button class="lb-x" id="lb-close">&#xd7;</button>
+  <button class="lb-nav" id="lb-prev">&#x2039;</button>
+  <div class="lb-inner">
+    <img class="lb-img" id="lb-img" src="" alt="">
+    <div class="lb-cap" id="lb-cap"></div>
+  </div>
+  <button class="lb-nav" id="lb-next">&#x203a;</button>
+</div>
+
+<script>
+const FIGS = [
+  // MAPS
+  { src:'images/map_quartiles_boys_all.png',       cat:'map',
+    en:'AAPC quartile map, adolescent boys 10-19, global coverage',
+    zh:'青少年男性10-19歲AAPC四分位地圖，全球覆蓋',
+    tag_en:'Map', tag_zh:'地圖' },
+  { src:'images/map_quartiles_girls_all.png',      cat:'map',
+    en:'AAPC quartile map, adolescent girls 10-19, global coverage',
+    zh:'青少年女性10-19歲AAPC四分位地圖，全球覆蓋',
+    tag_en:'Map', tag_zh:'地圖' },
+  { src:'images/map_prevalence_comparison.png',    cat:'map',
+    en:'Prevalence comparison map, 1990 vs 2022, adolescents 10-19',
+    zh:'盛行率比較地圖，1990年對比2022年，青少年10-19歲',
+    tag_en:'Map', tag_zh:'地圖' },
+  { src:'images/map_aapc_quartiles.png',           cat:'map',
+    en:'AAPC quartile choropleth, multi-country comparison',
+    zh:'AAPC四分位等值地圖，多國比較',
+    tag_en:'Map', tag_zh:'地圖' },
+  { src:'images/map_adults_quartiles_early.png',   cat:'map',
+    en:'Quartile map, both sexes, early adulthood obesity',
+    zh:'四分位地圖，雙性別，青壯年期肥胖',
+    tag_en:'Map', tag_zh:'地圖' },
+  { src:'images/map_adults_quartiles_later.png',   cat:'map',
+    en:'Quartile map, both sexes, later adulthood obesity',
+    zh:'四分位地圖，雙性別，中老年期肥胖',
+    tag_en:'Map', tag_zh:'地圖' },
+  { src:'images/map_aapc_women_early.png',         cat:'map',
+    en:'AAPC map, women, early adulthood period',
+    zh:'AAPC地圖，女性，青壯年期',
+    tag_en:'Map', tag_zh:'地圖' },
+  { src:'images/map_aapc_men_early.png',           cat:'map',
+    en:'AAPC map, men, early adulthood period',
+    zh:'AAPC地圖，男性，青壯年期',
+    tag_en:'Map', tag_zh:'地圖' },
+  { src:'images/map_supp_women.png',               cat:'map',
+    en:'Country-level prevalence panel, women',
+    zh:'各國盛行率面板圖，女性',
+    tag_en:'Map Panel', tag_zh:'地圖面板' },
+  { src:'images/map_supp_women2.png',              cat:'map',
+    en:'Country-level AAPC panel, women',
+    zh:'各國AAPC面板圖，女性',
+    tag_en:'Map Panel', tag_zh:'地圖面板' },
+
+  // TRENDS
+  { src:'images/trend_adolescent_prevalence.png',  cat:'trend',
+    en:'Prevalence trends, adolescent obesity, sex-stratified, 1990-2022',
+    zh:'青少年肥胖盛行率趨勢，性別分層，1990-2022年',
+    tag_en:'Trend', tag_zh:'趨勢' },
+  { src:'images/trend_adolescent_magnitude.png',   cat:'trend',
+    en:'Magnitude of change in adolescent obesity, country-level',
+    zh:'青少年肥胖變化幅度，各國比較',
+    tag_en:'Trend', tag_zh:'趨勢' },
+  { src:'images/trend_adults_prevalence.png',      cat:'trend',
+    en:'Obesity prevalence trends, adult cohorts, 1990-2022',
+    zh:'成人肥胖盛行率趨勢，1990-2022年',
+    tag_en:'Trend', tag_zh:'趨勢' },
+  { src:'images/trend_adults_magnitude.png',       cat:'trend',
+    en:'Magnitude of change in adult obesity, by age group and sex',
+    zh:'成人肥胖變化幅度，依年齡組與性別分層',
+    tag_en:'Trend', tag_zh:'趨勢' },
+  { src:'images/trend_cancer_vs_obesity.png',      cat:'trend',
+    en:'Global cancer vs obesity trends over time',
+    zh:'全球癌症與肥胖趨勢隨時間變化',
+    tag_en:'Trend', tag_zh:'趨勢' },
+  { src:'images/spaghetti_trend.png',              cat:'trend',
+    en:'Country-level incidence trajectories, multi-country spaghetti plot',
+    zh:'各國發生率軌跡，多國疊加圖',
+    tag_en:'Spaghetti', tag_zh:'軌跡圖' },
+  { src:'images/spaghetti_top5.png',               cat:'trend',
+    en:'Top 5 country incidence trend trajectories',
+    zh:'發生率趨勢前5名國家軌跡圖',
+    tag_en:'Spaghetti', tag_zh:'軌跡圖' },
+  { src:'images/spaghetti_bottom5.png',            cat:'trend',
+    en:'Bottom 5 country incidence trend trajectories',
+    zh:'發生率趨勢後5名國家軌跡圖',
+    tag_en:'Spaghetti', tag_zh:'軌跡圖' },
+  { src:'images/spaghetti_obesity_top10.png',      cat:'trend',
+    en:'Top 10 obesity trend countries, multi-year trajectories',
+    zh:'肥胖趨勢前10名國家多年軌跡',
+    tag_en:'Spaghetti', tag_zh:'軌跡圖' },
+  { src:'images/incidence_vs_obesity.png',         cat:'trend',
+    en:'Cancer incidence trends plotted against obesity trends over time',
+    zh:'癌症發生率趨勢與肥胖趨勢隨時間對應圖',
+    tag_en:'Trend', tag_zh:'趨勢' },
+  { src:'images/age_lines_early.png',              cat:'trend',
+    en:'Age-stratified incidence trends, early-onset cancer group',
+    zh:'年齡分層發生率趨勢，早發型癌症組',
+    tag_en:'Trend Lines', tag_zh:'趨勢折線' },
+  { src:'images/age_lines_later.png',              cat:'trend',
+    en:'Age-stratified incidence trends, later-onset cancer group',
+    zh:'年齡分層發生率趨勢，晚發型癌症組',
+    tag_en:'Trend Lines', tag_zh:'趨勢折線' },
+
+  // REGRESSION
+  { src:'images/reg_obesity_10yr.png',             cat:'reg',
+    en:'Regression: obesity-related cancers, 10-year lag model',
+    zh:'迴歸分析：肥胖相關癌症，10年滯後模型',
+    tag_en:'Regression', tag_zh:'迴歸' },
+  { src:'images/reg_obesity_15yr.png',             cat:'reg',
+    en:'Regression: obesity-related cancers, 15-year lag model',
+    zh:'迴歸分析：肥胖相關癌症，15年滯後模型',
+    tag_en:'Regression', tag_zh:'迴歸' },
+  { src:'images/reg_obesity_20yr.png',             cat:'reg',
+    en:'Regression: obesity-related cancers, 20-year lag model',
+    zh:'迴歸分析：肥胖相關癌症，20年滯後模型',
+    tag_en:'Regression', tag_zh:'迴歸' },
+  { src:'images/reg_nonobesity_10yr.png',          cat:'reg',
+    en:'Regression: non-obesity-related cancers, 10-year lag model',
+    zh:'迴歸分析：非肥胖相關癌症，10年滯後模型',
+    tag_en:'Regression', tag_zh:'迴歸' },
+  { src:'images/reg_nonobesity_15yr.png',          cat:'reg',
+    en:'Regression: non-obesity-related cancers, 15-year lag model',
+    zh:'迴歸分析：非肥胖相關癌症，15年滯後模型',
+    tag_en:'Regression', tag_zh:'迴歸' },
+
+  // CORRELATIONS
+  { src:'images/corr_kidney_female.png',           cat:'corr',
+    en:'Correlation: female kidney cancer vs obesity prevalence',
+    zh:'相關分析：女性腎癌與肥胖盛行率',
+    tag_en:'Correlation', tag_zh:'相關分析' },
+  { src:'images/corr_pancreatic_male.png',         cat:'corr',
+    en:'Correlation: male pancreatic cancer vs obesity trend',
+    zh:'相關分析：男性胰臟癌與肥胖趨勢',
+    tag_en:'Correlation', tag_zh:'相關分析' },
+  { src:'images/scatter_ordered.png',              cat:'corr',
+    en:'Obesity-cancer association scatter, cancer sites ordered by effect',
+    zh:'肥胖與癌症相關散點圖，依效應量排序',
+    tag_en:'Scatter', tag_zh:'散點圖' },
+  { src:'images/scatter_composite.png',            cat:'corr',
+    en:'Composite scatter panel, sex-stratified, cross-dataset',
+    zh:'複合散點圖面板，性別分層，跨資料集',
+    tag_en:'Composite', tag_zh:'複合圖' },
+  { src:'images/supp_scatter_adults.png',          cat:'corr',
+    en:'Scatter plots panel: adult obesity vs outcome measures',
+    zh:'散點圖面板：成人肥胖與各結果指標',
+    tag_en:'Scatter', tag_zh:'散點圖' },
+  { src:'images/scatter_age_compare.png',          cat:'corr',
+    en:'Age-group rate comparison scatter, female cohorts',
+    zh:'年齡組別比率比較散點圖，女性組',
+    tag_en:'Scatter', tag_zh:'散點圖' },
+
+  // HEATMAPS & RANKING
+  { src:'images/heatmap_pct_incidence.png',        cat:'dist',
+    en:'Heatmap: percent change in incidence by cancer site and country group',
+    zh:'熱圖：各癌症部位與國家組別的發生率百分比變化',
+    tag_en:'Heatmap', tag_zh:'熱圖' },
+  { src:'images/heatmap_pct_deaths.png',           cat:'dist',
+    en:'Heatmap: percent change in mortality by cancer site and country group',
+    zh:'熱圖：各癌症部位與國家組別的死亡率百分比變化',
+    tag_en:'Heatmap', tag_zh:'熱圖' },
+  { src:'images/heatmap_props_incidence.png',      cat:'dist',
+    en:'Heatmap: proportional incidence change, multi-cancer comparison',
+    zh:'熱圖：比例發生率變化，多癌症比較',
+    tag_en:'Heatmap', tag_zh:'熱圖' },
+  { src:'images/ranking_incidence.png',            cat:'dist',
+    en:'Global cancer incidence ranking, correct burden order',
+    zh:'全球癌症發生率排序，正確負擔排列',
+    tag_en:'Ranking', tag_zh:'排序圖' },
+  { src:'images/ranking_deaths.png',               cat:'dist',
+    en:'Global cancer mortality ranking, correct burden order',
+    zh:'全球癌症死亡率排序，正確負擔排列',
+    tag_en:'Ranking', tag_zh:'排序圖' },
+  { src:'images/bar_pct_aggregated.png',           cat:'dist',
+    en:'Aggregated percent change bar chart across cancer sites',
+    zh:'各癌症部位總體百分比變化長條圖',
+    tag_en:'Bar Chart', tag_zh:'長條圖' },
+  { src:'images/stacked_age_incidence.png',        cat:'dist',
+    en:'Stacked bar: age composition of incidence by cancer site',
+    zh:'堆疊長條圖：各癌症部位發生率的年齡組成',
+    tag_en:'Stacked Bar', tag_zh:'堆疊圖' },
+  { src:'images/stacked_age_deaths.png',           cat:'dist',
+    en:'Stacked bar: age composition of mortality by cancer site',
+    zh:'堆疊長條圖：各癌症部位死亡率的年齡組成',
+    tag_en:'Stacked Bar', tag_zh:'堆疊圖' },
+  { src:'images/lollipop_male_2049.png',           cat:'dist',
+    en:'Lollipop chart: AAPC ranked by country, male 20-49',
+    zh:'棒棒糖圖：各國AAPC排序，男性20-49歲',
+    tag_en:'Lollipop', tag_zh:'棒棒糖圖' },
+  { src:'images/lollipop_male_50plus.png',         cat:'dist',
+    en:'Lollipop chart: AAPC ranked by country, male 50+',
+    zh:'棒棒糖圖：各國AAPC排序，男性50歲以上',
+    tag_en:'Lollipop', tag_zh:'棒棒糖圖' },
+  { src:'images/lollipop_female_2049.png',         cat:'dist',
+    en:'Lollipop chart: AAPC ranked by country, female 20-49',
+    zh:'棒棒糖圖：各國AAPC排序，女性20-49歲',
+    tag_en:'Lollipop', tag_zh:'棒棒糖圖' },
+  { src:'images/lollipop_female_50plus.png',       cat:'dist',
+    en:'Lollipop chart: AAPC ranked by country, female 50+',
+    zh:'棒棒糖圖：各國AAPC排序，女性50歲以上',
+    tag_en:'Lollipop', tag_zh:'棒棒糖圖' },
+  { src:'images/proportions_incidence.png',        cat:'dist',
+    en:'Corrected proportional incidence by cancer category',
+    zh:'校正後各癌症類別比例發生率',
+    tag_en:'Proportions', tag_zh:'比例圖' },
+
+  // AGE & SEX PATTERNS
+  { src:'images/agesex_incidence_rates.png',       cat:'agesex',
+    en:'Age and sex trends in incidence rates, global, multi-cancer',
+    zh:'全球發生率年齡與性別趨勢，多癌症',
+    tag_en:'Age/Sex', tag_zh:'年齡性別' },
+  { src:'images/agesex_deaths_rates.png',          cat:'agesex',
+    en:'Age and sex trends in mortality rates, global, multi-cancer',
+    zh:'全球死亡率年齡與性別趨勢，多癌症',
+    tag_en:'Age/Sex', tag_zh:'年齡性別' },
+  { src:'images/agesex_incidence_props.png',       cat:'agesex',
+    en:'Age and sex trends in proportional incidence, global',
+    zh:'全球比例發生率年齡與性別趨勢',
+    tag_en:'Age/Sex', tag_zh:'年齡性別' },
+  { src:'images/agesex_deaths_props.png',          cat:'agesex',
+    en:'Age and sex trends in proportional mortality, global',
+    zh:'全球比例死亡率年齡與性別趨勢',
+    tag_en:'Age/Sex', tag_zh:'年齡性別' },
+  { src:'images/rate_trends_female.png',           cat:'agesex',
+    en:'Rate trends by cancer type, female, multi-year',
+    zh:'各癌症類型率趨勢，女性，多年期',
+    tag_en:'Rate Trends', tag_zh:'率趨勢' },
+  { src:'images/rate_trends_male.png',             cat:'agesex',
+    en:'Rate trends by cancer type, male, multi-year',
+    zh:'各癌症類型率趨勢，男性，多年期',
+    tag_en:'Rate Trends', tag_zh:'率趨勢' },
+  { src:'images/prop_trends_female.png',           cat:'agesex',
+    en:'Proportional burden trends, female, updated color scheme',
+    zh:'比例負擔趨勢，女性，更新配色版本',
+    tag_en:'Proportions', tag_zh:'比例趨勢' },
+  { src:'images/prop_trends_male.png',             cat:'agesex',
+    en:'Proportional burden trends, male, updated color scheme',
+    zh:'比例負擔趨勢，男性，更新配色版本',
+    tag_en:'Proportions', tag_zh:'比例趨勢' },
+
+  // COMPARATIVE
+  { src:'images/dumbbell_sex_incidence.png',       cat:'comp',
+    en:'Dumbbell plot: sex disparity in cancer incidence rates',
+    zh:'啞鈴圖：癌症發生率的性別差異',
+    tag_en:'Dumbbell', tag_zh:'啞鈴圖' },
+  { src:'images/dumbbell_sex_deaths.png',          cat:'comp',
+    en:'Dumbbell plot: sex disparity in cancer mortality rates',
+    zh:'啞鈴圖：癌症死亡率的性別差異',
+    tag_en:'Dumbbell', tag_zh:'啞鈴圖' },
+  { src:'images/dumbbell_cancer_incidence.png',    cat:'comp',
+    en:'Dumbbell plot: cancer-site disparity in incidence rates',
+    zh:'啞鈴圖：各癌症部位發生率差異',
+    tag_en:'Dumbbell', tag_zh:'啞鈴圖' },
+  { src:'images/dumbbell_cancer_deaths.png',       cat:'comp',
+    en:'Dumbbell plot: cancer-site disparity in mortality rates',
+    zh:'啞鈴圖：各癌症部位死亡率差異',
+    tag_en:'Dumbbell', tag_zh:'啞鈴圖' },
+  { src:'images/sdi_trends_incidence.png',         cat:'comp',
+    en:'SDI vs global trends by cancer site, incidence',
+    zh:'SDI與全球各癌症部位發生率趨勢比較',
+    tag_en:'SDI Compare', tag_zh:'SDI比較' },
+  { src:'images/sdi_trends_deaths.png',            cat:'comp',
+    en:'SDI vs global trends by cancer site, mortality',
+    zh:'SDI與全球各癌症部位死亡率趨勢比較',
+    tag_en:'SDI Compare', tag_zh:'SDI比較' },
+  { src:'images/adults_comparison_bothsexes.png',  cat:'comp',
+    en:'Early vs later adulthood obesity comparison, both sexes with sample sizes',
+    zh:'青壯年與中老年肥胖比較，雙性別含樣本數',
+    tag_en:'Comparison', tag_zh:'比較圖' },
+];
+
+// Language
+const html = document.documentElement;
+document.querySelectorAll('.lang-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    html.dataset.lang = b.dataset.lang;
+    document.querySelectorAll('.lang-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    renderGallery(currentFilter);
+  });
+});
+const lang = () => html.dataset.lang || 'en';
+
+// Gallery
+let currentFilter = 'all';
+let visible = [];
+let lbIdx = 0;
+
+function renderGallery(filter) {
+  currentFilter = filter;
+  visible = filter === 'all' ? FIGS : FIGS.filter(f => f.cat === filter);
+  const l = lang();
+  document.getElementById('gallery-grid').innerHTML = visible.map((f, i) => `
+    <div class="gi" data-i="${i}">
+      <img src="${f.src}" alt="${l==='en'?f.en:f.zh}" loading="lazy">
+      <div class="gi-cap">
+        ${l==='en'?f.en:f.zh}
+        <br><span class="gi-tag">${l==='en'?f.tag_en:f.tag_zh}</span>
+      </div>
+    </div>`).join('');
+  document.querySelectorAll('.gi').forEach(el => {
+    el.addEventListener('click', () => openLb(+el.dataset.i));
+  });
+}
+
+document.querySelectorAll('.fp').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('.fp').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    renderGallery(p.dataset.filter);
+  });
+});
+
+// Lightbox
+function openLb(i) {
+  lbIdx = i; syncLb();
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLb() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function syncLb() {
+  const f = visible[lbIdx], l = lang();
+  document.getElementById('lb-img').src = f.src;
+  document.getElementById('lb-cap').textContent = l==='en' ? f.en : f.zh;
+}
+document.getElementById('lb-close').onclick = closeLb;
+document.getElementById('lightbox').addEventListener('click', e => { if(e.target===document.getElementById('lightbox')) closeLb(); });
+document.getElementById('lb-prev').onclick = e => { e.stopPropagation(); lbIdx=(lbIdx-1+visible.length)%visible.length; syncLb(); };
+document.getElementById('lb-next').onclick = e => { e.stopPropagation(); lbIdx=(lbIdx+1)%visible.length; syncLb(); };
+document.addEventListener('keydown', e => {
+  if(!document.getElementById('lightbox').classList.contains('open')) return;
+  if(e.key==='Escape') closeLb();
+  if(e.key==='ArrowLeft')  { lbIdx=(lbIdx-1+visible.length)%visible.length; syncLb(); }
+  if(e.key==='ArrowRight') { lbIdx=(lbIdx+1)%visible.length; syncLb(); }
+});
+
+renderGallery('all');
+</script>
+</body>
+</html>
