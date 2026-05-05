@@ -55,6 +55,8 @@
     h1.hero-title { font-family: var(--serif); font-weight: 400; font-size: clamp(2.1rem, 4.2vw, 3.4rem); line-height: 1.13; letter-spacing: -0.01em; color: var(--text); margin-bottom: 1.5rem; max-width: 680px; }
     .hero-sub { font-size: 1rem; color: var(--text-muted); line-height: 1.75; max-width: 560px; margin-bottom: 2.8rem; }
     .hero-actions { display: flex; gap: 0.9rem; flex-wrap: wrap; }
+    .hero-proof { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1.5rem; max-width: 680px; }
+    .hero-proof span { display: inline-flex; align-items: center; min-height: 28px; padding: 4px 11px; border: 1px solid var(--border); border-radius: 20px; color: var(--text-muted); background: rgba(255,255,255,0.55); font-size: 0.74rem; }
     .btn { display: inline-block; text-decoration: none; padding: 11px 26px; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; border-radius: var(--radius); transition: all .2s; cursor: pointer; border: 1px solid transparent; font-family: var(--sans); }
     .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
     .btn-primary:hover { opacity: 0.82; }
@@ -103,6 +105,11 @@
     .price-items li { font-size: 0.82rem; color: var(--text-muted); padding-left: 1rem; position: relative; }
     .price-items li::before { content: '+'; position: absolute; left: 0; color: var(--accent); font-size: 0.75rem; top: 1px; }
     .price-note { margin-top: 1.2rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
+    .quick-scope-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.2rem; }
+    .quick-scope { border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem 1.25rem; background: var(--bg); }
+    .quick-scope-kicker { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+    .quick-scope-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .quick-scope-body { font-size: 0.82rem; color: var(--text-muted); line-height: 1.65; }
     .collab-note { display: flex; gap: 1.2rem; align-items: flex-start; margin-top: 2.5rem; background: var(--bg); border: 1.5px solid var(--accent); border-radius: 10px; padding: 1.4rem 1.6rem; }
     .collab-icon { font-size: 1.6rem; line-height: 1; flex-shrink: 0; color: var(--accent); margin-top: 0.1rem; }
     .collab-title { font-family: var(--serif); font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text); }
@@ -153,6 +160,8 @@
     #contact .sh-body { color: rgba(255,255,255,0.68); margin: 0 auto; }
     #contact .contact-grid { margin-top: 1.5rem; }
     #contact .contact-note { margin-top: 1.5rem; }
+    #contact .inquiry-guide { margin: 1.6rem auto 0; max-width: 780px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; }
+    #contact .guide-item { border: 1px solid rgba(255,255,255,0.2); border-radius: var(--radius); padding: 0.75rem 0.8rem; color: rgba(255,255,255,0.72); font-size: 0.78rem; line-height: 1.5; }
     .contact-grid { display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; margin-top: 2.5rem; }
     .contact-item { text-align: center; }
     .contact-item-label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 0.4rem; }
@@ -169,6 +178,8 @@
       .svc:nth-child(2n) { border-right: none; }
       .svc:nth-child(3n) { border-right: 1px solid var(--border); }
       .pricing-grid { grid-template-columns: 1fr; }
+      .quick-scope-grid { grid-template-columns: 1fr; }
+      #contact .inquiry-guide { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 600px) {
       nav { padding: 0 1.2rem; }
@@ -179,6 +190,7 @@
       .gallery-grid { columns: 1; }
       .stat-row { flex-wrap: wrap; gap: 1.5rem; }
       .contact-grid { gap: 1.8rem; }
+      #contact .inquiry-guide { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -220,7 +232,11 @@
       <span class="zh">我是Abdiwahab M. Ali，國立陽明交通大學博士生，駐台灣台北。我處理大規模國際流行病學資料，產出可直接用於論文的分析與圖表。全球接受諮詢委託。</span>
     </p>
     <div class="hero-actions">
-      <a href="#gallery" class="btn btn-primary">
+      <a href="mailto:Bookhaali@gmail.com?subject=Paid%20research%20analysis%20inquiry&amp;body=Project%20type%3A%0AData%20status%3A%0ADeadline%3A%0ADesired%20output%3A" class="btn btn-primary">
+        <span class="en">Request a Paid Scope</span>
+        <span class="zh">洽詢付費委託</span>
+      </a>
+      <a href="#gallery" class="btn btn-outline">
         <span class="en">View Work</span>
         <span class="zh">查看作品</span>
       </a>
@@ -228,6 +244,11 @@
         <span class="en">Get in Touch</span>
         <span class="zh">聯絡合作</span>
       </a>
+    </div>
+    <div class="hero-proof">
+      <span class="en">Small paid scopes welcome</span><span class="zh">接受小型付費委託</span>
+      <span class="en">Remote worldwide</span><span class="zh">全球遠端合作</span>
+      <span class="en">R, Stata, Joinpoint, SPSS</span><span class="zh">R、Stata、Joinpoint、SPSS</span>
     </div>
   </div>
 </section>
@@ -364,6 +385,32 @@
       <span class="en">Rates reflect doctoral-level work with international dataset expertise. All prices are negotiable depending on project scope, budget, and context. Get in touch to discuss.</span>
       <span class="zh">費用反映博士級專業及國際資料集操作能力。所有價格可依專案範圍、預算與情況協商調整。歡迎聯絡討論。</span>
     </p>
+    <div class="quick-scope-grid">
+      <div class="quick-scope">
+        <div class="quick-scope-kicker"><span class="en">Fast Start</span><span class="zh">快速開始</span></div>
+        <div class="quick-scope-title"><span class="en">Figure Rescue Sprint</span><span class="zh">圖表急救方案</span></div>
+        <div class="quick-scope-body">
+          <span class="en">Best when the analysis is already done and the figure needs to become cleaner, more consistent, and submission-ready.</span>
+          <span class="zh">適合分析已完成，但圖表需要變得更清楚、更一致、可用於投稿或修稿的情況。</span>
+        </div>
+      </div>
+      <div class="quick-scope">
+        <div class="quick-scope-kicker"><span class="en">Student Friendly</span><span class="zh">學生友善</span></div>
+        <div class="quick-scope-title"><span class="en">Methods and Results Check</span><span class="zh">方法與結果檢查</span></div>
+        <div class="quick-scope-body">
+          <span class="en">A focused review of statistical choices, output interpretation, figure logic, and the next step needed to move a thesis or paper forward.</span>
+          <span class="zh">針對統計方法、結果解讀、圖表邏輯與下一步進行聚焦檢查，協助論文或研究繼續推進。</span>
+        </div>
+      </div>
+      <div class="quick-scope">
+        <div class="quick-scope-kicker"><span class="en">Defined Project</span><span class="zh">明確專案</span></div>
+        <div class="quick-scope-title"><span class="en">Analysis plus Figures</span><span class="zh">分析加圖表</span></div>
+        <div class="quick-scope-body">
+          <span class="en">For teams with a dataset and a clear question who need analysis, clean code outputs, core figures, and a concise results summary.</span>
+          <span class="zh">適合已有資料與明確問題的團隊，需要分析、乾淨輸出、核心圖表與簡短結果摘要。</span>
+        </div>
+      </div>
+    </div>
     <div class="pricing-grid">
 
       <div class="price-card">
@@ -412,12 +459,12 @@
       <div class="collab-icon">&#9697;</div>
       <div>
         <div class="collab-title">
-          <span class="en">Open to research collaboration</span>
-          <span class="zh">開放學術研究合作</span>
+          <span class="en">Paid work first, collaboration when aligned</span>
+          <span class="zh">優先付費委託，研究契合時可談合作</span>
         </div>
         <div class="collab-body">
-          <span class="en">Not every project needs a fee. If our research interests align in epidemiology, cancer burden, obesity trends, or related areas, I am open to unpaid collaboration. Any contribution will be made in full accordance with ICMJE authorship guidelines, ensuring transparent and ethical attribution for all parties.</span>
-          <span class="zh">並非每個合作都需要收費。若我們的研究興趣相符——涵蓋流行病學、癌症負擔、肥胖趨勢或相關領域——歡迎洽談無償學術合作。所有貢獻將嚴格遵循ICMJE著作權準則，確保各方貢獻的透明與公正認定。</span>
+          <span class="en">Most service requests are handled as paid scoped projects. If a project is a genuine academic collaboration in epidemiology, cancer burden, obesity trends, or related areas, authorship and contribution will follow ICMJE guidelines with transparent attribution.</span>
+          <span class="zh">多數服務需求會以明確範圍的付費專案處理。若屬於真正的流行病學、癌症負擔、肥胖趨勢或相關學術合作，作者資格與貢獻將依ICMJE準則透明認定。</span>
         </div>
       </div>
     </div>
@@ -505,6 +552,12 @@
       <span class="en">Students, researchers, professors, clinicians, and hospitals are all welcome. Project-based or hourly. Based in Taipei, Taiwan, working with clients anywhere.</span>
       <span class="zh">歡迎學生、研究人員、教授、臨床醫師及醫院委託。可接專案或計時合作。駐台灣，接受全球客戶。</span>
     </p>
+    <div class="inquiry-guide">
+      <div class="guide-item"><span class="en">Project type</span><span class="zh">專案類型</span></div>
+      <div class="guide-item"><span class="en">Data status</span><span class="zh">資料狀態</span></div>
+      <div class="guide-item"><span class="en">Deadline</span><span class="zh">預計期限</span></div>
+      <div class="guide-item"><span class="en">Desired output</span><span class="zh">希望交付成果</span></div>
+    </div>
     <div class="contact-grid">
       <div class="contact-item">
         <div class="contact-item-label"><span class="en">Email (General)</span><span class="zh">電子郵件（一般）</span></div>
