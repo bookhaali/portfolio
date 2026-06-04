@@ -1,196 +1,253 @@
 <!DOCTYPE html>
-<html lang="en" data-lang="en">
+<html lang="en" data-lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Epidemiological Data Analysis &amp; Visualization · Taipei, Taiwan</title>
-  <meta name="description" content="PhD-level epidemiological analysis, publication-ready R visualizations, and manuscript support. Based in Taipei, Taiwan, available worldwide.">
+  <title>Abdiwahab M. Ali / Epidemiology data analysis / Taipei</title>
+  <meta name="description" content="Doctoral-level epidemiological analysis and publication figures in R, Stata, and Joinpoint. Based in Taipei, available worldwide.">
+  <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('pf-theme') || 'dark';
+        document.documentElement.dataset.theme = t;
+        var l = localStorage.getItem('pf-lang');
+        if (l) document.documentElement.dataset.lang = l;
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:          #F6F5F1;
-      --bg-card:     #FFFFFF;
-      --text:        #1A1A18;
-      --text-muted:  #6A6A65;
+      --bg:          #F8F8F6;
+      --surface:     #FFFFFF;
+      --text:        #161512;
+      --muted:       #6A6A63;
+      --faint:       #9A9A90;
+      --border:      #E4E3DC;
       --accent:      #1C3D6B;
-      --accent-light:#E6EDF6;
-      --border:      #E0DFD9;
-      --radius:      3px;
-      --serif:       Georgia, 'Times New Roman', serif;
-      --sans:        -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      --accent-soft: #EAEFF6;
+      --grid:        rgba(0,0,0,0.035);
+      --contact-bg:  #14130F;
+      --contact-fg:  #F4F3EE;
+      --contact-mut: rgba(244,243,238,0.55);
+      --contact-bd:  rgba(244,243,238,0.16);
+      --contact-lnk: #F4F3EE;
+      --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, 'PingFang TC', 'Microsoft JhengHei', 'Noto Sans TC', monospace;
+    }
+    [data-theme="dark"] {
+      --bg:          #0D0D0C;
+      --surface:     #151513;
+      --text:        #ECEBE4;
+      --muted:       #9C9B91;
+      --faint:       #6E6D64;
+      --border:      #2A2924;
+      --accent:      #8DB0E4;
+      --accent-soft: #18222E;
+      --grid:        rgba(255,255,255,0.04);
+      --contact-bg:  #0A0A09;
+      --contact-fg:  #ECEBE4;
+      --contact-mut: #9C9B91;
+      --contact-bd:  #2A2924;
+      --contact-lnk: #8DB0E4;
     }
 
     html { scroll-behavior: smooth; font-size: 16px; }
-    body { font-family: var(--sans); background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: var(--mono);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      transition: background .3s ease, color .3s ease;
+    }
 
     [data-lang="zh"] .en { display: none !important; }
     [data-lang="en"] .zh { display: none !important; }
+
+    a { color: inherit; }
+    ::selection { background: var(--accent); color: var(--bg); }
 
     /* NAV */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 200;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 3rem; height: 54px;
-      background: rgba(246,245,241,0.93);
-      backdrop-filter: blur(10px);
+      padding: 0 2.4rem; height: 56px;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
-    .nav-logo { font-family: var(--serif); font-size: 1rem; color: var(--text); text-decoration: none; }
-    .nav-links { display: flex; gap: 1.8rem; list-style: none; }
-    .nav-links a { font-size: 0.77rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color .18s; }
-    .nav-links a:hover { color: var(--accent); }
-    .lang-toggle { display: flex; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
-    .lang-btn { background: none; border: none; cursor: pointer; padding: 4px 13px; font-size: 0.75rem; letter-spacing: 0.04em; color: var(--text-muted); transition: all .18s; font-family: var(--sans); }
-    .lang-btn.active { background: var(--accent); color: #fff; }
+    .nav-logo { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.02em; color: var(--text); text-decoration: none; }
+    .nav-logo .dim { color: var(--faint); font-weight: 400; }
+    .nav-links { display: flex; gap: 1.6rem; list-style: none; }
+    .nav-links a { font-size: 0.72rem; letter-spacing: 0.05em; color: var(--muted); text-decoration: none; position: relative; transition: color .18s; }
+    .nav-links a::after { content: ''; position: absolute; left: 0; bottom: -4px; width: 0; height: 1px; background: var(--accent); transition: width .2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-tools { display: flex; align-items: center; gap: 0.6rem; }
+    .lang-toggle { display: flex; border: 1px solid var(--border); border-radius: 2px; overflow: hidden; }
+    .lang-btn { background: none; border: none; cursor: pointer; padding: 5px 11px; font-size: 0.7rem; letter-spacing: 0.03em; color: var(--muted); transition: all .18s; font-family: var(--mono); }
+    .lang-btn.active { background: var(--text); color: var(--bg); }
+    .theme-btn {
+      background: none; border: 1px solid var(--border); border-radius: 2px;
+      cursor: pointer; padding: 5px 12px; font-size: 0.7rem; letter-spacing: 0.05em;
+      color: var(--muted); font-family: var(--mono); transition: all .18s;
+    }
+    .theme-btn:hover { color: var(--text); border-color: var(--text); }
 
     /* SECTIONS */
-    section { padding: 5.5rem 3rem; }
-    .container { max-width: 1100px; margin: 0 auto; }
+    section { padding: 6rem 2.4rem; }
+    .container { max-width: 1080px; margin: 0 auto; }
+
+    .shead { display: flex; align-items: baseline; gap: 0.7rem; margin-bottom: 1.1rem; }
+    .sh-idx { font-size: 0.72rem; color: var(--accent); font-weight: 700; }
+    .sh-label { font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .sh-title { font-weight: 500; font-size: clamp(1.4rem, 2.6vw, 2rem); line-height: 1.25; letter-spacing: -0.01em; margin-bottom: 1rem; color: var(--text); }
+    .sh-body { font-size: 0.86rem; color: var(--muted); line-height: 1.8; max-width: 660px; }
 
     /* HERO */
-    #hero { min-height: 92vh; display: flex; align-items: center; padding-top: 130px; padding-bottom: 4rem; }
-    .hero-label { display: flex; align-items: center; gap: 0.7rem; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.4rem; }
-    .hero-label::before { content: ''; display: block; width: 28px; height: 1px; background: var(--accent); }
-    h1.hero-title { font-family: var(--serif); font-weight: 400; font-size: clamp(2.1rem, 4.2vw, 3.4rem); line-height: 1.13; letter-spacing: -0.01em; color: var(--text); margin-bottom: 1.5rem; max-width: 680px; }
-    .hero-sub { font-size: 1rem; color: var(--text-muted); line-height: 1.75; max-width: 560px; margin-bottom: 2.8rem; }
-    .hero-actions { display: flex; gap: 0.9rem; flex-wrap: wrap; }
-    .hero-proof { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1.5rem; max-width: 680px; }
-    .hero-proof span { display: inline-flex; align-items: center; min-height: 28px; padding: 4px 11px; border: 1px solid var(--border); border-radius: 20px; color: var(--text-muted); background: rgba(255,255,255,0.55); font-size: 0.74rem; }
-    .btn { display: inline-block; text-decoration: none; padding: 11px 26px; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; border-radius: var(--radius); transition: all .2s; cursor: pointer; border: 1px solid transparent; font-family: var(--sans); }
-    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-    .btn-primary:hover { opacity: 0.82; }
-    .btn-outline { background: transparent; color: var(--text); border-color: var(--border); }
-    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+    #hero {
+      min-height: 100vh; display: flex; align-items: center;
+      padding-top: 130px; padding-bottom: 4rem;
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 38px 38px;
+    }
+    .hero-kicker { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.6rem; }
+    h1.hero-title {
+      font-weight: 700; font-size: clamp(2rem, 5vw, 3.3rem);
+      line-height: 1.12; letter-spacing: -0.02em; color: var(--text);
+      margin-bottom: 1.6rem; max-width: 820px;
+    }
+    .caret { display: inline-block; width: 0.55em; height: 1em; background: var(--accent); margin-left: 0.1em; transform: translateY(0.12em); animation: blink 1.1s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .hero-sub { font-size: 0.92rem; color: var(--muted); line-height: 1.85; max-width: 580px; margin-bottom: 2.6rem; }
+    .hero-actions { display: flex; gap: 0.7rem; flex-wrap: wrap; }
+    .hero-proof { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.8rem; max-width: 720px; }
+    .hero-proof span { display: inline-flex; align-items: center; min-height: 28px; padding: 4px 12px; border: 1px solid var(--border); border-radius: 2px; color: var(--muted); background: var(--surface); font-size: 0.72rem; }
 
-    /* SECTION HEADERS */
-    .sh-label { font-size: 0.71rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.55rem; }
-    .sh-title { font-family: var(--serif); font-weight: 400; font-size: clamp(1.55rem, 3vw, 2.15rem); line-height: 1.18; margin-bottom: 1rem; color: var(--text); }
-    .sh-body { font-size: 0.93rem; color: var(--text-muted); line-height: 1.78; max-width: 680px; }
+    .btn { display: inline-block; text-decoration: none; padding: 12px 24px; font-size: 0.74rem; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 2px; transition: all .18s; cursor: pointer; border: 1px solid transparent; font-family: var(--mono); }
+    .btn-primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+    .btn-primary:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn-outline { background: transparent; color: var(--text); border-color: var(--border); }
+    .btn-outline:hover { border-color: var(--text); }
 
     /* ABOUT */
-    #about { background: var(--bg-card); }
-    .about-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 4rem; align-items: start; }
-    .ds-row { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.5rem; }
-    .ds-badge { font-size: 0.73rem; padding: 4px 11px; border: 1px solid var(--border); border-radius: 20px; color: var(--text-muted); background: var(--bg); }
-    .stats-block { display: flex; flex-direction: column; gap: 0; }
-    .stat-row { display: flex; gap: 2rem; padding: 1.6rem 0; border-bottom: 1px solid var(--border); }
-    .stat-row:first-child { padding-top: 0; }
-    .stat-row:last-child { border-bottom: none; }
-    .stat-num { font-family: var(--serif); font-size: 2.2rem; color: var(--accent); line-height: 1; margin-bottom: 0.2rem; }
-    .stat-lbl { font-size: 0.77rem; color: var(--text-muted); }
+    #about { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .ds-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1.6rem; }
+    .ds-badge { font-size: 0.7rem; padding: 4px 10px; border: 1px solid var(--border); border-radius: 2px; color: var(--muted); background: var(--bg); }
 
     /* SERVICES */
     #services { background: var(--bg); }
-    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 3rem; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-    .svc { padding: 2rem 1.8rem; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); transition: background .2s; }
-    .svc:hover { background: var(--accent-light); }
+    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 2.6rem; border: 1px solid var(--border); border-radius: 2px; overflow: hidden; }
+    .svc { padding: 1.9rem 1.7rem; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); transition: background .18s; }
+    .svc:hover { background: var(--surface); }
     .svc:nth-child(3n) { border-right: none; }
     .svc:nth-child(n+4) { border-bottom: none; }
-    .svc-num { font-family: var(--serif); font-size: 1.9rem; color: var(--border); line-height: 1; margin-bottom: 1rem; }
-    .svc-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.55rem; }
-    .svc-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.65; }
+    .svc-num { font-size: 0.74rem; color: var(--accent); font-weight: 700; margin-bottom: 0.9rem; }
+    .svc-title { font-size: 0.84rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .svc-desc { font-size: 0.77rem; color: var(--muted); line-height: 1.7; }
 
     /* PRICING */
-    #pricing { background: var(--bg-card); }
-    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-top: 3rem; }
-    .price-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem 1.8rem; background: var(--bg-card); transition: border-color .2s; }
-    .price-card:hover { border-color: var(--accent); }
-    .price-card.featured { border-color: var(--accent); background: var(--accent-light); }
-    .price-tier { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.7rem; }
-    .price-amount { font-family: var(--serif); font-size: 1.9rem; color: var(--text); line-height: 1.1; margin-bottom: 0.3rem; }
-    .price-ntd { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.2rem; }
-    .price-divider { height: 1px; background: var(--border); margin-bottom: 1.2rem; }
-    .price-items { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
-    .price-items li { font-size: 0.82rem; color: var(--text-muted); padding-left: 1rem; position: relative; }
+    #pricing { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .quick-scope-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; margin-top: 2.2rem; }
+    .quick-scope { border: 1px solid var(--border); border-radius: 2px; padding: 1.2rem 1.25rem; background: var(--bg); }
+    .quick-scope-kicker { font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+    .quick-scope-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .quick-scope-body { font-size: 0.77rem; color: var(--muted); line-height: 1.65; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.6rem; }
+    .price-card { border: 1px solid var(--border); border-radius: 2px; padding: 1.8rem 1.7rem; background: var(--bg); transition: border-color .18s; }
+    .price-card:hover { border-color: var(--text); }
+    .price-card.featured { border-color: var(--accent); }
+    .price-tier { font-size: 0.68rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.7rem; }
+    .price-amount { font-size: 1.7rem; font-weight: 700; color: var(--text); line-height: 1.1; margin-bottom: 0.3rem; }
+    .price-amount .unit { font-size: 0.82rem; font-weight: 400; color: var(--muted); }
+    .price-ntd { font-size: 0.76rem; color: var(--muted); margin-bottom: 1.1rem; }
+    .price-divider { height: 1px; background: var(--border); margin-bottom: 1.1rem; }
+    .price-items { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .price-items li { font-size: 0.78rem; color: var(--muted); padding-left: 1rem; position: relative; }
     .price-items li::before { content: '+'; position: absolute; left: 0; color: var(--accent); font-size: 0.75rem; top: 1px; }
-    .price-note { margin-top: 1.2rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
-    .quick-scope-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.2rem; }
-    .quick-scope { border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem 1.25rem; background: var(--bg); }
-    .quick-scope-kicker { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
-    .quick-scope-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; }
-    .quick-scope-body { font-size: 0.82rem; color: var(--text-muted); line-height: 1.65; }
-    .collab-note { display: flex; gap: 1.2rem; align-items: flex-start; margin-top: 2.5rem; background: var(--bg); border: 1.5px solid var(--accent); border-radius: 10px; padding: 1.4rem 1.6rem; }
-    .collab-icon { font-size: 1.6rem; line-height: 1; flex-shrink: 0; color: var(--accent); margin-top: 0.1rem; }
-    .collab-title { font-family: var(--serif); font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text); }
-    .collab-body { font-size: 0.85rem; color: var(--text-muted); line-height: 1.65; }
+    .collab-note { margin-top: 2rem; border: 1px solid var(--accent); border-radius: 2px; padding: 1.3rem 1.5rem; background: var(--accent-soft); }
+    .collab-title { font-size: 0.84rem; font-weight: 700; margin-bottom: 0.45rem; color: var(--text); }
+    .collab-body { font-size: 0.79rem; color: var(--muted); line-height: 1.65; }
+    .price-note { margin-top: 1.6rem; font-size: 0.77rem; color: var(--muted); line-height: 1.6; }
 
     /* GALLERY */
     #gallery { background: var(--bg); }
-    .filter-bar { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 2.2rem 0 2rem; }
-    .fp { padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border); background: none; font-size: 0.77rem; color: var(--text-muted); cursor: pointer; letter-spacing: 0.03em; transition: all .18s; font-family: var(--sans); }
-    .fp.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-    .fp:not(.active):hover { border-color: var(--accent); color: var(--accent); }
+    .filter-bar { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 2.2rem 0 1.8rem; }
+    .fp { padding: 6px 14px; border-radius: 2px; border: 1px solid var(--border); background: none; font-size: 0.73rem; color: var(--muted); cursor: pointer; letter-spacing: 0.02em; transition: all .18s; font-family: var(--mono); }
+    .fp.active { background: var(--text); border-color: var(--text); color: var(--bg); }
+    .fp:not(.active):hover { border-color: var(--text); color: var(--text); }
 
     .gallery-grid { columns: 3 300px; gap: 10px; }
-    .gi { break-inside: avoid; margin-bottom: 10px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; background: var(--bg-card); transition: transform .22s, box-shadow .22s; }
-    .gi:hover { transform: translateY(-4px); box-shadow: 0 10px 36px rgba(0,0,0,0.08); }
+    .gi { break-inside: avoid; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 2px; overflow: hidden; cursor: pointer; background: var(--surface); transition: transform .2s, border-color .2s; }
+    .gi:hover { transform: translateY(-3px); border-color: var(--text); }
     .gi img { display: block; width: 100%; height: auto; }
-    .gi-cap { padding: 9px 13px; font-size: 0.74rem; color: var(--text-muted); line-height: 1.45; border-top: 1px solid var(--border); }
-    .gi-tag { display: inline-block; margin-top: 4px; font-size: 0.67rem; padding: 2px 8px; border-radius: 10px; background: var(--accent-light); color: var(--accent); letter-spacing: 0.04em; }
+    .gi-cap { padding: 9px 12px; font-size: 0.72rem; color: var(--muted); line-height: 1.45; border-top: 1px solid var(--border); }
+    .gi-tag { display: inline-block; margin-top: 5px; font-size: 0.64rem; padding: 2px 8px; border-radius: 2px; background: var(--accent-soft); color: var(--accent); letter-spacing: 0.03em; }
 
     /* LIGHTBOX */
-    #lightbox { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(10,10,10,0.91); align-items: center; justify-content: center; }
+    #lightbox { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(8,8,8,0.93); align-items: center; justify-content: center; }
     #lightbox.open { display: flex; }
     .lb-inner { position: relative; display: flex; flex-direction: column; align-items: center; max-width: 92vw; }
-    .lb-img { max-width: 100%; max-height: 82vh; object-fit: contain; border-radius: var(--radius); }
-    .lb-cap { color: rgba(255,255,255,0.62); font-size: 0.8rem; margin-top: 1rem; text-align: center; max-width: 600px; line-height: 1.5; }
-    .lb-x { position: fixed; top: 1.4rem; right: 1.8rem; background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; opacity: 0.6; line-height: 1; }
+    .lb-img { max-width: 100%; max-height: 82vh; object-fit: contain; border-radius: 2px; }
+    .lb-cap { color: rgba(255,255,255,0.6); font-size: 0.78rem; margin-top: 1rem; text-align: center; max-width: 600px; line-height: 1.5; }
+    .lb-x { position: fixed; top: 1.4rem; right: 1.8rem; background: none; border: none; color: #fff; font-size: 1.8rem; cursor: pointer; opacity: 0.6; line-height: 1; font-family: var(--mono); }
     .lb-x:hover { opacity: 1; }
-    .lb-nav { position: fixed; top: 50%; transform: translateY(-50%); background: none; border: none; color: #fff; font-size: 2.4rem; cursor: pointer; padding: 1rem; opacity: 0.45; transition: opacity .18s; }
+    .lb-nav { position: fixed; top: 50%; transform: translateY(-50%); background: none; border: none; color: #fff; font-size: 2.2rem; cursor: pointer; padding: 1rem; opacity: 0.45; transition: opacity .18s; font-family: var(--mono); }
     .lb-nav:hover { opacity: 1; }
     #lb-prev { left: 0.8rem; }
     #lb-next { right: 0.8rem; }
 
     /* PUBLICATIONS */
-    #publications { background: var(--bg-card); }
-    .pub-list { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1rem; }
-    .pub { display: flex; gap: 1.4rem; align-items: flex-start; padding: 1.4rem 1.5rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-card); transition: border-color .18s; }
-    .pub:hover { border-color: var(--accent); }
-    .pub-n { font-family: var(--serif); font-size: 1.25rem; color: var(--border); flex-shrink: 0; min-width: 26px; }
-    .pub-title { font-size: 0.88rem; font-weight: 500; line-height: 1.45; margin-bottom: 0.35rem; }
-    .pub-meta { font-size: 0.77rem; color: var(--text-muted); }
-    .pub-link { display: inline-block; margin-top: 0.45rem; font-size: 0.76rem; color: var(--accent); text-decoration: none; }
-    .pub-link:hover { text-decoration: underline; }
+    #publications { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .pub-list { margin-top: 2.4rem; display: flex; flex-direction: column; gap: 0.9rem; }
+    .pub { display: flex; gap: 1.3rem; align-items: flex-start; padding: 1.3rem 1.4rem; border: 1px solid var(--border); border-radius: 2px; background: var(--bg); transition: border-color .18s; }
+    .pub:hover { border-color: var(--text); }
+    .pub-n { font-size: 0.9rem; font-weight: 700; color: var(--accent); flex-shrink: 0; min-width: 22px; }
+    .pub-title { font-size: 0.84rem; font-weight: 500; line-height: 1.5; margin-bottom: 0.35rem; }
+    .pub-meta { font-size: 0.74rem; color: var(--muted); }
+    .pub-link { display: inline-block; margin-top: 0.45rem; font-size: 0.74rem; color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+    .pub-link:hover { border-color: var(--accent); }
 
     /* CONTACT */
-    #contact { background: var(--accent); text-align: center; padding: 3rem 3rem; }
-    #contact .sh-label { color: #fff; font-size: clamp(1.4rem, 2.5vw, 1.9rem); letter-spacing: 0.02em; text-transform: none; font-weight: 600; font-family: var(--serif); margin-bottom: 0.3rem; }
-    #contact .sh-title { color: rgba(255,255,255,0.75); font-size: clamp(0.9rem, 1.5vw, 1.05rem); font-weight: 400; margin-bottom: 0.6rem; }
-    #contact .sh-body { color: rgba(255,255,255,0.68); margin: 0 auto; }
-    #contact .contact-grid { margin-top: 1.5rem; }
-    #contact .contact-note { margin-top: 1.5rem; }
-    #contact .inquiry-guide { margin: 1.6rem auto 0; max-width: 780px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; }
-    #contact .guide-item { border: 1px solid rgba(255,255,255,0.2); border-radius: var(--radius); padding: 0.75rem 0.8rem; color: rgba(255,255,255,0.72); font-size: 0.78rem; line-height: 1.5; }
-    .contact-grid { display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; margin-top: 2.5rem; }
-    .contact-item { text-align: center; }
-    .contact-item-label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 0.4rem; }
-    .contact-link { font-size: 0.95rem; color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.25); padding-bottom: 2px; transition: border-color .18s; }
-    .contact-link:hover { border-color: #fff; }
-    .contact-note { margin-top: 2.5rem; font-size: 0.77rem; color: rgba(255,255,255,0.38); }
+    #contact { background: var(--contact-bg); color: var(--contact-fg); text-align: center; }
+    #contact .shead { justify-content: center; }
+    #contact .sh-idx { color: var(--contact-fg); opacity: 0.5; }
+    #contact .sh-label { color: var(--contact-mut); }
+    #contact .sh-title { color: var(--contact-fg); }
+    #contact .sh-body { color: var(--contact-mut); margin-left: auto; margin-right: auto; }
+    .contact-grid { display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; margin-top: 2.4rem; }
+    .contact-item-label { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--contact-mut); margin-bottom: 0.4rem; }
+    .contact-link { font-size: 0.88rem; color: var(--contact-lnk); text-decoration: none; border-bottom: 1px solid var(--contact-bd); padding-bottom: 2px; transition: border-color .18s; }
+    .contact-link:hover { border-color: var(--contact-lnk); }
+    .contact-note { margin-top: 2.4rem; font-size: 0.74rem; color: var(--contact-mut); }
 
-    footer { background: #101010; color: rgba(255,255,255,0.28); text-align: center; padding: 1.4rem 2rem; font-size: 0.73rem; letter-spacing: 0.04em; }
+    footer { background: #09090A; color: rgba(255,255,255,0.3); padding: 1.4rem 2.4rem; font-size: 0.72rem; letter-spacing: 0.03em; text-align: center; }
 
     /* RESPONSIVE */
     @media (max-width: 860px) {
-      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
       .services-grid { grid-template-columns: 1fr 1fr; }
       .svc:nth-child(2n) { border-right: none; }
       .svc:nth-child(3n) { border-right: 1px solid var(--border); }
-      .pricing-grid { grid-template-columns: 1fr; }
-      .quick-scope-grid { grid-template-columns: 1fr; }
-      #contact .inquiry-guide { grid-template-columns: 1fr 1fr; }
+      .quick-scope-grid, .pricing-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 600px) {
-      nav { padding: 0 1.2rem; }
-      section { padding: 3.5rem 1.2rem; }
+      nav { padding: 0 1.1rem; }
+      section { padding: 4rem 1.1rem; }
       .nav-links { display: none; }
       .services-grid { grid-template-columns: 1fr; }
       .svc { border-right: none !important; }
       .gallery-grid { columns: 1; }
-      .stat-row { flex-wrap: wrap; gap: 1.5rem; }
-      .contact-grid { gap: 1.8rem; }
-      #contact .inquiry-guide { grid-template-columns: 1fr; }
+      .contact-grid { gap: 1.6rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .caret { animation: none; }
+      html { scroll-behavior: auto; }
     }
   </style>
 </head>
@@ -198,56 +255,56 @@
 
 <!-- NAV -->
 <nav>
-  <a href="#" class="nav-logo">
-    <span class="en">Data Analysis</span>
-    <span class="zh">數據分析服務</span>
-  </a>
+  <a href="#hero" class="nav-logo">Abdiwahab Ali</a>
   <ul class="nav-links">
     <li><a href="#about"><span class="en">About</span><span class="zh">關於</span></a></li>
     <li><a href="#services"><span class="en">Services</span><span class="zh">服務</span></a></li>
     <li><a href="#pricing"><span class="en">Pricing</span><span class="zh">費用</span></a></li>
-    <li><a href="#gallery"><span class="en">Gallery</span><span class="zh">作品集</span></a></li>
-    <li><a href="#publications"><span class="en">Publications</span><span class="zh">文獻</span></a></li>
+    <li><a href="#gallery"><span class="en">Work</span><span class="zh">作品</span></a></li>
+    <li><a href="#publications"><span class="en">Papers</span><span class="zh">文獻</span></a></li>
     <li><a href="#contact"><span class="en">Contact</span><span class="zh">聯絡</span></a></li>
   </ul>
-  <div class="lang-toggle">
-    <button class="lang-btn active" data-lang="en">EN</button>
-    <button class="lang-btn" data-lang="zh">繁中</button>
+  <div class="nav-tools">
+    <div class="lang-toggle">
+      <button class="lang-btn active" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="zh">繁中</button>
+    </div>
+    <button class="theme-btn" id="theme-btn" aria-label="Toggle dark mode">DARK</button>
   </div>
 </nav>
 
 <!-- HERO -->
 <section id="hero">
   <div class="container">
-    <div class="hero-label">
-      <span class="en">Epidemiology · Biostatistics · R · Stata</span>
-      <span class="zh">流行病學 · 生物統計 · R · Stata</span>
+    <div class="hero-kicker">
+      <span class="en">Epidemiology / Biostatistics / R / Stata</span>
+      <span class="zh">流行病學 / 生物統計 / R / Stata</span>
     </div>
     <h1 class="hero-title">
-      <span class="en">Large datasets.<br>Clean analysis.<br>Figures that hold up.</span>
-      <span class="zh">大型資料集。<br>嚴謹分析。<br>經得起審查的圖表。</span>
+      <span class="en">Large datasets.<br>Reproducible analysis.<br>Figures journals accept.<span class="caret"></span></span>
+      <span class="zh">大型資料集。<br>可重現的分析。<br>期刊接受的圖表。<span class="caret"></span></span>
     </h1>
     <p class="hero-sub">
-      <span class="en">I'm Abdiwahab M. Ali, a doctoral student at NYCU, Taipei, Taiwan. I work with international epidemiological data at scale and produce the kind of analysis and figures that go straight into manuscripts. Available for consultations worldwide.</span>
-      <span class="zh">我是Abdiwahab M. Ali，國立陽明交通大學博士生，駐台灣台北。我處理大規模國際流行病學資料，產出可直接用於論文的分析與圖表。全球接受諮詢委託。</span>
+      <span class="en">I am Abdiwahab M. Ali, a doctoral student at NYCU in Taipei. I work with international epidemiological datasets and produce analysis and figures that go into manuscripts. Remote work worldwide.</span>
+      <span class="zh">我是 Abdiwahab M. Ali，國立陽明交通大學博士生，駐台北。我處理國際流行病學資料，產出可直接放進論文的分析與圖表。全球遠端接案。</span>
     </p>
     <div class="hero-actions">
       <a href="mailto:Bookhaali@gmail.com?subject=Paid%20research%20analysis%20inquiry&amp;body=Project%20type%3A%0AData%20status%3A%0ADeadline%3A%0ADesired%20output%3A" class="btn btn-primary">
-        <span class="en">Request a Paid Scope</span>
-        <span class="zh">洽詢付費委託</span>
+        <span class="en">Request a scope</span>
+        <span class="zh">洽詢委託</span>
       </a>
       <a href="#gallery" class="btn btn-outline">
-        <span class="en">View Work</span>
+        <span class="en">View work</span>
         <span class="zh">查看作品</span>
       </a>
       <a href="#contact" class="btn btn-outline">
-        <span class="en">Get in Touch</span>
-        <span class="zh">聯絡合作</span>
+        <span class="en">Contact</span>
+        <span class="zh">聯絡</span>
       </a>
     </div>
     <div class="hero-proof">
-      <span class="en">Small paid scopes welcome</span><span class="zh">接受小型付費委託</span>
-      <span class="en">Remote worldwide</span><span class="zh">全球遠端合作</span>
+      <span class="en">Small scopes welcome</span><span class="zh">接受小型委託</span>
+      <span class="en">Remote worldwide</span><span class="zh">全球遠端</span>
       <span class="en">R, Stata, Joinpoint, SPSS</span><span class="zh">R、Stata、Joinpoint、SPSS</span>
     </div>
   </div>
@@ -258,18 +315,21 @@
   <div class="container">
     <div class="about-grid">
       <div>
-        <p class="sh-label"><span class="en">Background</span><span class="zh">背景介紹</span></p>
+        <div class="shead">
+          <span class="sh-idx">01</span>
+          <span class="sh-label"><span class="en">About</span><span class="zh">關於</span></span>
+        </div>
         <h2 class="sh-title">
-          <span class="en">Who I am<br>and what I do</span>
-          <span class="zh">我是誰<br>以及我的專長</span>
+          <span class="en">Who I am, what I do</span>
+          <span class="zh">我是誰，做什麼</span>
         </h2>
         <p class="sh-body">
-          <span class="en">I am Abdiwahab M. Ali, a doctoral student at National Yang Ming Chiao Tung University (NYCU), Taipei, Taiwan. My research focuses on global cancer epidemiology, obesity and non-communicable disease trends, and burden-of-disease analysis. I have worked as a data analyst with hospitals and cancer centers in Taiwan.</span>
-          <span class="zh">我是國立陽明交通大學（NYCU）的博士生，研究聚焦於全球癌症流行病學、肥胖與非傳染性疾病趨勢，以及疾病負擔分析。我曾在台灣多家醫院及癌症中心擔任資料分析師。</span>
+          <span class="en">I am a doctoral student at National Yang Ming Chiao Tung University (NYCU) in Taipei. My research covers global cancer epidemiology, obesity and non-communicable disease trends, and burden of disease. I have worked as a data analyst with hospitals and cancer centers in Taiwan.</span>
+          <span class="zh">我是國立陽明交通大學（NYCU）博士生，駐台北。研究主題包含全球癌症流行病學、肥胖與非傳染性疾病趨勢，以及疾病負擔。我曾在台灣多家醫院及癌症中心擔任資料分析師。</span>
         </p>
         <p class="sh-body" style="margin-top:0.9rem;">
-          <span class="en">I handle datasets from GBD, GLOBOCAN, NCD Risk Factor Collaboration, and WHO indicators. I have processed a single dataset with over 18 million rows. Analysis is done in R, Stata, and Joinpoint software. I also support manuscript drafting and can work in SPSS for clients who need it.</span>
-          <span class="zh">我處理來自GBD、GLOBOCAN、NCD Risk Factor Collaboration及WHO指標的資料集，曾處理單一超過1,800萬筆的資料集。分析使用R、Stata及Joinpoint軟體，同時提供論文撰寫支援，也可配合客戶需求使用SPSS。</span>
+          <span class="en">I work with data from GBD, GLOBOCAN, the NCD Risk Factor Collaboration, and WHO. One dataset I processed had over 18 million rows. I run analysis in R, Stata, and Joinpoint, support manuscript drafting, and use SPSS when a client needs it.</span>
+          <span class="zh">我處理 GBD、GLOBOCAN、NCD Risk Factor Collaboration 及 WHO 的資料，曾處理超過 1,800 萬筆的單一資料集。分析使用 R、Stata 及 Joinpoint，提供論文撰寫支援，也可依客戶需求使用 SPSS。</span>
         </p>
         <div class="ds-row">
           <span class="ds-badge">GBD</span>
@@ -283,24 +343,6 @@
           <span class="ds-badge">SPSS</span>
         </div>
       </div>
-      <div class="stats-block">
-        <div class="stat-row">
-          <div>
-            <div class="stat-num">18M+</div>
-            <div class="stat-lbl"><span class="en">Rows in a single dataset</span><span class="zh">單一資料集最大處理行數</span></div>
-          </div>
-          <div>
-            <div class="stat-num">204</div>
-            <div class="stat-lbl"><span class="en">Countries in global analyses</span><span class="zh">全球分析覆蓋國家數</span></div>
-          </div>
-        </div>
-        <div class="stat-row">
-          <div>
-            <div class="stat-num">4</div>
-            <div class="stat-lbl"><span class="en">Analysis tools (R, Stata, Joinpoint, SPSS)</span><span class="zh">分析工具（R、Stata、Joinpoint、SPSS）</span></div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </section>
@@ -308,7 +350,10 @@
 <!-- SERVICES -->
 <section id="services">
   <div class="container">
-    <p class="sh-label"><span class="en">Services</span><span class="zh">服務項目</span></p>
+    <div class="shead">
+      <span class="sh-idx">02</span>
+      <span class="sh-label"><span class="en">Services</span><span class="zh">服務項目</span></span>
+    </div>
     <h2 class="sh-title">
       <span class="en">What I offer</span>
       <span class="zh">服務內容</span>
@@ -317,55 +362,55 @@
 
       <div class="svc">
         <div class="svc-num">01</div>
-        <div class="svc-title"><span class="en">Statistical Analysis</span><span class="zh">統計分析</span></div>
+        <div class="svc-title"><span class="en">Statistical analysis</span><span class="zh">統計分析</span></div>
         <div class="svc-desc">
-          <span class="en">Regression (linear, logistic, Poisson), joinpoint regression, time-series, survival analysis, mixed models. I work in R, Stata, and Joinpoint depending on what the method requires.</span>
-          <span class="zh">迴歸分析（線性、邏輯斯、卜瓦松）、接合點迴歸、時間序列、存活分析、混合模型。依方法需求使用R、Stata或Joinpoint。</span>
+          <span class="en">Regression (linear, logistic, Poisson), joinpoint regression, time series, survival analysis, mixed models. R, Stata, or Joinpoint depending on the method.</span>
+          <span class="zh">迴歸分析（線性、邏輯斯、卜瓦松）、接合點迴歸、時間序列、存活分析、混合模型。依方法使用 R、Stata 或 Joinpoint。</span>
         </div>
       </div>
 
       <div class="svc">
         <div class="svc-num">02</div>
-        <div class="svc-title"><span class="en">Figure Production (R)</span><span class="zh">圖表製作（R）</span></div>
+        <div class="svc-title"><span class="en">Figures in R</span><span class="zh">圖表製作（R）</span></div>
         <div class="svc-desc">
           <span class="en">Choropleth maps, heatmaps, spaghetti plots, dumbbell charts, lollipop plots, scatter composites, stacked bars, faceted panels. Built in ggplot2, sf, and tmap to journal specifications.</span>
-          <span class="zh">等值地圖、熱圖、折線圖、啞鈴圖、棒棒糖圖、散點複合圖、堆疊長條圖、分面圖。以ggplot2、sf及tmap依期刊規格製作。</span>
+          <span class="zh">等值地圖、熱圖、折線圖、啞鈴圖、棒棒糖圖、散點複合圖、堆疊長條圖、分面圖。以 ggplot2、sf 及 tmap 依期刊規格製作。</span>
         </div>
       </div>
 
       <div class="svc">
         <div class="svc-num">03</div>
-        <div class="svc-title"><span class="en">Epidemiological Analysis</span><span class="zh">流行病學分析</span></div>
+        <div class="svc-title"><span class="en">Epidemiological analysis</span><span class="zh">流行病學分析</span></div>
         <div class="svc-desc">
-          <span class="en">Global burden of disease, AAPC computation, age-period-cohort analysis, SDI stratification, sex-disaggregated comparisons, cross-country trend analysis using GBD, GLOBOCAN, and WHO datasets.</span>
-          <span class="zh">全球疾病負擔、AAPC計算、年齡-時期-世代分析、SDI分層、性別分層比較、使用GBD、GLOBOCAN及WHO資料的跨國趨勢分析。</span>
+          <span class="en">Burden of disease, AAPC computation, age-period-cohort analysis, SDI stratification, sex-disaggregated comparison, cross-country trends using GBD, GLOBOCAN, and WHO data.</span>
+          <span class="zh">疾病負擔、AAPC 計算、年齡-時期-世代分析、SDI 分層、性別分層比較、使用 GBD、GLOBOCAN 及 WHO 資料的跨國趨勢分析。</span>
         </div>
       </div>
 
       <div class="svc">
         <div class="svc-num">04</div>
-        <div class="svc-title"><span class="en">Large Dataset Processing</span><span class="zh">大型資料集處理</span></div>
+        <div class="svc-title"><span class="en">Large dataset processing</span><span class="zh">大型資料集處理</span></div>
         <div class="svc-desc">
-          <span class="en">Data cleaning, restructuring, and analysis at scale. Familiar with GBD, GLOBOCAN, NCD-RisC, UN WPP, and WHO indicator formats. Handled a single dataset with over 18 million rows.</span>
-          <span class="zh">大規模資料清理、重組與分析。熟悉GBD、GLOBOCAN、NCD-RisC、聯合國WPP及WHO指標格式，曾處理超過1,800萬筆的單一資料集。</span>
+          <span class="en">Cleaning, restructuring, and analysis at scale. Familiar with GBD, GLOBOCAN, NCD-RisC, UN WPP, and WHO indicator formats. Handled a single dataset over 18 million rows.</span>
+          <span class="zh">大規模資料清理、重組與分析。熟悉 GBD、GLOBOCAN、NCD-RisC、聯合國 WPP 及 WHO 指標格式，曾處理超過 1,800 萬筆的單一資料集。</span>
         </div>
       </div>
 
       <div class="svc">
         <div class="svc-num">05</div>
-        <div class="svc-title"><span class="en">Manuscript Support</span><span class="zh">論文撰寫支援</span></div>
+        <div class="svc-title"><span class="en">Manuscript support</span><span class="zh">論文撰寫支援</span></div>
         <div class="svc-desc">
-          <span class="en">Methods sections, results drafting, statistical reporting, table formatting, and figure preparation for journal submission. I can also help with revision responses.</span>
-          <span class="zh">方法學撰寫、結果陳述、統計報告、表格排版及圖形準備，協助投稿期刊。也可協助回應審查意見。</span>
+          <span class="en">Methods sections, results drafting, statistical reporting, table formatting, and figure preparation for submission. I also help with revision responses.</span>
+          <span class="zh">方法學撰寫、結果陳述、統計報告、表格排版及圖形準備，協助投稿。也可協助回應審查意見。</span>
         </div>
       </div>
 
       <div class="svc">
         <div class="svc-num">06</div>
-        <div class="svc-title"><span class="en">Reports and Presentations</span><span class="zh">報告與簡報</span></div>
+        <div class="svc-title"><span class="en">Reports and slides</span><span class="zh">報告與簡報</span></div>
         <div class="svc-desc">
-          <span class="en">Slide decks for conferences, clinical summaries, policy briefs, and reports with embedded figures. Can produce in R Markdown, PowerPoint, or HTML format.</span>
-          <span class="zh">學術會議簡報、臨床摘要、政策報告及嵌入圖表的研究報告。可用R Markdown、PowerPoint或HTML格式產出。</span>
+          <span class="en">Conference decks, clinical summaries, policy briefs, and reports with embedded figures. R Markdown, PowerPoint, or HTML.</span>
+          <span class="zh">學術會議簡報、臨床摘要、政策報告及嵌入圖表的研究報告。可用 R Markdown、PowerPoint 或 HTML 產出。</span>
         </div>
       </div>
 
@@ -376,50 +421,53 @@
 <!-- PRICING -->
 <section id="pricing">
   <div class="container">
-    <p class="sh-label"><span class="en">Pricing</span><span class="zh">費用說明</span></p>
+    <div class="shead">
+      <span class="sh-idx">03</span>
+      <span class="sh-label"><span class="en">Pricing</span><span class="zh">費用說明</span></span>
+    </div>
     <h2 class="sh-title">
-      <span class="en">Transparent rates</span>
-      <span class="zh">明確收費標準</span>
+      <span class="en">Rates</span>
+      <span class="zh">收費標準</span>
     </h2>
     <p class="sh-body">
-      <span class="en">Rates reflect doctoral-level work with international dataset expertise. All prices are negotiable depending on project scope, budget, and context. Get in touch to discuss.</span>
-      <span class="zh">費用反映博士級專業及國際資料集操作能力。所有價格可依專案範圍、預算與情況協商調整。歡迎聯絡討論。</span>
+      <span class="en">Rates reflect doctoral-level work with international datasets. Prices adjust with project scope, budget, and context. Get in touch to discuss.</span>
+      <span class="zh">費用反映博士級專業及國際資料集操作。價格依專案範圍、預算與情況調整。歡迎聯絡討論。</span>
     </p>
     <div class="quick-scope-grid">
       <div class="quick-scope">
-        <div class="quick-scope-kicker"><span class="en">Fast Start</span><span class="zh">快速開始</span></div>
-        <div class="quick-scope-title"><span class="en">Figure Rescue Sprint</span><span class="zh">圖表急救方案</span></div>
+        <div class="quick-scope-kicker"><span class="en">Fast start</span><span class="zh">快速開始</span></div>
+        <div class="quick-scope-title"><span class="en">Figure rescue</span><span class="zh">圖表急救</span></div>
         <div class="quick-scope-body">
-          <span class="en">Best when the analysis is already done and the figure needs to become cleaner, more consistent, and submission-ready.</span>
-          <span class="zh">適合分析已完成，但圖表需要變得更清楚、更一致、可用於投稿或修稿的情況。</span>
+          <span class="en">For when the analysis is done and a figure needs to become consistent and submission-ready.</span>
+          <span class="zh">適合分析已完成，但圖表需要一致、可用於投稿或修稿。</span>
         </div>
       </div>
       <div class="quick-scope">
-        <div class="quick-scope-kicker"><span class="en">Student Friendly</span><span class="zh">學生友善</span></div>
-        <div class="quick-scope-title"><span class="en">Methods and Results Check</span><span class="zh">方法與結果檢查</span></div>
+        <div class="quick-scope-kicker"><span class="en">Student friendly</span><span class="zh">學生友善</span></div>
+        <div class="quick-scope-title"><span class="en">Methods and results check</span><span class="zh">方法與結果檢查</span></div>
         <div class="quick-scope-body">
-          <span class="en">A focused review of statistical choices, output interpretation, figure logic, and the next step needed to move a thesis or paper forward.</span>
-          <span class="zh">針對統計方法、結果解讀、圖表邏輯與下一步進行聚焦檢查，協助論文或研究繼續推進。</span>
+          <span class="en">A review of statistical choices, output interpretation, figure logic, and the next step for a thesis or paper.</span>
+          <span class="zh">針對統計方法、結果解讀、圖表邏輯與下一步進行檢查，協助論文推進。</span>
         </div>
       </div>
       <div class="quick-scope">
-        <div class="quick-scope-kicker"><span class="en">Defined Project</span><span class="zh">明確專案</span></div>
-        <div class="quick-scope-title"><span class="en">Analysis plus Figures</span><span class="zh">分析加圖表</span></div>
+        <div class="quick-scope-kicker"><span class="en">Defined project</span><span class="zh">明確專案</span></div>
+        <div class="quick-scope-title"><span class="en">Analysis plus figures</span><span class="zh">分析加圖表</span></div>
         <div class="quick-scope-body">
-          <span class="en">For teams with a dataset and a clear question who need analysis, clean code outputs, core figures, and a concise results summary.</span>
-          <span class="zh">適合已有資料與明確問題的團隊，需要分析、乾淨輸出、核心圖表與簡短結果摘要。</span>
+          <span class="en">For teams with a dataset and a question who need analysis, code outputs, core figures, and a results summary.</span>
+          <span class="zh">適合已有資料與問題的團隊，需要分析、輸出、核心圖表與結果摘要。</span>
         </div>
       </div>
     </div>
     <div class="pricing-grid">
 
       <div class="price-card">
-        <div class="price-tier"><span class="en">Hourly Rate</span><span class="zh">計時收費</span></div>
-        <div class="price-amount">NT$900 <span style="font-size:1rem;font-family:var(--sans);color:var(--text-muted)">/ ~$28 USD</span></div>
-        <div class="price-ntd"><span class="en">Professionals &nbsp;·&nbsp; NT$500 / ~$16 USD for students</span><span class="zh">一般委託 &nbsp;·&nbsp; 學生優惠價 NT$500 / ~$16 USD</span></div>
+        <div class="price-tier"><span class="en">Hourly</span><span class="zh">計時收費</span></div>
+        <div class="price-amount">NT$900 <span class="unit">/ ~$28 USD</span></div>
+        <div class="price-ntd"><span class="en">Professionals / NT$500 / ~$16 USD for students</span><span class="zh">一般委託 / 學生價 NT$500 / ~$16 USD</span></div>
         <div class="price-divider"></div>
         <ul class="price-items">
-          <li><span class="en">Consultation and statistical advice</span><span class="zh">統計諮詢與建議</span></li>
+          <li><span class="en">Statistical consultation</span><span class="zh">統計諮詢與建議</span></li>
           <li><span class="en">Code review or debugging</span><span class="zh">程式碼審查或除錯</span></li>
           <li><span class="en">Figure revisions</span><span class="zh">圖表修改</span></li>
           <li><span class="en">Manuscript statistics check</span><span class="zh">論文統計審查</span></li>
@@ -427,50 +475,47 @@
       </div>
 
       <div class="price-card featured">
-        <div class="price-tier"><span class="en">Project Package</span><span class="zh">專案套餐</span></div>
-        <div class="price-amount">from $400 <span style="font-size:1rem;font-family:var(--sans)">USD</span></div>
-        <div class="price-ntd"><span class="en">from NT$12,800 &nbsp;·&nbsp; scope-dependent</span><span class="zh">起價新台幣12,800元 &nbsp;·&nbsp; 依專案規模調整</span></div>
+        <div class="price-tier"><span class="en">Project package</span><span class="zh">專案套餐</span></div>
+        <div class="price-amount">from $400 <span class="unit">USD</span></div>
+        <div class="price-ntd"><span class="en">from NT$12,800 / scope-dependent</span><span class="zh">起價 NT$12,800 / 依規模調整</span></div>
         <div class="price-divider"></div>
         <ul class="price-items">
           <li><span class="en">Data cleaning and preparation</span><span class="zh">資料清理與整備</span></li>
           <li><span class="en">Full statistical analysis</span><span class="zh">完整統計分析</span></li>
-          <li><span class="en">All figures (publication-ready)</span><span class="zh">所有圖表（達發表水準）</span></li>
+          <li><span class="en">All figures, submission-ready</span><span class="zh">所有圖表，達發表水準</span></li>
           <li><span class="en">Methods draft or summary report</span><span class="zh">方法學初稿或分析摘要</span></li>
           <li><span class="en">Two rounds of revisions</span><span class="zh">兩輪修改</span></li>
         </ul>
       </div>
 
       <div class="price-card">
-        <div class="price-tier"><span class="en">Per Figure</span><span class="zh">單圖收費</span></div>
-        <div class="price-amount">NT$700 <span style="font-size:1rem;font-family:var(--sans);color:var(--text-muted)">/ ~$22 USD</span></div>
-        <div class="price-ntd"><span class="en">Professionals &nbsp;·&nbsp; NT$400 / ~$12 USD for students</span><span class="zh">一般委託 &nbsp;·&nbsp; 學生優惠價 NT$400 / ~$12 USD</span></div>
+        <div class="price-tier"><span class="en">Per figure</span><span class="zh">單圖收費</span></div>
+        <div class="price-amount">NT$700 <span class="unit">/ ~$22 USD</span></div>
+        <div class="price-ntd"><span class="en">Professionals / NT$400 / ~$12 USD for students</span><span class="zh">一般委託 / 學生價 NT$400 / ~$12 USD</span></div>
         <div class="price-divider"></div>
         <ul class="price-items">
           <li><span class="en">Choropleth and regional maps</span><span class="zh">等值與區域地圖</span></li>
           <li><span class="en">Heatmaps and trend plots</span><span class="zh">熱圖與趨勢圖</span></li>
           <li><span class="en">Scatter and correlation panels</span><span class="zh">散點與相關分析面板</span></li>
           <li><span class="en">Dumbbell, lollipop, stacked bar</span><span class="zh">啞鈴圖、棒棒糖圖、堆疊圖</span></li>
-          <li><span class="en">Print and journal-ready export</span><span class="zh">可列印及符合期刊規格的輸出</span></li>
+          <li><span class="en">Journal-ready export</span><span class="zh">符合期刊規格的輸出</span></li>
         </ul>
       </div>
 
     </div>
     <div class="collab-note">
-      <div class="collab-icon">&#9697;</div>
-      <div>
-        <div class="collab-title">
-          <span class="en">Paid work first, collaboration when aligned</span>
-          <span class="zh">優先付費委託，研究契合時可談合作</span>
-        </div>
-        <div class="collab-body">
-          <span class="en">Most service requests are handled as paid scoped projects. If a project is a genuine academic collaboration in epidemiology, cancer burden, obesity trends, or related areas, authorship and contribution will follow ICMJE guidelines with transparent attribution.</span>
-          <span class="zh">多數服務需求會以明確範圍的付費專案處理。若屬於真正的流行病學、癌症負擔、肥胖趨勢或相關學術合作，作者資格與貢獻將依ICMJE準則透明認定。</span>
-        </div>
+      <div class="collab-title">
+        <span class="en">Paid work first, collaboration when the research aligns</span>
+        <span class="zh">優先付費委託，研究契合時可談合作</span>
+      </div>
+      <div class="collab-body">
+        <span class="en">Most requests run as paid scoped projects. For academic collaboration in epidemiology, cancer burden, obesity trends, or related areas, authorship follows ICMJE guidelines with transparent attribution.</span>
+        <span class="zh">多數需求以明確範圍的付費專案處理。若屬流行病學、癌症負擔、肥胖趨勢或相關學術合作，作者資格依 ICMJE 準則透明認定。</span>
       </div>
     </div>
     <p class="price-note">
-      <span class="en">All prices are negotiable. Large or complex projects (systematic reviews, multi-country GBD analyses, Shiny dashboards) are quoted individually. Get in touch to discuss.</span>
-      <span class="zh">所有價格均可協商。大型或複雜專案（系統性文獻回顧、多國GBD分析、Shiny儀表板）另行報價。歡迎聯絡討論。</span>
+      <span class="en">Prices are negotiable. Large projects (systematic reviews, multi-country GBD analyses, Shiny dashboards) are quoted individually.</span>
+      <span class="zh">所有價格可協商。大型專案（系統性文獻回顧、多國 GBD 分析、Shiny 儀表板）另行報價。</span>
     </p>
   </div>
 </section>
@@ -478,24 +523,27 @@
 <!-- GALLERY -->
 <section id="gallery">
   <div class="container">
-    <p class="sh-label"><span class="en">Figure Gallery</span><span class="zh">圖表作品集</span></p>
+    <div class="shead">
+      <span class="sh-idx">04</span>
+      <span class="sh-label"><span class="en">Work</span><span class="zh">圖表作品</span></span>
+    </div>
     <h2 class="sh-title">
-      <span class="en">A sample of figures from ongoing and completed research.</span>
-      <span class="zh">以下為進行中及已完成研究的部分圖表作品。</span>
+      <span class="en">Figures from completed and ongoing research</span>
+      <span class="zh">已完成及進行中研究的圖表</span>
     </h2>
     <p class="sh-body">
-      <span class="en">All figures below were produced in R using ggplot2, sf, tmap, and related packages. They come from real analyses on GBD, GLOBOCAN, NCD-RisC, and WHO datasets, covering up to 204 countries.</span>
-      <span class="zh">以下所有圖表均使用R語言（ggplot2、sf、tmap及相關套件）製作，來自GBD、GLOBOCAN、NCD-RisC及WHO等真實資料集的分析，涵蓋多達204個國家。</span>
+      <span class="en">Built in R with ggplot2, sf, and tmap, from analyses on GBD, GLOBOCAN, NCD-RisC, and WHO data covering up to 204 countries.</span>
+      <span class="zh">以 R 製作（ggplot2、sf、tmap），來自 GBD、GLOBOCAN、NCD-RisC 及 WHO 資料的分析，涵蓋多達 204 個國家。</span>
     </p>
     <div class="filter-bar" id="filter-bar">
       <button class="fp active" data-filter="all"><span class="en">All</span><span class="zh">全部</span></button>
       <button class="fp" data-filter="map"><span class="en">Maps</span><span class="zh">地圖</span></button>
       <button class="fp" data-filter="trend"><span class="en">Trends</span><span class="zh">趨勢</span></button>
-      <button class="fp" data-filter="reg"><span class="en">Regression</span><span class="zh">迴歸分析</span></button>
-      <button class="fp" data-filter="corr"><span class="en">Correlations</span><span class="zh">相關分析</span></button>
-      <button class="fp" data-filter="dist"><span class="en">Heatmaps &amp; Ranking</span><span class="zh">熱圖與排序</span></button>
-      <button class="fp" data-filter="agesex"><span class="en">Age &amp; Sex Patterns</span><span class="zh">年齡與性別分析</span></button>
-      <button class="fp" data-filter="comp"><span class="en">Comparative</span><span class="zh">比較分析</span></button>
+      <button class="fp" data-filter="reg"><span class="en">Regression</span><span class="zh">迴歸</span></button>
+      <button class="fp" data-filter="corr"><span class="en">Correlation</span><span class="zh">相關</span></button>
+      <button class="fp" data-filter="dist"><span class="en">Heatmaps and ranking</span><span class="zh">熱圖與排序</span></button>
+      <button class="fp" data-filter="agesex"><span class="en">Age and sex</span><span class="zh">年齡與性別</span></button>
+      <button class="fp" data-filter="comp"><span class="en">Comparative</span><span class="zh">比較</span></button>
     </div>
     <div class="gallery-grid" id="gallery-grid"></div>
   </div>
@@ -504,7 +552,10 @@
 <!-- PUBLICATIONS -->
 <section id="publications">
   <div class="container">
-    <p class="sh-label"><span class="en">Publications</span><span class="zh">發表文獻</span></p>
+    <div class="shead">
+      <span class="sh-idx">05</span>
+      <span class="sh-label"><span class="en">Papers</span><span class="zh">發表文獻</span></span>
+    </div>
     <h2 class="sh-title">
       <span class="en">Peer-reviewed work</span>
       <span class="zh">同行評審文獻</span>
@@ -517,8 +568,8 @@
             <span class="en">Khat chewing and its association with oral/esophageal squamous cell carcinoma and oral white lesions: A systematic review and meta-analysis</span>
             <span class="zh">嚼食卡特草與口腔/食道鱗狀細胞癌及口腔白色病變之關聯：系統性文獻回顧與統合分析</span>
           </div>
-          <div class="pub-meta">ecancer Medical Science</div>
-          <a href="https://ecancer.org/en/journal/article/2094-erratum-relationship-between-khat-chewing-and-upper-digestive-tract-cancers-among-male-patients-in-hargeisa-a-preliminary-case-control-study" target="_blank" rel="noopener" class="pub-link">
+          <div class="pub-meta">Public Health / 2026 / doi:10.1016/j.puhe.2026.106177</div>
+          <a href="https://doi.org/10.1016/j.puhe.2026.106177" target="_blank" rel="noopener" class="pub-link">
             <span class="en">View publication</span><span class="zh">查看文獻</span>
           </a>
         </div>
@@ -530,8 +581,8 @@
             <span class="en">Relationship between khat chewing and upper digestive tract cancers among male patients in Hargeisa: a preliminary case-control study</span>
             <span class="zh">嚼食卡特草與哈爾格薩男性上消化道癌症之關係：初步病例對照研究</span>
           </div>
-          <div class="pub-meta">Public Health · 2026 · doi:10.1016/j.puhe.2026.106177</div>
-          <a href="https://doi.org/10.1016/j.puhe.2026.106177" target="_blank" rel="noopener" class="pub-link">
+          <div class="pub-meta">ecancer Medical Science</div>
+          <a href="https://ecancer.org/en/journal/article/1880-relationship-between-khat-chewing-and-upper-digestive-tract-cancers-among-male-patients-in-hargeisa-case-control-study" target="_blank" rel="noopener" class="pub-link">
             <span class="en">View publication</span><span class="zh">查看文獻</span>
           </a>
         </div>
@@ -543,45 +594,42 @@
 <!-- CONTACT -->
 <section id="contact">
   <div class="container">
-    <p class="sh-label"><span class="en">Contact</span><span class="zh">聯絡方式</span></p>
-    <h2 class="sh-title" style="font-weight:700;">
+    <div class="shead">
+      <span class="sh-idx">06</span>
+      <span class="sh-label"><span class="en">Contact</span><span class="zh">聯絡方式</span></span>
+    </div>
+    <h2 class="sh-title">
       <span class="en">Available for consultations</span>
       <span class="zh">開放接受諮詢委託</span>
     </h2>
     <p class="sh-body">
-      <span class="en">Students, researchers, professors, clinicians, and hospitals are all welcome. Project-based or hourly. Based in Taipei, Taiwan, working with clients anywhere.</span>
-      <span class="zh">歡迎學生、研究人員、教授、臨床醫師及醫院委託。可接專案或計時合作。駐台灣，接受全球客戶。</span>
+      <span class="en">Project-based or hourly. When you write, include the project type, your data status, a deadline, and the output you need.</span>
+      <span class="zh">可接專案或計時。來信時請說明專案類型、資料狀態、預計期限與需要的成果。</span>
     </p>
-    <div class="inquiry-guide">
-      <div class="guide-item"><span class="en">Project type</span><span class="zh">專案類型</span></div>
-      <div class="guide-item"><span class="en">Data status</span><span class="zh">資料狀態</span></div>
-      <div class="guide-item"><span class="en">Deadline</span><span class="zh">預計期限</span></div>
-      <div class="guide-item"><span class="en">Desired output</span><span class="zh">希望交付成果</span></div>
-    </div>
     <div class="contact-grid">
-      <div class="contact-item">
-        <div class="contact-item-label"><span class="en">Email (General)</span><span class="zh">電子郵件（一般）</span></div>
+      <div>
+        <div class="contact-item-label"><span class="en">Email</span><span class="zh">電子郵件</span></div>
         <a href="mailto:Bookhaali@gmail.com" class="contact-link">Bookhaali@gmail.com</a>
       </div>
-      <div class="contact-item">
+      <div>
         <div class="contact-item-label"><span class="en">Email (NYCU)</span><span class="zh">電子郵件（陽明交大）</span></div>
         <a href="mailto:abdiwahab.md13@nycu.edu.tw" class="contact-link">abdiwahab.md13@nycu.edu.tw</a>
       </div>
-      <div class="contact-item">
+      <div>
         <div class="contact-item-label"><span class="en">Phone (Taiwan)</span><span class="zh">電話（台灣）</span></div>
         <a href="tel:+886910922220" class="contact-link">+886 910 922 220</a>
       </div>
     </div>
     <p class="contact-note">
-      <span class="en">Based in Taipei, Taiwan &nbsp;·&nbsp; Available worldwide &nbsp;·&nbsp; Confidentiality assured</span>
-      <span class="zh">駐台灣台北 &nbsp;·&nbsp; 全球接案 &nbsp;·&nbsp; 保密保證</span>
+      <span class="en">Confidentiality assured</span>
+      <span class="zh">保密保證</span>
     </p>
   </div>
 </section>
 
 <footer>
-  <span class="en">2026 &nbsp;·&nbsp; Epidemiological Data Analysis &nbsp;·&nbsp; Taipei, Taiwan</span>
-  <span class="zh">2026 &nbsp;·&nbsp; 流行病學數據分析 &nbsp;·&nbsp; 台灣台北</span>
+  <span class="en">2026 / Abdiwahab M. Ali / Epidemiology data analysis / Taipei</span>
+  <span class="zh">2026 / Abdiwahab M. Ali / 流行病學數據分析 / 台北</span>
 </footer>
 
 <!-- LIGHTBOX -->
@@ -828,17 +876,39 @@ const FIGS = [
     tag_en:'Comparison', tag_zh:'比較圖' },
 ];
 
+const root = document.documentElement;
+const lang = () => root.dataset.lang || 'en';
+
+// Theme
+const themeBtn = document.getElementById('theme-btn');
+function themeLabel() {
+  const dark = root.dataset.theme === 'dark';
+  const l = lang();
+  themeBtn.textContent = dark ? (l === 'en' ? 'LIGHT' : '淺色') : (l === 'en' ? 'DARK' : '深色');
+}
+function setTheme(t) {
+  root.dataset.theme = t;
+  try { localStorage.setItem('pf-theme', t); } catch (e) {}
+  themeLabel();
+}
+themeBtn.addEventListener('click', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+
 // Language
-const html = document.documentElement;
 document.querySelectorAll('.lang-btn').forEach(b => {
   b.addEventListener('click', () => {
-    html.dataset.lang = b.dataset.lang;
-    document.querySelectorAll('.lang-btn').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
+    root.dataset.lang = b.dataset.lang;
+    try { localStorage.setItem('pf-lang', b.dataset.lang); } catch (e) {}
+    document.querySelectorAll('.lang-btn').forEach(x => x.classList.toggle('active', x === b));
+    themeLabel();
     renderGallery(currentFilter);
   });
 });
-const lang = () => html.dataset.lang || 'en';
+// sync controls to the pre-painted state
+(function initControls() {
+  const l = lang();
+  document.querySelectorAll('.lang-btn').forEach(x => x.classList.toggle('active', x.dataset.lang === l));
+  themeLabel();
+})();
 
 // Gallery
 let currentFilter = 'all';
