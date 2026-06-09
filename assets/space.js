@@ -818,7 +818,7 @@ const conCenter = new THREE.Vector3(0, 0, 1.2); let storyParts = null;
 })();
 const GALVIEW = GALP.clone().add(new THREE.Vector3(0, 0, 17));
 const RETURN_DUR = 4600, RET_CP = new THREE.Vector3(50, 18, -80), STORY_ZERO = new THREE.Vector3(0, 0, 0);
-let storyMode = null, storyT0 = 0; const STORY_DUR = 3900, flightStart = new THREE.Vector3(), flightStartTgt = new THREE.Vector3();
+let storyMode = null, storyT0 = 0; const STORY_DUR = 4400, flightStart = new THREE.Vector3(), flightStartTgt = new THREE.Vector3();
 function enterStory() {
   if (storyMode) return;
   flightStart.copy(camera.position); flightStartTgt.copy(curTarget);
@@ -876,7 +876,7 @@ function animate() {
     for (const g of WORLD_GROUPS) g.visible = false;
     galGroup.visible = true; corridor.visible = true;
     const now = performance.now(), tms = now * 0.001, aspect = innerWidth / innerHeight, TAN = 0.3839, ringDist = Math.max((RX + 1.7) / (TAN * aspect), (RY + 1.1) / TAN, 15) * 1.06, focusZ = ringDist - Math.max(2.925 / (0.9 * TAN * aspect), 1.755 / (0.9 * TAN)), galView = GALVIEW.clone(); galView.z = GALP.z + ringDist;
-    if (storyMode === 'in') { const e = smooth(clamp((now - storyT0) / STORY_DUR, 0, 1)); camera.position.lerpVectors(flightStart, galView, e); curTarget.lerpVectors(flightStartTgt, GALP, e); corridor.material.opacity = Math.sin(e * Math.PI) * 0.95; if (e >= 1) storyMode = 'idle'; }
+    if (storyMode === 'in') { const e = smooth(clamp((now - storyT0) / STORY_DUR, 0, 1)), it = 1 - e, cx = (flightStart.x + galView.x) / 2 - 50, cy = (flightStart.y + galView.y) / 2 + 20, cz = (flightStart.z + galView.z) / 2; camera.position.set(it * it * flightStart.x + 2 * it * e * cx + e * e * galView.x, it * it * flightStart.y + 2 * it * e * cy + e * e * galView.y, it * it * flightStart.z + 2 * it * e * cz + e * e * galView.z); curTarget.lerpVectors(flightStartTgt, GALP, e); corridor.material.opacity = Math.sin(e * Math.PI) * 0.95; if (e >= 1) storyMode = 'idle'; }
     else if (storyMode === 'idle') { camera.position.lerp(galView, 0.05); curTarget.lerp(GALP, 0.05); corridor.material.opacity *= 0.9; }
     else { const raw = clamp((now - storyT0) / RETURN_DUR, 0, 1), t = smooth(raw), it = 1 - t, ep = STATIONS[0].camPos.clone().multiplyScalar(fit); globePivot.visible = true; camera.position.set(it * it * flightStart.x + 2 * it * t * RET_CP.x + t * t * ep.x, it * it * flightStart.y + 2 * it * t * RET_CP.y + t * t * ep.y, it * it * flightStart.z + 2 * it * t * RET_CP.z + t * t * ep.z); curTarget.lerpVectors(flightStartTgt, STORY_ZERO, smooth(clamp(raw / 0.62, 0, 1))); corridor.material.opacity = Math.max(0, Math.sin(clamp(raw / 0.6, 0, 1) * Math.PI)) * 0.9; if (raw >= 1) { storyMode = null; galGroup.visible = false; corridor.visible = false; curStation = 0; onStation(0); document.body.classList.remove('story-on'); try { scrollTo(0, 0); } catch (er) {} } }
     camera.lookAt(curTarget);
