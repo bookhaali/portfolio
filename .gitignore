@@ -1,2 +1,9 @@
 .DS_Store
 legacy_index.html
+HANDOFF.md
+serve.py
+DESIGN_REPORT.md
+data/atlas.json
+data/world.js
+data/build_atlas.py
+data/build_extra.py

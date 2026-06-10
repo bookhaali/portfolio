@@ -3,7 +3,7 @@ import * as THREE from 'three';
 const OB = window.ATLAS_DATA, DIET = window.DIET_DATA, CAN = window.CANCER_DATA, CEN = window.ISO_CENTROIDS;
 const DEG = Math.PI / 180, R = 1;
 const ACCENT = 0x8DB0E4, HI = 0xF7F8FA, WARM = 0xD98A6E, COOL = 0x6FB1E0;
-const REGION_COLORS = { 'African': 0xE0A24A, 'Americas': 0x6FB1E0, 'Eastern Mediterranean': 0xD98A6E, 'European': 0x9B8DE4, 'South-East Asia': 0x6FC8A3, 'Western Pacific': 0xE0728F };
+const REGION_COLORS = { 'African': 0xD9A05C, 'Americas': 0x7FA8D6, 'Eastern Mediterranean': 0xC98A70, 'European': 0x9C92D6, 'South-East Asia': 0x7BBFA0, 'Western Pacific': 0xD08294 };   // brand-adjacent, evenly desaturated
 const regionColor = r => REGION_COLORS[r] != null ? REGION_COLORS[r] : 0x9C9B91;
 function llToV3(lon, lat, r = R) { const phi = (90 - lat) * DEG, theta = (lon + 180) * DEG; return new THREE.Vector3(-r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(theta)); }
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -13,22 +13,98 @@ const remap = (v, r, a, b) => a + (v - r.min) / ((r.max - r.min) || 1) * (b - a)
 
 // ---- renderer / scene / camera ----
 const canvas = document.getElementById('space');
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1));
 renderer.setSize(innerWidth, innerHeight); renderer.setClearColor(0x0D0D0C, 1);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.12;
 const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x0D0D0C, 0.03);   // far worlds fade into space (declutter)
 const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.05, 760);
 camera.position.set(0, 0.3, 3.3);
+const BF = () => innerWidth / innerHeight < 0.8 ? 47 : 42;   // base FOV: wider on portrait so worlds fill the screen
 scene.add(new THREE.AmbientLight(0xffffff, 0.34));
 const sun = new THREE.DirectionalLight(0xffffff, 1.45); sun.position.set(5, 2.5, 4); scene.add(sun);
+
+// note: post-processing bloom was tried and rejected — the composer's linear-space blending
+// lifts every faint additive sprite (nebulae, glows) and washes the corridor grey.
+// Direct ACES tone mapping keeps the deep black frame and still rolls highlights off softly.
+const render = () => renderer.render(scene, camera);
+
+// soft round sprite for point clouds (default gl points are hard squares)
+const dotTex = (() => { const S = 64, cv = document.createElement('canvas'); cv.width = cv.height = S; const c = cv.getContext('2d'); const g = c.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.5, 'rgba(255,255,255,.85)'); g.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = g; c.fillRect(0, 0, S, S); return new THREE.CanvasTexture(cv); })();
 
 (function stars() {
   const n = 5000, pos = new Float32Array(n * 3); let s = 7; const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
   for (let i = 0; i < n; i++) { const u = rnd() * 2 - 1, t = rnd() * 6.2832, q = Math.sqrt(1 - u * u), r = 30 + rnd() * 200; pos[i * 3] = r * q * Math.cos(t); pos[i * 3 + 1] = r * u; pos[i * 3 + 2] = r * q * Math.sin(t); }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0xffffff, size: 0.16, sizeAttenuation: true, transparent: true, opacity: 0.85, fog: false })));
+  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0xffffff, size: 0.16, sizeAttenuation: true, transparent: true, opacity: 0.85, fog: false, map: dotTex, depthWrite: false })));
 })();
+
+// ---- deep field: bright twinkling stars in brand hues + a corridor of nebulae ----
+let twinkleMat = null;
+(function brightStars() {
+  const STAR_COLS = [0xFFFFFF, 0xBCD4F5, 0xF5E1C2, 0x9EC0EE, 0xE0A24A, 0x6FC8A3];
+  const n = 520, pos = new Float32Array(n * 3), col = new Float32Array(n * 3), ph = new Float32Array(n);
+  let s = 23; const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+  const c = new THREE.Color();
+  for (let i = 0; i < n; i++) {
+    const u = rnd() * 2 - 1, t = rnd() * 6.2832, q = Math.sqrt(1 - u * u), r = 40 + rnd() * 260;
+    pos[i * 3] = r * q * Math.cos(t); pos[i * 3 + 1] = r * u; pos[i * 3 + 2] = r * q * Math.sin(t) - 120;
+    c.setHex(STAR_COLS[(rnd() * STAR_COLS.length) | 0]); col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b; ph[i] = rnd() * 6.2832;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.setAttribute('ph', new THREE.BufferAttribute(ph, 1));
+  twinkleMat = new THREE.ShaderMaterial({
+    uniforms: { uT: { value: 0 } }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false,
+    vertexShader: 'attribute float ph; attribute vec3 color; varying vec3 vC; uniform float uT; void main(){ vC=color; vec4 mv=modelViewMatrix*vec4(position,1.0); float tw=0.55+0.45*sin(uT*1.6+ph); gl_PointSize=(2.0+5.5*tw)*(180.0/-mv.z); gl_Position=projectionMatrix*mv; }',
+    fragmentShader: 'varying vec3 vC; void main(){ vec2 d=gl_PointCoord-0.5; float a=smoothstep(0.5,0.0,length(d)); gl_FragColor=vec4(vC, a); }'
+  });
+  scene.add(new THREE.Points(g, twinkleMat));
+})();
+
+function nebulaTexture(hex) {
+  const S = 256, cv = document.createElement('canvas'); cv.width = cv.height = S; const c = cv.getContext('2d');
+  const col = new THREE.Color(hex), r = (col.r * 255) | 0, g = (col.g * 255) | 0, b = (col.b * 255) | 0;
+  const grad = c.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2);
+  grad.addColorStop(0, `rgba(${r},${g},${b},0.9)`); grad.addColorStop(0.35, `rgba(${r},${g},${b},0.35)`); grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+  c.fillStyle = grad; c.fillRect(0, 0, S, S);
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const nebulaTex = { blue: nebulaTexture(0x2E5C9E), warm: nebulaTexture(0x7A4A38), teal: nebulaTexture(0x2E6E5E), violet: nebulaTexture(0x4A3E7A) };
+function addNebula(hex, size, x, y, z, opacity) {
+  const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: hex, transparent: true, opacity: opacity, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+  m.scale.set(size, size, 1); m.position.set(x, y, z); scene.add(m); return m;
+}
+// scatter soft clouds down the corridor so the void has depth and colour
+addNebula(nebulaTex.blue, 70, -34, 14, -30, 0.16); addNebula(nebulaTex.warm, 54, 40, -20, -70, 0.13);
+addNebula(nebulaTex.teal, 60, -30, -16, -120, 0.12); addNebula(nebulaTex.violet, 64, 36, 22, -180, 0.12);
+addNebula(nebulaTex.blue, 80, 0, 0, -250, 0.10); addNebula(nebulaTex.warm, 46, -44, 24, -210, 0.10);
+
+// ---- reusable atmosphere shell (fresnel rim glow) ----
+function atmosphere(radius, hex, power, intensity, side) {
+  const mat = new THREE.ShaderMaterial({
+    uniforms: { uC: { value: new THREE.Color(hex) }, uP: { value: power }, uI: { value: intensity } },
+    transparent: true, blending: THREE.AdditiveBlending, side: side || THREE.BackSide, depthWrite: false,
+    vertexShader: 'varying vec3 vN; varying vec3 vP; void main(){ vN=normalize(normalMatrix*normal); vec4 mv=modelViewMatrix*vec4(position,1.0); vP=mv.xyz; gl_Position=projectionMatrix*mv; }',
+    fragmentShader: 'uniform vec3 uC; uniform float uP; uniform float uI; varying vec3 vN; varying vec3 vP; void main(){ vec3 vd=normalize(-vP); float f=pow(1.0-abs(dot(vN,vd)),uP); gl_FragColor=vec4(uC, f*uI); }'
+  });
+  return new THREE.Mesh(new THREE.SphereGeometry(radius, 48, 48), mat);
+}
+
+// ---- reusable planet (body + atmosphere + optional ring + orbiting moons) as scenery ----
+const orbiters = [];
+function makePlanet(parent, opt) {
+  const g = new THREE.Group(); g.position.set(opt.x || 0, opt.y || 0, opt.z || 0);
+  const body = new THREE.Mesh(new THREE.SphereGeometry(opt.r, 48, 48), new THREE.MeshStandardMaterial({ color: opt.color, roughness: 0.9, metalness: 0.05, emissive: opt.emissive != null ? opt.emissive : 0x0c0c0c, emissiveIntensity: 0.4 }));
+  g.add(body); g.userData.spin = body;
+  g.add(atmosphere(opt.r * 1.14, opt.glow != null ? opt.glow : opt.color, 3.0, opt.glowI != null ? opt.glowI : 0.8));
+  if (opt.ring) { const ring = new THREE.Mesh(new THREE.RingGeometry(opt.r * 1.5, opt.r * 2.2, 72), new THREE.MeshBasicMaterial({ color: opt.ring, transparent: true, opacity: 0.18, side: THREE.DoubleSide, depthWrite: false })); ring.rotation.set(1.18, 0.35, 0); g.add(ring); }
+  if (opt.moons) for (let k = 0; k < opt.moons; k++) { const mo = new THREE.Mesh(new THREE.SphereGeometry(opt.r * (0.12 + 0.06 * k), 20, 20), new THREE.MeshStandardMaterial({ color: 0xb8b4ac, roughness: 1 })); g.add(mo); orbiters.push({ moon: mo, a: k * 2.1, speed: 0.004 + k * 0.0017, rx: opt.r * (2.3 + k * 0.9), rz: opt.r * (2.3 + k * 0.9), ry: opt.r * (0.7 + 0.3 * k), tilt: 0.4 * k }); }
+  parent.add(g); return g;
+}
+function updateOrbiters(f60) { for (const o of orbiters) { o.a += o.speed * (f60 || 1); o.moon.position.set(Math.cos(o.a) * o.rx, Math.sin(o.a) * o.ry + o.tilt, Math.sin(o.a) * o.rz); } }
 
 function makeLabel(text, { size = 0.3, color = '#ECEBE4' } = {}) {
   const fs = 110, pad = 16, c = document.createElement('canvas'), ctx = c.getContext('2d');
@@ -37,7 +113,7 @@ function makeLabel(text, { size = 0.3, color = '#ECEBE4' } = {}) {
   function draw(t) {
     ctx.font = `700 ${fs}px JetBrains Mono, monospace`; c.width = Math.ceil(ctx.measureText(t).width) + pad * 2; c.height = fs + pad * 2;
     ctx.font = `700 ${fs}px JetBrains Mono, monospace`; ctx.clearRect(0, 0, c.width, c.height); ctx.fillStyle = color; ctx.textBaseline = 'middle'; ctx.fillText(t, pad, c.height / 2);
-    tex.needsUpdate = true; spr.scale.set(size * c.width / c.height, size, 1);
+    tex.needsUpdate = true; spr.scale.set(size * c.width / c.height, size, 1); spr.userData.text = t;
   }
   draw(text); spr.userData.kind = 'label'; spr.userData.set = draw; return spr;
 }
@@ -84,34 +160,53 @@ const globePivot = new THREE.Group(); scene.add(globePivot);
 const globe = new THREE.Group(); globePivot.add(globe);
 const loader = document.getElementById('loader');
 sun.position.set(2.6, 2, 6);   // light the camera-facing (day) side
-function finishEarth() { loader.classList.add('gone'); introActive = true; introStart = performance.now(); try { scrollTo(0, 0); } catch (e) {} }
+function finishEarth() {
+  const fill = document.getElementById('loader-fill'); if (fill) fill.style.width = '100%';
+  loader.classList.add('gone');
+  if (REDUCE) {   // vestibular safety: no auto camera flight, land directly on Earth
+    introActive = false; document.getElementById('intro').classList.add('gone');
+    curTarget.copy(STATIONS[0].camTarget); curStation = 0; onStation(0); setTime(1);
+    try { scrollTo(0, 0); } catch (e) {} return;
+  }
+  introActive = true; introStart = performance.now(); try { scrollTo(0, 0); } catch (e) {}
+}
 new THREE.TextureLoader().load('assets/textures/earth.jpg', dayTex => {
   dayTex.colorSpace = THREE.SRGBColorSpace; dayTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-  globe.add(new THREE.Mesh(new THREE.SphereGeometry(R, 96, 96), new THREE.MeshStandardMaterial({ map: dayTex, roughness: 1, metalness: 0 })));
+  renderer.initTexture(dayTex);   // upload now, not on first visible frame
+  globe.add(new THREE.Mesh(new THREE.SphereGeometry(R, 96, 96), new THREE.MeshStandardMaterial({ map: dayTex, roughness: 0.86, metalness: 0 })));
   finishEarth();
-}, ev => { if (ev.lengthComputable) { const el = document.getElementById('loader-txt'); if (el) el.textContent = 'loading earth ' + Math.round(ev.loaded / ev.total * 100) + '%'; } });
-globe.add(new THREE.Mesh(new THREE.SphereGeometry(R * 1.012, 64, 64), new THREE.MeshBasicMaterial({ color: ACCENT, transparent: true, opacity: 0.07, side: THREE.BackSide })));
-const spikeMat = new THREE.MeshBasicMaterial({ color: ACCENT });
-const spikeGeo = new THREE.CylinderGeometry(0.0032, 0.0062, 1, 5); spikeGeo.translate(0, 0.5, 0);
+}, ev => { if (ev.lengthComputable) { const p = Math.round(ev.loaded / ev.total * 100); const el = document.getElementById('loader-txt'); if (el) el.textContent = 'loading earth ' + p + '%'; const fill = document.getElementById('loader-fill'); if (fill) fill.style.width = p + '%'; } });
+globe.add(atmosphere(R * 1.025, 0x9EC0EE, 2.4, 0.85));   // tight rim
+globe.add(atmosphere(R * 1.16, 0x4F86C6, 3.2, 0.9));      // soft halo
+const spikeMat = new THREE.MeshBasicMaterial({ color: ACCENT });   // shared default (kept for refs)
+const spikeGeo = new THREE.CylinderGeometry(0.0038, 0.0072, 1, 6); spikeGeo.translate(0, 0.5, 0);
+// value -> colour: cool teal (low) -> blue -> warm -> hot
+const spikeCool = new THREE.Color(0x5FC9C0), spikeMidC = new THREE.Color(0x8DB0E4), spikeWarmC = new THREE.Color(0xE0A24A), spikeHotC = new THREE.Color(0xE8743B);
+function spikeColor(t, out) { if (t < 0.4) out.lerpColors(spikeCool, spikeMidC, t / 0.4); else if (t < 0.75) out.lerpColors(spikeMidC, spikeWarmC, (t - 0.4) / 0.35); else out.lerpColors(spikeWarmC, spikeHotC, (t - 0.75) / 0.25); return out; }
 const spikes = []; const spikeGroup = new THREE.Group(); globe.add(spikeGroup);
 for (const iso in OB.countries) {
   const c = OB.countries[iso], cen = CEN[iso]; if (!cen || (!c.adol && !c.adult)) continue;
-  const base = llToV3(cen[0], cen[1], R), m = new THREE.Mesh(spikeGeo, spikeMat);
+  const base = llToV3(cen[0], cen[1], R), mat = new THREE.MeshBasicMaterial({ color: ACCENT }), m = new THREE.Mesh(spikeGeo, mat);
   m.position.copy(base); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), base.clone().normalize());
-  m.scale.y = 0.02; m.userData = { iso, cur: 0.02, target: 0.02, mat0: spikeMat, tip: () => countryTip(iso, obIdx()) };
+  m.scale.y = 0.02; m.userData = { iso, cur: 0.02, target: 0.02, mat0: mat, tip: () => countryTip(iso, obIdx()) };
   spikeGroup.add(m); spikes.push(m);
 }
 // hottest-country live highlight (the leader changes as the years play)
-const spikeHotMat = new THREE.MeshBasicMaterial({ color: WARM });
-const hotMarker = new THREE.Mesh(new THREE.SphereGeometry(0.02, 16, 16), new THREE.MeshBasicMaterial({ color: 0xE8743B })); hotMarker.visible = false; globe.add(hotMarker);
+const hotMarker = new THREE.Mesh(new THREE.SphereGeometry(0.02, 16, 16), new THREE.MeshBasicMaterial({ color: 0xF5C16B })); hotMarker.visible = false; globe.add(hotMarker);
 const hotLabel = makeLabel(' ', { size: 0.075, color: '#E8743B' }); hotLabel.visible = false; globe.add(hotLabel);
 let hotSpike = null, hotIso = null;
+const _spikeCol = new THREE.Color();
 function refreshSpikes() {
-  const kH = 0.34 / obPrevMax(pop), idx = obIdx(); let maxV = -1, maxM = null, maxIso = null;
-  for (const m of spikes) { const r = OB.countries[m.userData.iso][pop]; if (!r) { m.visible = false; continue; } m.visible = true; m.userData.target = Math.max(0.015, r.series[idx] * kH); if (r.series[idx] > maxV) { maxV = r.series[idx]; maxM = m; maxIso = m.userData.iso; } }
-  if (maxM) { if (hotSpike && hotSpike !== maxM) hotSpike.material = spikeMat; hotSpike = maxM; hotSpike.material = spikeHotMat; hotIso = maxIso; hotMarker.visible = hotLabel.visible = true; hotLabel.userData.set('highest  ' + OB.countries[maxIso].name + ' ' + maxV.toFixed(0) + '%'); }
+  const cmax = obPrevMax(pop) || 1, kH = 0.34 / cmax, idx = obIdx(); let maxV = -1, maxM = null, maxIso = null;
+  for (const m of spikes) {
+    const r = OB.countries[m.userData.iso][pop]; if (!r) { m.visible = false; continue; }
+    m.visible = true; const v = r.series[idx]; m.userData.target = Math.max(0.015, v * kH);
+    spikeColor(clamp(v / cmax, 0, 1), _spikeCol); m.userData.mat0.color.copy(_spikeCol);
+    if (v > maxV) { maxV = v; maxM = m; maxIso = m.userData.iso; }
+  }
+  if (maxM) { hotSpike = maxM; hotIso = maxIso; hotMarker.visible = hotLabel.visible = true; hotLabel.userData.set('highest  ' + OB.countries[maxIso].name + ' ' + maxV.toFixed(0) + '%'); }
 }
-const moon = new THREE.Mesh(new THREE.SphereGeometry(0.27, 48, 48), new THREE.MeshStandardMaterial({ color: 0x8c8c8c, roughness: 1 })); moon.position.set(3.4, 1.9, -7); scene.add(moon);
+const moon = new THREE.Mesh(new THREE.SphereGeometry(0.27, 48, 48), new THREE.MeshStandardMaterial({ color: 0x9a9893, roughness: 0.95 })); moon.position.set(3.4, 1.9, -7); moon.add(atmosphere(0.302, 0x9EC0EE, 3.2, 0.22)); scene.add(moon);
 
 // ====================================================================
 // 2. SCATTER (burden x velocity) - stable, pin-select
@@ -121,23 +216,31 @@ const scatterGroup = new THREE.Group(); scatterGroup.position.copy(SCATTER); sce
 const scatterSpin = new THREE.Group(); scatterGroup.add(scatterSpin);
 const ptGeo = new THREE.SphereGeometry(0.06, 16, 16);
 const regionMatCache = {}; const regionMat = r => regionMatCache[r] || (regionMatCache[r] = new THREE.MeshBasicMaterial({ color: regionColor(r) }));
+const REGION_Z = { 'African': 2.4, 'Americas': 1.4, 'Eastern Mediterranean': 0.5, 'European': -0.5, 'South-East Asia': -1.4, 'Western Pacific': -2.4 };
+const hashJit = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return ((h >>> 0) % 1000) / 1000 - 0.5; };
 let scatterPoints = [];
 function buildScatter() {
   while (scatterSpin.children.length) scatterSpin.remove(scatterSpin.children[0]);
   scatterPoints = []; const recs = [];
   for (const iso in OB.countries) { const c = OB.countries[iso], r = c[pop]; if (!r || r.aapc == null) continue; recs.push({ iso, base: r.series[0], end: r.series[r.series.length - 1], aapc: r.aapc, region: c.region }); }
-  const xR = ext(recs, 'base'), yR = ext(recs, 'aapc'), zR = ext(recs, 'end');
+  const xR = ext(recs, 'end'), yR = ext(recs, 'aapc');
+  // floor grid + zero (no-change) reference plane
+  const gl = []; for (let g = 0; g <= 6; g++) { const t = -3.3 + g * 1.1; gl.push(new THREE.Vector3(-3.4, -2.7, t), new THREE.Vector3(3.4, -2.7, t), new THREE.Vector3(t, -2.7, -3.3), new THREE.Vector3(t, -2.7, 3.3)); }
+  scatterSpin.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(gl), new THREE.LineBasicMaterial({ color: 0x232220 })));
+  const y0 = remap(0, yR, -2.4, 2.4);   // aapc = 0 (no change)
+  scatterSpin.add(new THREE.Mesh(new THREE.PlaneGeometry(6.8, 6.6), new THREE.MeshBasicMaterial({ color: 0x6FB1E0, transparent: true, opacity: 0.05, side: THREE.DoubleSide })).translateY(y0).rotateX(-Math.PI / 2));
   for (const d of recs) {
     const mat = regionMat(d.region), m = new THREE.Mesh(ptGeo, mat);
-    m.position.set(remap(d.base, xR, -3.4, 3.4), remap(d.aapc, yR, -2.6, 2.6), remap(d.end, zR, -3.4, 3.4));
-    m.scale.setScalar(0.5 + (d.end / (zR.max || 1)) * 1.0);
+    m.position.set(remap(d.end, xR, -3.2, 3.2), remap(d.aapc, yR, -2.4, 2.4), (REGION_Z[d.region] || 0) + hashJit(d.iso) * 0.7);
+    m.scale.setScalar(0.55 + (d.end / (xR.max || 1)) * 1.3);
     m.userData = { iso: d.iso, mat0: mat, tip: () => countryTip(d.iso, OB.layers[pop].years.length - 1) };
     scatterSpin.add(m); scatterPoints.push(m);
   }
-  const ax = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-3.7, -3, -3.7), new THREE.Vector3(3.7, -3, -3.7), new THREE.Vector3(-3.7, -3, -3.7), new THREE.Vector3(-3.7, 3, -3.7), new THREE.Vector3(-3.7, -3, -3.7), new THREE.Vector3(-3.7, -3, 3.7)]), new THREE.LineBasicMaterial({ color: 0x2A2924 }));
-  scatterSpin.add(ax);
-  const lx = makeLabel('burden', { size: 0.42, color: '#6E6D64' }); lx.position.set(2.6, -3.4, -3.7); scatterSpin.add(lx);
-  const ly = makeLabel('rising fast', { size: 0.42, color: '#6E6D64' }); ly.position.set(-4.4, 2.6, -3.7); scatterSpin.add(ly);
+  scatterSpin.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-3.4, -2.7, -3.3), new THREE.Vector3(3.4, -2.7, -3.3), new THREE.Vector3(-3.4, -2.7, -3.3), new THREE.Vector3(-3.4, 2.7, -3.3)]), new THREE.LineBasicMaterial({ color: 0x3A3934 })));
+  const lx = makeLabel('current burden →', { size: 0.32, color: '#9C9B91' }); lx.position.set(1.6, -2.95, -3.3); scatterSpin.add(lx);
+  const ly = makeLabel('rising →', { size: 0.32, color: '#9C9B91' }); ly.position.set(-3.9, 1.6, -3.3); scatterSpin.add(ly);
+  const lq = makeLabel('high and still rising', { size: 0.26, color: '#E8743B' }); lq.position.set(2.1, 2.5, 0); scatterSpin.add(lq);
+  const l0 = makeLabel('no change', { size: 0.2, color: '#6E6D64' }); l0.position.set(-3.6, y0, 0); scatterSpin.add(l0);
 }
 
 // ---- generic bar row ----
@@ -177,7 +280,7 @@ function buildSurface() {
   geo.setAttribute('color', new THREE.BufferAttribute(colors, 3)); geo.computeVertexNormals();
   rankSpin.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.72, metalness: 0.04, side: THREE.DoubleSide })));
   rankSpin.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0x0D0D0C, wireframe: true, transparent: true, opacity: 0.14 })));
-  const la = makeLabel('age  20 → 80', { size: 0.3, color: '#9C9B91' }); la.position.set(0, 0.05, D / 2 + 0.45); rankSpin.add(la);
+  const la = makeLabel('age  20 → 80', { size: 0.3, color: '#9C9B91' }); la.position.set(0, 0.34, D / 2 + 0.62); rankSpin.add(la);   // lifted clear of the front ridge
   const ly = makeLabel('1990 → 2024', { size: 0.3, color: '#9C9B91' }); ly.position.set(W / 2 + 0.9, 0.05, 0); rankSpin.add(ly);
   const t1 = makeLabel('later onset', { size: 0.26, color: '#D98A6E' }); t1.position.set(W * 0.24, 2.4, -D / 2 + 0.2); rankSpin.add(t1);
   const t2 = makeLabel('early onset, rising', { size: 0.26, color: '#E8743B' }); t2.position.set(-W * 0.18, 2.5, D / 2 - 0.4); rankSpin.add(t2);
@@ -206,8 +309,8 @@ function buildDiet() {
       m.position.set(cx + Math.cos(a) * r, Math.sin(a) * r, Math.cos(a * 1.7) * 0.5);
       m.userData = { f, cur: 0.4, target: 0.4, mat0: mat, tip: () => ({ name: f.label, sub: f.role + ' food', valHTML: (f.series[dietIdx()] || 0).toFixed(1) + '<small> g/day &nbsp;' + DIET.yearsF[dietIdx()] + '</small>', series: f.series, hiIdx: dietIdx(), color: f.role === 'Risk' ? '#D98A6E' : '#6FB1E0' }) };
       dietSpin.add(m); dietFoods.push(m);
-      const lab = makeLabel(DIET_SHORT[f.label] || f.label.slice(0, 7), { size: 0.22, color: '#9C9B91' });
-      lab.position.set(m.position.x, m.position.y + 0.52, m.position.z); dietSpin.add(lab);
+      const lab = makeLabel(DIET_SHORT[f.label] || f.label.slice(0, 7), { size: 0.21, color: '#C9C8C0' });
+      lab.position.set(m.position.x, m.position.y + 0.7, m.position.z); m.userData.lab = lab; dietSpin.add(lab);
     });
   }
   cluster(prot, -3.6); cluster(risk, 3.6);
@@ -219,7 +322,7 @@ function buildDiet() {
 }
 function refreshDiet() {
   const idx = dietIdx();
-  for (const m of dietFoods) { const v = m.userData.f.series[idx] || 0; m.userData.target = 0.3 + Math.sqrt(v / dietGlobalMax) * 1.4; }
+  for (const m of dietFoods) { const v = m.userData.f.series[idx] || 0; m.userData.target = 0.3 + Math.sqrt(v / dietGlobalMax) * 1.15; }
   if (dietScore) { const ai = Math.round(tNorm * (DIET.aheiYearly.series.length - 1)); dietScore.userData.set(DIET.aheiYearly.series[ai].toFixed(0)); }
 }
 
@@ -235,35 +338,46 @@ const CW = 9, CH = 4.6, cyN = CAN.years.length;
 const cX = i => -CW / 2 + (i / (cyN - 1)) * CW, cY = v => -CH / 2 + (Math.sqrt(Math.max(0, v)) / Math.sqrt(cancerMax)) * CH;
 const CSHORT = { 'Colon and rectum cancer': 'Colorectal', 'Liver cancer due to NASH': 'Liver (NASH)', 'Multiple myeloma': 'Myeloma', 'Gallbladder and biliary tract cancer': 'Gallbladder' };
 let cancerLines = [], cancerCursor = null;
+const CDEPTH = 0.66, cZ = i => (i - (cancers.length - 1) / 2) * CDEPTH;   // lane i, tallest at the back
+function ribbonGeo(series, z) {   // filled area under the curve at depth z
+  const seg = cyN - 1, pos = new Float32Array(seg * 18); let k = 0;
+  const P = (x, y) => { pos[k++] = x; pos[k++] = y; pos[k++] = z; };
+  for (let j = 0; j < seg; j++) {
+    const x0 = cX(j), x1 = cX(j + 1), y0 = cY(series[j]), y1 = cY(series[j + 1]), b = cY(0);
+    P(x0, b); P(x0, y0); P(x1, y1); P(x0, b); P(x1, y1); P(x1, b);
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); return g;
+}
 function buildCancer() {
   while (cancerSpin.children.length) cancerSpin.remove(cancerSpin.children[0]);
   cancerLines = [];
-  const items = [];
-  cancers.forEach(c => {
-    const rising = c.both[c.both.length - 1] >= c.both[0];
-    const pts = c[csex].map((v, i) => new THREE.Vector3(cX(i), cY(v), 0));
-    const mat = new THREE.MeshBasicMaterial({ color: rising ? WARM : COOL });
-    const m = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, 0.035, 6, false), mat);
+  // faint floor grid in the x-z plane
+  const fl = [], zb = cZ(0) - 0.4, zf = cZ(cancers.length - 1) + 0.4;
+  for (let g = 0; g <= 6; g++) { const x = cX(0) + g / 6 * CW; fl.push(new THREE.Vector3(x, cY(0), zb), new THREE.Vector3(x, cY(0), zf)); }
+  fl.push(new THREE.Vector3(cX(0), cY(0), zb), new THREE.Vector3(cX(cyN - 1), cY(0), zb), new THREE.Vector3(cX(0), cY(0), zf), new THREE.Vector3(cX(cyN - 1), cY(0), zf));
+  cancerSpin.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(fl), new THREE.LineBasicMaterial({ color: 0x232220 })));
+  cancers.forEach((c, i) => {
+    const z = cZ(i), s = c[csex], rising = s[s.length - 1] >= s[0], colHex = rising ? WARM : COOL;
+    cancerSpin.add(new THREE.Mesh(ribbonGeo(s, z), new THREE.MeshBasicMaterial({ color: colHex, transparent: true, opacity: 0.2, side: THREE.DoubleSide, depthWrite: false })));
+    const pts = s.map((v, j) => new THREE.Vector3(cX(j), cY(v), z));
+    const mat = new THREE.MeshBasicMaterial({ color: colHex });
+    const m = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, 0.03, 6, false), mat);
     m.userData = { c, mat0: mat, tip: () => ({ name: c.cause, sub: 'incidence /100k, ' + csex, valHTML: c[csex][canIdx()].toFixed(1) + '<small> &nbsp;' + CAN.years[canIdx()] + '</small>', series: c[csex], hiIdx: canIdx(), color: rising ? '#D98A6E' : '#6FB1E0' }) };
     cancerSpin.add(m); cancerLines.push(m);
-    const lab = makeLabel(CSHORT[c.cause] || c.cause.replace(/ cancer| due.*/i, ''), { size: 0.19, color: rising ? '#D98A6E' : '#6FB1E0' });
-    items.push({ lab, endY: cY(c[csex][cyN - 1]), y: cY(c[csex][cyN - 1]) });
+    const lab = makeLabel(CSHORT[c.cause] || c.cause.replace(/ cancer| due.*/i, ''), { size: 0.17, color: rising ? '#D98A6E' : '#6FB1E0' });
+    lab.position.set(cX(cyN - 1) + 0.55, cY(s[cyN - 1]) + 0.12, z); cancerSpin.add(lab);
   });
-  // de-collide labels vertically, then add leader lines
-  items.sort((a, b) => a.y - b.y);
-  const gap = 0.32;
-  for (let i = 1; i < items.length; i++) if (items[i].y - items[i - 1].y < gap) items[i].y = items[i - 1].y + gap;
-  const over = items[items.length - 1].y - (CH / 2 + 0.3); if (over > 0) items.forEach(it => it.y -= over);
-  const leaders = [];
-  items.forEach(it => { it.lab.position.set(cX(cyN - 1) + 0.95, it.y, 0); cancerSpin.add(it.lab); leaders.push(new THREE.Vector3(cX(cyN - 1), it.endY, 0), new THREE.Vector3(cX(cyN - 1) + 0.8, it.y, 0)); });
-  cancerSpin.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(leaders), new THREE.LineBasicMaterial({ color: 0x3A3934 })));
-  cancerSpin.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(cX(0), cY(0), 0), new THREE.Vector3(cX(cyN - 1), cY(0), 0), new THREE.Vector3(cX(0), cY(0), 0), new THREE.Vector3(cX(0), CH / 2, 0)]), new THREE.LineBasicMaterial({ color: 0x2A2924 })));
-  cancerCursor = new THREE.Mesh(new THREE.PlaneGeometry(0.025, CH), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.22 })); cancerSpin.add(cancerCursor);
-  const y0 = makeLabel('1990', { size: 0.22, color: '#6E6D64' }); y0.position.set(cX(0), cY(0) - 0.45, 0); cancerSpin.add(y0);
-  const y1 = makeLabel('2021', { size: 0.22, color: '#6E6D64' }); y1.position.set(cX(cyN - 1), cY(0) - 0.45, 0); cancerSpin.add(y1);
+  cancerCursor = new THREE.Mesh(new THREE.BoxGeometry(0.03, CH * 0.55, (zf - zb)), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.16, depthWrite: false }));
+  cancerCursor.position.set(cX(canIdx()), cY(0) + CH * 0.27, (zb + zf) / 2); cancerSpin.add(cancerCursor);
+  const y0 = makeLabel('1990', { size: 0.22, color: '#6E6D64' }); y0.position.set(cX(0), cY(0) - 0.4, zf); cancerSpin.add(y0);
+  const y1 = makeLabel('2021', { size: 0.22, color: '#6E6D64' }); y1.position.set(cX(cyN - 1), cY(0) - 0.4, zf); cancerSpin.add(y1);
+  const yl = makeLabel('incidence per 100k →', { size: 0.2, color: '#9C9B91' }); yl.position.set(cX(0) - 0.75, CH * 0.3, zf); cancerSpin.add(yl);
+  const ti = makeLabel('each ridge is one cancer', { size: 0.2, color: '#6E6D64' }); ti.position.set(0, cY(0) - 0.78, zf); cancerSpin.add(ti);   // centred, clear of the year labels
+  const wr = makeLabel('warm rising', { size: 0.2, color: '#D98A6E' }); wr.position.set(cX(0) - 0.2, CH / 2 + 0.2, zf); cancerSpin.add(wr);
+  const cf = makeLabel('cool falling', { size: 0.2, color: '#6FB1E0' }); cf.position.set(cX(0) + 1.7, CH / 2 + 0.2, zf); cancerSpin.add(cf);
   refreshCancer();
 }
-function refreshCancer() { if (cancerCursor) cancerCursor.position.set(cX(canIdx()), 0, 0); }
+function refreshCancer() { if (cancerCursor) cancerCursor.position.x = cX(canIdx()); }
 
 // ====================================================================
 // chart-plane helper (for lag + forecast)
@@ -275,7 +389,7 @@ function chartPlane(w, h, pos) {
   g.add(new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex, transparent: true })));
   return { cv, ctx: cv.getContext('2d'), tex, group: g, lw: pxw, lh: pxh, dpr: DPR };
 }
-function panelBg(ctx, W, H) { ctx.clearRect(0, 0, W, H); ctx.fillStyle = 'rgba(18,18,16,0.92)'; ctx.strokeStyle = '#2A2924'; ctx.lineWidth = 2; roundRect(ctx, 4, 4, W - 8, H - 8, 18); ctx.fill(); ctx.stroke(); }
+function panelBg(ctx, W, H) { ctx.clearRect(0, 0, W, H); ctx.fillStyle = 'rgba(21,21,18,0.94)'; ctx.strokeStyle = '#2E2D28'; ctx.lineWidth = 2; roundRect(ctx, 4, 4, W - 8, H - 8, 18); ctx.fill(); ctx.stroke(); }
 function roundRect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
 const pearson = (a, b) => { const n = Math.min(a.length, b.length); let sa = 0, sb = 0, saa = 0, sbb = 0, sab = 0; for (let i = 0; i < n; i++) { sa += a[i]; sb += b[i]; saa += a[i] * a[i]; sbb += b[i] * b[i]; sab += a[i] * b[i]; } const num = n * sab - sa * sb, den = Math.sqrt((n * saa - sa * sa) * (n * sbb - sb * sb)); return den ? num / den : 0; };
 
@@ -321,8 +435,14 @@ function drawForecast() {
   let sx = 0, sy = 0, sxx = 0, sxy = 0; for (let i = 0; i < k; i++) { sx += xs[i]; sy += ys[i]; sxx += xs[i] * xs[i]; sxy += xs[i] * ys[i]; }
   const b1 = (k * sxy - sx * sy) / (k * sxx - sx * sx), b0 = (sy - b1 * sx) / k;
   let sse = 0; for (let i = 0; i < k; i++) { sse += (ys[i] - (b0 + b1 * xs[i])) ** 2; } const sigma = Math.sqrt(sse / Math.max(1, k - 2));
-  const nFut = yEnd - yLast; const allMax = Math.max.apply(null, ob) * 1.8;
+  const nFut = yEnd - yLast;
+  const projEnd = Math.exp(b0 + b1 * (ob.length - 1 + nFut));
+  const allMax = Math.max(Math.max.apply(null, ob) * 1.25, projEnd * 1.18);   // scale to the projection so the curve fills the panel
   const X = yr => m.l + ((yr - y0) / (yEnd - y0)) * iw, Y = v => m.t + ih - (v / allMax) * ih;
+  // horizontal gridlines + % labels
+  const step = allMax > 16 ? 5 : 2;
+  ctx.font = '400 20px JetBrains Mono';
+  for (let v = step; v < allMax; v += step) { ctx.strokeStyle = '#1E1D1A'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(m.l, Y(v)); ctx.lineTo(m.l + iw, Y(v)); ctx.stroke(); ctx.fillStyle = '#55544D'; ctx.fillText(v + '%', m.l - 58, Y(v) + 7); }
   // axis baseline
   ctx.strokeStyle = '#2A2924'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(m.l, m.t + ih); ctx.lineTo(m.l + iw, m.t + ih); ctx.stroke();
   // cone
@@ -333,8 +453,8 @@ function drawForecast() {
   ctx.strokeStyle = '#8DB0E4'; ctx.lineWidth = 3; ctx.beginPath(); ob.forEach((v, i) => { const x = X(y0 + i), yy = Y(v); i ? ctx.lineTo(x, yy) : ctx.moveTo(x, yy); }); ctx.stroke();
   // forecast central
   ctx.strokeStyle = '#8DB0E4'; ctx.setLineDash([10, 8]); ctx.beginPath(); for (let f = 0; f <= nFut; f++) { const idx = ob.length - 1 + f, yr = yLast + f, c = Math.exp(b0 + b1 * idx); const x = X(yr), yy = Y(c); f ? ctx.lineTo(x, yy) : ctx.moveTo(x, yy); } ctx.stroke(); ctx.setLineDash([]);
-  const proj = Math.exp(b0 + b1 * (ob.length - 1 + nFut));
-  ctx.font = '700 28px JetBrains Mono'; ctx.fillStyle = '#ECEBE4'; ctx.textAlign = 'right'; ctx.fillText('~' + proj.toFixed(0) + '% by 2050', W - m.r, 56); ctx.textAlign = 'left';
+  ctx.fillStyle = '#8DB0E4'; ctx.beginPath(); ctx.arc(X(2050), Y(projEnd), 7, 0, 7); ctx.fill();   // landing point
+  ctx.font = '700 28px JetBrains Mono'; ctx.fillStyle = '#ECEBE4'; ctx.textAlign = 'right'; ctx.fillText('~' + projEnd.toFixed(0) + '% by 2050', W - m.r, 56); ctx.textAlign = 'left';
   ctx.font = '600 22px JetBrains Mono'; ctx.fillStyle = '#6E6D64'; ctx.fillText(y0 + '', m.l, m.t + ih + 36); ctx.fillText('2050', X(2050) - 40, m.t + ih + 36);
   fcPlane.tex.needsUpdate = true;
 }
@@ -342,13 +462,13 @@ function drawForecast() {
 // ====================================================================
 // 8. ABOUT
 // ====================================================================
-const ABP = new THREE.Vector3(0, 0, -172);
+const ABP = new THREE.Vector3(0, 0, -246);
 const aboutGroup = new THREE.Group(); aboutGroup.position.copy(ABP); scene.add(aboutGroup);
 const aboutSpin = new THREE.Group(); aboutGroup.add(aboutSpin);
 const aboutPicks = [];
-aboutSpin.add(new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), new THREE.MeshStandardMaterial({ color: ACCENT, roughness: 0.5, emissive: 0x16222e })));
-const aboutName = makeLabel('Abdiwahab Ali', { size: 0.5, color: '#ECEBE4' }); aboutName.position.set(0, 1.5, 0); aboutSpin.add(aboutName);
-const aboutRole = makeLabel('doctoral researcher, NYCU Taipei', { size: 0.3, color: '#9C9B91' }); aboutRole.position.set(0, 1.05, 0); aboutSpin.add(aboutRole);
+aboutSpin.add(new THREE.Mesh(new THREE.SphereGeometry(0.5, 48, 48), new THREE.MeshStandardMaterial({ color: 0x5E87BE, roughness: 0.32, metalness: 0.1, emissive: 0x16283f, emissiveIntensity: 0.85 })));
+aboutGroup.add(atmosphere(0.505, 0xB9D2F2, 2.0, 0.4, THREE.FrontSide));   // limb shading on the body itself
+aboutGroup.add(atmosphere(0.62, 0x9EC0EE, 2.6, 0.9));
 const aboutNodes = [
   { t: 'GBD', tip: { name: 'GBD', sub: 'dataset', valHTML: 'global burden of disease' } },
   { t: 'GLOBOCAN', tip: { name: 'GLOBOCAN', sub: 'dataset', valHTML: 'global cancer' } },
@@ -369,7 +489,7 @@ aboutNodes.forEach((nd, i) => {
 // 8b. COLLABORATE (meta-analysis: forest + funnel)
 // ====================================================================
 function planeMesh(w, h) { const DPR = 2.0, pxw = 900, pxh = Math.round(pxw * h / w), cv = document.createElement('canvas'); cv.width = pxw * DPR; cv.height = pxh * DPR; const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = renderer.capabilities.getMaxAnisotropy(); const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex, transparent: true })); return { cv, ctx: cv.getContext('2d'), tex, mesh, lw: pxw, lh: pxh, dpr: DPR }; }
-const COLLAB = new THREE.Vector3(-8, 1, -150);
+const COLLAB = new THREE.Vector3(-8, 1, -222);
 const collabGroup = new THREE.Group(); collabGroup.position.copy(COLLAB); scene.add(collabGroup);
 const collabSpin = new THREE.Group(); collabGroup.add(collabSpin);
 const forest = planeMesh(3.9, 3.2); forest.mesh.position.set(-2.2, 0.75, 0); collabSpin.add(forest.mesh);
@@ -491,7 +611,7 @@ function drawCollab(n) {
 // ====================================================================
 // 8c. STORYTELLER (one table, many stories)
 // ====================================================================
-const STORYP = new THREE.Vector3(-7, 0.4, -196);
+const STORYP = new THREE.Vector3(-7, 0.4, -270);
 const storyGroup = new THREE.Group(); storyGroup.position.copy(STORYP); scene.add(storyGroup);
 const storySpin = new THREE.Group(); storyGroup.add(storySpin);
 const SD_CATS = ['Refined grains', 'Sugary drinks', 'Red & proc. meat', 'Fruit & veg', 'Whole grains', 'Nuts & legumes'];
@@ -509,6 +629,154 @@ function drawStoryTable() {
   storyTablePlane.tex.needsUpdate = true;
 }
 const storyHint = makeLabel('tell its story', { size: 0.34, color: '#8DB0E4' }); storyHint.position.set(0, -0.78, 0); storySpin.add(storyHint);
+
+// ====================================================================
+// 8d. CAUSAL DAG (how I think: confounding, mediation)
+// ====================================================================
+const DAGP = new THREE.Vector3(8, 0.6, -150);
+const dagGroup = new THREE.Group(); dagGroup.position.copy(DAGP); scene.add(dagGroup);
+const dagSpin = new THREE.Group(); dagGroup.add(dagSpin);
+makePlanet(dagGroup, { x: 18.5, y: -12, z: -26, r: 3.6, color: 0x2f4a6e, glow: 0x6FB1E0, glowI: 0.7, moons: 1 });
+const DAG_KIND_COL = { confounder: 0xE0A24A, exposure: 0x8DB0E4, mediator: 0x6FC8A3, outcome: 0xE8743B };
+const DAG_NODES = {
+  ses: { label: 'Socio-economics', x: -4.4, y: 2.0, z: 0, kind: 'confounder', role: 'Upstream common cause. Opens a backdoor path that must be adjusted for.' },
+  age: { label: 'Age', x: -4.4, y: -2.1, z: 0.3, kind: 'confounder', role: 'Common cause of both obesity and cancer. A classic confounder.' },
+  diet: { label: 'Diet quality', x: -1.3, y: 2.6, z: -0.2, kind: 'exposure', role: 'Modifiable exposure acting through and around obesity.' },
+  pa: { label: 'Physical activity', x: -1.3, y: 0.1, z: 0.4, kind: 'exposure', role: 'Modifiable exposure. Protective.' },
+  smoke: { label: 'Smoking', x: -1.3, y: -2.5, z: -0.2, kind: 'exposure', role: 'Independent cause of the outcome, off the obesity path.' },
+  ob: { label: 'Obesity', x: 1.7, y: 1.1, z: 0.2, kind: 'mediator', role: 'Central mediator. The causal path runs through here.' },
+  ca: { label: 'Early-onset cancer', x: 4.5, y: -0.6, z: 0, kind: 'outcome', role: 'The outcome. Estimated after closing every backdoor.' }
+};
+const DAG_EDGES = [['ses', 'diet', 0], ['ses', 'pa', 0], ['ses', 'ca', 1], ['age', 'ob', 1], ['age', 'ca', 1], ['diet', 'ob', 0], ['pa', 'ob', 0], ['diet', 'ca', 0], ['smoke', 'ca', 0], ['ob', 'ca', 0]];
+function dagArrow(from, to, backdoor, parent) {
+  const a = new THREE.Vector3(from.x, from.y, from.z), b = new THREE.Vector3(to.x, to.y, to.z), nd = b.clone().sub(a).normalize();
+  const start = a.clone().add(nd.clone().multiplyScalar(0.36)), end = b.clone().sub(nd.clone().multiplyScalar(0.46));
+  const mid = start.clone().add(end).multiplyScalar(0.5); mid.z += backdoor ? -0.9 : 0.4;
+  const curve = new THREE.QuadraticBezierCurve3(start, mid, end), col = backdoor ? 0xC98A4A : 0x7FA8DE;
+  parent.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 26, backdoor ? 0.009 : 0.013, 6, false), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: backdoor ? 0.45 : 0.78 })));
+  const head = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.15, 10), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: backdoor ? 0.5 : 0.9 }));
+  const tan = curve.getTangent(1); head.position.copy(end); head.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), tan); parent.add(head);
+}
+let dagPicks = [];
+(function buildDag() {
+  DAG_EDGES.forEach(([f, t, bd]) => dagArrow(DAG_NODES[f], DAG_NODES[t], bd, dagSpin));
+  for (const k in DAG_NODES) {
+    const nd = DAG_NODES[k], col = DAG_KIND_COL[nd.kind], rad = nd.kind === 'outcome' ? 0.34 : nd.kind === 'mediator' ? 0.3 : 0.24;
+    const mat = new THREE.MeshStandardMaterial({ color: col, roughness: 0.4, emissive: col, emissiveIntensity: 0.28 });
+    const m = new THREE.Mesh(new THREE.SphereGeometry(rad, 26, 26), mat); m.position.set(nd.x, nd.y, nd.z);
+    m.userData = { mat0: mat, tip: () => ({ name: nd.label, sub: nd.kind, valHTML: nd.role }) }; dagSpin.add(m); dagPicks.push(m);
+    const lab = makeLabel(nd.label, { size: 0.24, color: '#' + col.toString(16).padStart(6, '0') }); lab.position.set(nd.x, nd.y + rad + 0.26, nd.z); dagSpin.add(lab);
+  }
+})();
+
+// ====================================================================
+// 8e. MULTIVARIABLE REGRESSION (3D point cloud + fitted plane + residuals)
+// ====================================================================
+const REGP = new THREE.Vector3(-8, 0.6, -174);
+const regGroup = new THREE.Group(); regGroup.position.copy(REGP); scene.add(regGroup);
+const regSpin = new THREE.Group(); regGroup.add(regSpin);
+makePlanet(regGroup, { x: -18.5, y: 12, z: -27, r: 3.4, color: 0x46324f, glow: 0x9B8DE4, glowI: 0.7, ring: 0x9B8DE4, moons: 1 });
+function solve3(A, b) {
+  const M = [A[0].concat(b[0]), A[1].concat(b[1]), A[2].concat(b[2])];
+  for (let i = 0; i < 3; i++) {
+    let p = i; for (let r = i + 1; r < 3; r++) if (Math.abs(M[r][i]) > Math.abs(M[p][i])) p = r;
+    const tmp = M[i]; M[i] = M[p]; M[p] = tmp; const piv = M[i][i] || 1e-9;
+    for (let r = 0; r < 3; r++) { if (r === i) continue; const f = M[r][i] / piv; for (let c = i; c < 4; c++) M[r][c] -= f * M[i][c]; }
+  }
+  return [M[0][3] / (M[0][0] || 1e-9), M[1][3] / (M[1][1] || 1e-9), M[2][3] / (M[2][2] || 1e-9)];
+}
+(function buildRegression() {
+  const r = rng(101), n = 130, px = [], py = [], pz = [];
+  for (let i = 0; i < n; i++) {
+    const bmi = 19 + r() * 22, age = 24 + r() * 52;              // raw predictors
+    const X = (bmi - 30) / 11 * 3, Z = (age - 50) / 26 * 3;       // display coords -3..3
+    const Y = 0.62 * X + 0.34 * Z + gauss(r) * 0.8;               // outcome with noise
+    px.push(X); py.push(Y); pz.push(Z);
+  }
+  // OLS: Y = c0 + c1*X + c2*Z on display coords (plane matches the rendered points exactly)
+  let S = [[n, 0, 0], [0, 0, 0], [0, 0, 0]], B = [0, 0, 0];
+  for (let i = 0; i < n; i++) { const X = px[i], Z = pz[i], Y = py[i]; S[0][1] += X; S[0][2] += Z; S[1][1] += X * X; S[1][2] += X * Z; S[2][2] += Z * Z; B[0] += Y; B[1] += X * Y; B[2] += Z * Y; }
+  S[1][0] = S[0][1]; S[2][0] = S[0][2]; S[2][1] = S[1][2];
+  const c = solve3(S, B); const plane = (X, Z) => c[0] + c[1] * X + c[2] * Z;
+  const meanY = B[0] / n; let sst = 0, ssr = 0; for (let i = 0; i < n; i++) { sst += (py[i] - meanY) ** 2; const f = plane(px[i], pz[i]); ssr += (py[i] - f) ** 2; } const r2 = 1 - ssr / sst;
+  // floor grid
+  const gl = []; for (let g = -3; g <= 3; g++) { gl.push(new THREE.Vector3(-3, -3, g), new THREE.Vector3(3, -3, g), new THREE.Vector3(g, -3, -3), new THREE.Vector3(g, -3, 3)); }
+  regSpin.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(gl), new THREE.LineBasicMaterial({ color: 0x2A2924 })));
+  // fitted plane (two triangles) + wire
+  const corners = [[-3, -3], [3, -3], [3, 3], [-3, 3]].map(([X, Z]) => new THREE.Vector3(X, plane(X, Z), Z));
+  const pg = new THREE.BufferGeometry(); pg.setFromPoints([corners[0], corners[1], corners[2], corners[0], corners[2], corners[3]]);
+  regSpin.add(new THREE.Mesh(pg, new THREE.MeshBasicMaterial({ color: 0x9B8DE4, transparent: true, opacity: 0.16, side: THREE.DoubleSide })));
+  regSpin.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(corners), new THREE.LineBasicMaterial({ color: 0x9B8DE4, transparent: true, opacity: 0.5 })));
+  // points + residual sticks
+  const dotGeo = new THREE.SphereGeometry(0.055, 12, 12), warmM = new THREE.MeshBasicMaterial({ color: 0xE0A24A }), coolM = new THREE.MeshBasicMaterial({ color: 0x6FB1E0 });
+  for (let i = 0; i < n; i++) {
+    const f = plane(px[i], pz[i]), res = py[i] - f, above = res >= 0;
+    regSpin.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(px[i], py[i], pz[i]), new THREE.Vector3(px[i], f, pz[i])]), new THREE.LineBasicMaterial({ color: above ? 0xE0A24A : 0x6FB1E0, transparent: true, opacity: 0.4 })));
+    const d = new THREE.Mesh(dotGeo, above ? warmM : coolM); d.position.set(px[i], py[i], pz[i]); regSpin.add(d);
+  }
+  const lx = makeLabel('BMI', { size: 0.28, color: '#9C9B91' }); lx.position.set(3.4, -3, 0); regSpin.add(lx);
+  const lz = makeLabel('age', { size: 0.28, color: '#9C9B91' }); lz.position.set(0, -3.38, 3.62); regSpin.add(lz);   // below the fitted plane, never occluded
+  const ly = makeLabel('risk', { size: 0.24, color: '#9C9B91' }); ly.position.set(-3.7, 1.9, -3); regSpin.add(ly);
+})();
+
+// ====================================================================
+// 8f. NETWORK (comorbidity / network meta-analysis graph, animated)
+// ====================================================================
+const NETP = new THREE.Vector3(7, 0.6, -198);
+const netGroup = new THREE.Group(); netGroup.position.copy(NETP); scene.add(netGroup);
+const netSpin = new THREE.Group(); netGroup.add(netSpin);
+makePlanet(netGroup, { x: 18.5, y: 12, z: -27, r: 3.5, color: 0x244b78, glow: 0x6FB1E0, glowI: 0.7, moons: 2 });
+const NET_NODES = [
+  { label: 'Obesity', prev: 1.0, comm: 0 }, { label: 'Type 2 diabetes', prev: 0.62, comm: 0 }, { label: 'Hypertension', prev: 0.7, comm: 0 },
+  { label: 'NAFLD', prev: 0.48, comm: 0 }, { label: 'Colorectal ca', prev: 0.3, comm: 1 }, { label: 'Breast ca', prev: 0.34, comm: 1 },
+  { label: 'Endometrial ca', prev: 0.26, comm: 1 }, { label: 'CKD', prev: 0.4, comm: 2 }, { label: 'Heart disease', prev: 0.66, comm: 2 }
+];
+const NET_COMM_COL = [0x8DB0E4, 0xE0728F, 0x6FC8A3];
+const NET_EDGES = [[0, 1, 2.4], [0, 2, 2.1], [0, 3, 2.0], [0, 4, 1.7], [0, 5, 1.5], [0, 6, 1.9], [0, 8, 1.8], [1, 2, 1.4], [1, 7, 1.6], [1, 8, 1.5], [2, 8, 1.7], [3, 1, 1.3], [4, 5, 0.9], [5, 6, 1.1], [7, 8, 1.2]];
+let netPicks = [], netPulse = null;
+(function buildNetwork() {
+  const Nn = NET_NODES.length, R3 = 3.1;
+  NET_NODES.forEach((nd, i) => {
+    if (i === 0) nd.pos = new THREE.Vector3(0, 0.1, 0);                 // Obesity = central hub
+    else { const a = -Math.PI / 2 + (i - 1) / (Nn - 1) * 6.2832; nd.pos = new THREE.Vector3(Math.cos(a) * R3, Math.sin(a) * R3 * 0.9, Math.sin(a * 2.3) * 0.7); }
+    nd.deg = 0;
+  });
+  NET_EDGES.forEach(([i, j]) => { NET_NODES[i].deg++; NET_NODES[j].deg++; });
+  // edges
+  NET_EDGES.forEach(([i, j, w]) => {
+    const a = NET_NODES[i].pos, b = NET_NODES[j].pos, mid = a.clone().add(b).multiplyScalar(0.5).multiplyScalar(0.7);
+    const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
+    netSpin.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 20, 0.006 + w * 0.011, 6, false), new THREE.MeshBasicMaterial({ color: 0x4d6890, transparent: true, opacity: 0.32 + w * 0.12 })));
+  });
+  // nodes
+  NET_NODES.forEach((nd, i) => {
+    const col = NET_COMM_COL[nd.comm], rad = 0.2 + nd.prev * 0.34, mat = new THREE.MeshStandardMaterial({ color: col, roughness: 0.4, emissive: col, emissiveIntensity: 0.3 });
+    const m = new THREE.Mesh(new THREE.SphereGeometry(rad, 26, 26), mat); m.position.copy(nd.pos);
+    let best = -1, bestJ = -1; NET_EDGES.forEach(([a, b, w]) => { if (a === i && w > best) { best = w; bestJ = b; } if (b === i && w > best) { best = w; bestJ = a; } });
+    m.userData = { mat0: mat, tip: () => ({ name: nd.label, sub: nd.deg + ' links', valHTML: bestJ >= 0 ? 'strongest tie: ' + NET_NODES[bestJ].label + '<small> &nbsp;OR ' + best.toFixed(1) + '</small>' : 'central hub' }) };
+    netSpin.add(m); netPicks.push(m);
+    const lab = makeLabel(nd.label, { size: 0.2, color: '#' + col.toString(16).padStart(6, '0') }); lab.position.set(nd.pos.x, nd.pos.y + rad + 0.22, nd.pos.z); netSpin.add(lab);
+  });
+  // travelling pulses along edges
+  const PPE = 2, parts = []; NET_EDGES.forEach(([i, j]) => { for (let k = 0; k < PPE; k++) parts.push({ a: NET_NODES[i].pos, b: NET_NODES[j].pos, t: k / PPE, sp: 0.006 + Math.random() * 0.004 }); });
+  const arr = new Float32Array(parts.length * 3), pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+  netSpin.add(new THREE.Points(pg, new THREE.PointsMaterial({ color: 0xBCD4F5, size: 0.12, transparent: true, opacity: 0.95, depthWrite: false, blending: THREE.AdditiveBlending, map: dotTex })));
+  netPulse = { parts, geo: pg, arr };
+})();
+function updateNetPulse(f60) {
+  if (!netPulse) return; const { parts, arr, geo } = netPulse;
+  for (let i = 0; i < parts.length; i++) { const p = parts[i]; p.t += p.sp * (f60 || 1); if (p.t > 1) p.t -= 1; arr[i * 3] = p.a.x + (p.b.x - p.a.x) * p.t; arr[i * 3 + 1] = p.a.y + (p.b.y - p.a.y) * p.t; arr[i * 3 + 2] = p.a.z + (p.b.z - p.a.z) * p.t; }
+  geo.attributes.position.needsUpdate = true;
+}
+
+// ---- scenery planets: every world is a planet you fly to ----
+makePlanet(scatterGroup, { x: -16, y: 3, z: -18, r: 4.2, color: 0x35543a, glow: 0x6FC8A3, glowI: 0.6, moons: 1 });
+makePlanet(rankGroup, { x: -17, y: 11, z: -24, r: 3.5, color: 0x2f4a6e, glow: 0x6FB1E0, glowI: 0.6, ring: 0x6FB1E0, moons: 1 });
+makePlanet(dietGroup, { x: 18.5, y: 12, z: -23, r: 3.7, color: 0x6e5a32, glow: 0xE0A24A, glowI: 0.6, ring: 0xE0A24A, moons: 1 });
+makePlanet(cancerGroup, { x: -16, y: 9.5, z: -28, r: 4.0, color: 0x5a2f3a, glow: 0xE0728F, glowI: 0.6, moons: 1 });
+makePlanet(lagPlane.group, { x: 17, y: -11, z: -24, r: 3.2, color: 0x2f4a6e, glow: 0x8DB0E4, glowI: 0.6, moons: 1 });
+makePlanet(fcPlane.group, { x: -17, y: 11, z: -24, r: 3.2, color: 0x46324f, glow: 0x9B8DE4, glowI: 0.6, moons: 1 });
+makePlanet(collabGroup, { x: 18.5, y: -11, z: -26, r: 3.5, color: 0x244b78, glow: 0x6FB1E0, glowI: 0.6, moons: 2 });
 
 // 9. YOUR DATA (closing)
 // ====================================================================
@@ -528,7 +796,7 @@ let finalPts = null;
     pos[i * 3] = scatter[i * 3]; pos[i * 3 + 1] = scatter[i * 3 + 1]; pos[i * 3 + 2] = scatter[i * 3 + 2];
   }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  finalSpin.add(new THREE.Points(g, new THREE.PointsMaterial({ color: ACCENT, size: 0.05, transparent: true, opacity: 0.85 })));
+  finalSpin.add(new THREE.Points(g, new THREE.PointsMaterial({ color: ACCENT, size: 0.05, transparent: true, opacity: 0.85, map: dotTex, depthWrite: false })));
   finalPts = { geo: g, pos, target, scatter, n };
 })();
 
@@ -537,42 +805,94 @@ let finalPts = null;
 // ====================================================================
 const off = (p, dx, dy, dz) => p.clone().add(new THREE.Vector3(dx, dy, dz));
 const STATIONS = [
-  { name: 'Earth', cap: '<b>Each spike is a country.</b><br>Height is obesity prevalence. Play runs 35 years.', spin: globe, picks: () => spikes, camPos: new THREE.Vector3(0, 0.35, 3.7), camTarget: new THREE.Vector3(0, 0, 0), pop: 1, time: 1, spinIdle: 0.0006 },
-  { name: 'Burden / velocity', cap: '<b>Where it is high, and where it is rising.</b><br>Each sphere a country, by region. Click to pin.', spin: scatterSpin, picks: () => scatterPoints, camPos: off(SCATTER, 0, 1.8, 10.5), camTarget: SCATTER.clone(), pop: 1 },
-  { name: 'Early-onset shift', cap: '<b>Where disease is striking earlier.</b><br>Sample incidence by age and year. The ridge moves to younger ages.', spin: rankSpin, picks: () => [], camPos: off(RANK, 0, 3.6, 9.5), camTarget: off(RANK, 0, 0.9, 0) },
-  { name: 'Diet', cap: '<b>Good foods, bad foods.</b><br>The world scores 39 of 100. Bad foods keep growing.', spin: dietSpin, picks: () => dietFoods, camPos: off(DIETP, 0, 0.4, 12), camTarget: off(DIETP, 0, 0.2, 0), time: 1 },
-  { name: 'Cancer', cap: '<b>Thirteen obesity-related cancers.</b><br>Each line a cancer, 1990 to 2021. Warm rising, cool falling.', spin: cancerSpin, picks: () => cancerLines, camPos: off(CANP, 0, 0.3, 10), camTarget: CANP.clone(), time: 1, csex: 1 },
-  { name: 'Obesity drives cancer', cap: '<b>Obesity today, cancer tomorrow.</b><br>Drag the lag, watch the correlation move.', spin: lagPlane.group, picks: () => [], camPos: off(LAGP, 0, 0, 6.4), camTarget: LAGP.clone(), pop: 1, aux: { label: 'lag', min: 0, max: 15, on: v => { lag = v; drawLag(); document.getElementById('aux-val').textContent = v + ' yr'; } } },
-  { name: 'Forecast', cap: '<b>Where it is heading.</b><br>Projection to 2050 with uncertainty.', spin: fcPlane.group, picks: () => [], camPos: off(FCP, 0, 0, 6.4), camTarget: FCP.clone(), pop: 1 },
-  { name: 'Collaborate', cap: '<b>The methods I use, and the tools above.</b><br>Switch the analysis below. Open to collaboration on obesity, early-onset cancers, diet, and NCDs.', spin: collabSpin, picks: () => [], camPos: off(COLLAB, 0, 1.4, 10.8), camTarget: off(COLLAB, 0, 1.4, 0) },
-  { name: 'The analyst', cap: '<b>Abdiwahab M. Ali.</b><br>Datasets and tools I work with. Click a paper.', spin: aboutSpin, picks: () => aboutPicks, camPos: off(ABP, 0, 0, 7.2), camTarget: ABP.clone(), spinIdle: 0.0015 },
-  { name: 'One table, many stories', cap: '<b>Here is one small table.</b><br>Six numbers, then and now. Press the button and let me take you somewhere to show you what they really say.', spin: storySpin, picks: () => [], camPos: off(STORYP, 0, 0.5, 7), camTarget: off(STORYP, 0, 0.5, 0) }
+  { name: 'Earth', cap: '<b>Each spike is a country.</b> Press play to run 35 years.', spin: globe, picks: () => spikes, camPos: new THREE.Vector3(0, 0.35, 3.7), camTarget: new THREE.Vector3(0, 0, 0), pop: 1, time: 1, spinIdle: 0.0006 },
+  { name: 'Burden / velocity', cap: '<b>High, and still rising.</b> Up and right is the corner to watch.', spin: scatterSpin, picks: () => scatterPoints, camPos: off(SCATTER, 0, 1.8, 10.5), camTarget: SCATTER.clone(), pop: 1 },
+  { name: 'Early-onset shift', cap: '<b>Cancer is striking earlier.</b> The young ridge grows year by year.', spin: rankSpin, picks: () => [], camPos: off(RANK, 0, 3.6, 9.5), camTarget: off(RANK, 0, 0.9, 0) },
+  { name: 'Diet', cap: '<b>Protective foods shrink, risk foods grow.</b>', spin: dietSpin, picks: () => dietFoods, camPos: off(DIETP, 0, 0.35, 10.6), camTarget: off(DIETP, 0, 0.3, 0), time: 1 },
+  { name: 'Cancer', cap: '<b>13 obesity-linked cancers.</b> Warm ridges are rising.', spin: cancerSpin, picks: () => cancerLines, camPos: off(CANP, -1.4, 4.2, 16.5), camTarget: off(CANP, 0, -0.2, -0.6), time: 1, csex: 1 },
+  { name: 'Obesity drives cancer', cap: '<b>Obesity today, cancer tomorrow.</b> Slide the lag, watch r climb.', spin: lagPlane.group, picks: () => [], camPos: off(LAGP, 0, 0, 6.4), camTarget: LAGP.clone(), pop: 1, aux: { label: 'lag', min: 0, max: 15, on: v => { lag = v; drawLag(); document.getElementById('aux-val').textContent = v + ' yr'; } } },
+  { name: 'Forecast', cap: '<b>On course for ~22% of youth by 2050.</b>', spin: fcPlane.group, picks: () => [], camPos: off(FCP, 0, 0, 6.4), camTarget: FCP.clone(), pop: 1 },
+  { name: 'Causal thinking', cap: '<b>Backdoor paths, closed before estimating.</b>', spin: dagSpin, picks: () => dagPicks, camPos: off(DAGP, 0, 0.4, 9.6), camTarget: off(DAGP, 0, 0.2, 0) },
+  { name: 'Multivariable model', cap: '<b>Many inputs, one outcome.</b> A live OLS fit, residuals shown.', spin: regSpin, picks: () => [], camPos: off(REGP, 0, 0.5, 10.0), camTarget: off(REGP, 0, 0.1, 0), spinIdle: 0.0016 },
+  { name: 'Networks', cap: '<b>Disease rarely travels alone.</b> Edges are comorbidity ties.', spin: netSpin, picks: () => netPicks, camPos: off(NETP, 0, 0.9, 11), camTarget: off(NETP, 0, 0.8, 0), spinIdle: 0.0012 },
+  { name: 'Collaborate', cap: '<b>Forest, funnel, survival, ROC — computed live.</b>', spin: collabSpin, picks: () => [], camPos: off(COLLAB, 0, 1.25, 9.2), camTarget: off(COLLAB, 0, 1.15, 0) },
+  { name: 'The analyst', cap: '<b>Five global datasets. Two peer-reviewed papers.</b>', spin: aboutSpin, picks: () => aboutPicks, camPos: off(ABP, 0, 0, 7.2), camTarget: ABP.clone(), spinIdle: 0.0015 },
+  { name: 'One table, many stories', cap: '<b>One small table, ten ways to tell it.</b>', spin: storySpin, picks: () => [], camPos: off(STORYP, 0, 0.5, 7), camTarget: off(STORYP, 0, 0.5, 0) }
 ];
 const N = STATIONS.length;
-const WORLD_GROUPS = [globePivot, scatterGroup, rankGroup, dietGroup, cancerGroup, lagPlane.group, fcPlane.group, collabGroup, aboutGroup, storyGroup];
+const WORLD_GROUPS = [globePivot, scatterGroup, rankGroup, dietGroup, cancerGroup, lagPlane.group, fcPlane.group, dagGroup, regGroup, netGroup, collabGroup, aboutGroup, storyGroup];
 const curTarget = STATIONS[0].camTarget.clone(), desiredPos = new THREE.Vector3(), desiredTarget = new THREE.Vector3();
 let curStation = -1;
 
-// dot nav
+// dot nav + mobile station list
 const dotnav = document.getElementById('dotnav');
-function scrollToStation(i) { scrollTo({ top: i / (N - 1) * (document.body.scrollHeight - innerHeight), behavior: 'smooth' }); }
-STATIONS.forEach((s, i) => { const b = document.createElement('button'); b.title = s.name; b.innerHTML = '<span class="dot-name">' + (i + 1) + '. ' + s.name + '</span>'; b.addEventListener('click', () => scrollToStation(i)); dotnav.appendChild(b); });
+const stlistEl = document.getElementById('stlist');
+let scrollAnimId = 0;
+function scrollToStation(i) {   // consistent eased glide (native smooth-scroll duration is engine-dependent)
+  const top = i / (N - 1) * (document.body.scrollHeight - innerHeight);
+  if (REDUCE) { scrollTo(0, top); return; }
+  const from = scrollY, d = top - from; if (Math.abs(d) < 2) { scrollTo(0, top); return; }
+  const dur = clamp(560 + 300 * Math.abs(d) / innerHeight, 650, 1500), t0 = performance.now(), id = ++scrollAnimId;
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  document.documentElement.style.scrollSnapType = 'none';   // proximity snap would coerce every written frame and stair-step the glide
+  (function step() {
+    if (id !== scrollAnimId) { document.documentElement.style.scrollSnapType = ''; return; }   // cancelled by user input
+    const t = clamp((performance.now() - t0) / dur, 0, 1); scrollTo(0, from + d * ease(t));
+    if (t < 1) requestAnimationFrame(step); else document.documentElement.style.scrollSnapType = '';
+  })();
+}
+STATIONS.forEach((s, i) => {
+  const b = document.createElement('button'); b.setAttribute('aria-label', s.name); b.innerHTML = '<span class="dot-name">' + (i + 1) + '. ' + s.name + '</span>'; b.addEventListener('click', () => scrollToStation(i)); dotnav.appendChild(b);
+  const l = document.createElement('button'); l.textContent = String(i + 1).padStart(2, '0') + '  ' + s.name; l.addEventListener('click', e => { e.stopPropagation(); stlistEl.classList.remove('show'); scrollToStation(i); }); stlistEl.appendChild(l);
+});
+document.getElementById('station').addEventListener('click', () => { if (innerWidth <= 640) stlistEl.classList.toggle('show'); });
 // demo flight (auto fly-through everything, then back to the beginning)
 // demo flight: continuous cinematic camera (fly + zoom-in dwell at each world, forward through all)
 let demoActive = false, demoStart = 0; const DWELL = 1600, TRAVEL = 2300;
-function stopTour() { const btn = document.getElementById('tour'); if (!demoActive) { btn.classList.remove('on'); return; } demoActive = false; btn.classList.remove('on'); const cur = clamp(Math.round(curStation < 0 ? 0 : curStation), 0, N - 1); scrollTo(0, cur / (N - 1) * (document.body.scrollHeight - innerHeight)); }
+function stopTour(instant) {
+  const btn = document.getElementById('tour'); demoEnding = false;
+  if (instant) {   // hard reset only when handing off to the story flight; user interrupts ease out in animate()
+    camera.up.set(0, 1, 0); rollCur = 0; camera.fov = BF(); camera.updateProjectionMatrix();
+    if (demoStreaks) { demoStreaks.visible = false; demoStreaks.material.opacity = 0; }
+  }
+  if (!demoActive) { btn.classList.remove('on'); return; }
+  demoActive = false; btn.classList.remove('on');
+  const cur = clamp(Math.round(curStation < 0 ? 0 : curStation), 0, N - 1); scrollTo(0, cur / (N - 1) * (document.body.scrollHeight - innerHeight));
+}
 function startTour() { if (demoActive) { stopTour(); return; } demoActive = true; document.getElementById('tour').classList.add('on'); demoStart = performance.now(); }
+// ---- cinematic demo camera state ----
+const demoPos = new THREE.Vector3(), demoTgt = new THREE.Vector3(); let demoRoll = 0, demoFov = 42, demoEnding = false, rollCur = 0;
+const _up0 = new THREE.Vector3(0, 1, 0);
+function camOf(st, fit) { return st.camTarget.clone().add(st.camPos.clone().sub(st.camTarget).multiplyScalar(fit)); }   // scale the OFFSET, like the scroll path
+function orbitDwell(st, p, fit) {   // slow arc around the world; returns to the plain pose at p=0 and p=1 so it joins travel seamlessly
+  const tgt = st.camTarget.clone(), off = camOf(st, fit).sub(tgt), s = Math.sin(p * Math.PI);
+  off.applyAxisAngle(_up0, 0.2 * s).multiplyScalar(1 - 0.07 * s);
+  demoPos.copy(tgt).add(off); demoPos.y += 0.16 * s;
+  demoTgt.copy(tgt); demoRoll = 0; demoFov = BF();
+}
+function travelArc(a, b, e, fit) {   // lifted bezier swoop from world a to world b
+  const A = camOf(a, fit), B = camOf(b, fit), mid = A.clone().add(B).multiplyScalar(0.5);
+  mid.y += 3.6; mid.z += 4.4; const it = 1 - e;
+  demoPos.set(it * it * A.x + 2 * it * e * mid.x + e * e * B.x, it * it * A.y + 2 * it * e * mid.y + e * e * B.y, it * it * A.z + 2 * it * e * mid.z + e * e * B.z);
+  demoTgt.lerpVectors(a.camTarget, b.camTarget, e);
+  demoRoll = clamp((B.x - A.x) * 0.012, -0.35, 0.35) * Math.sin(e * Math.PI);
+  demoFov = BF() + 7 * Math.sin(e * Math.PI);
+}
 document.getElementById('tour').addEventListener('click', startTour);
-addEventListener('wheel', () => { earthIntro = false; if (demoActive) stopTour(); }, { passive: true });
+addEventListener('wheel', e => { earthIntro = false; scrollAnimId++; if (demoActive) stopTour(); if (storyMode === 'idle' && !storyCards.some(c => c.focus > 0)) { const dy = e.deltaMode === 1 ? e.deltaY * 33 : e.deltaMode === 2 ? e.deltaY * innerHeight : e.deltaY; storyScroll += dy * 0.012; storyScrollV = dy * 0.004; } }, { passive: true });
 
 const elDs = document.getElementById('ds'), elSex = document.getElementById('csex'), elAux = document.getElementById('aux'), elTimeline = document.getElementById('timeline');
 function onStation(i) {
   const s = STATIONS[i]; selected = null;
   document.getElementById('st-idx').textContent = String(i + 1).padStart(2, '0') + ' / ' + String(N).padStart(2, '0');
   document.getElementById('st-name').textContent = s.name;
-  const lg = document.getElementById('legend'); lg.innerHTML = s.cap; lg.style.animation = 'none'; void lg.offsetWidth; lg.style.animation = 'fadein .6s ease';
+  document.getElementById('st-cap').innerHTML = s.cap;
+  // choreographed arrival: title first, caption a beat later
+  const stEl = document.getElementById('station'); stEl.style.animation = 'none'; void stEl.offsetWidth; stEl.style.animation = 'fadein .5s cubic-bezier(.16,1,.3,1)';
+  const lg = document.getElementById('legend'); lg.innerHTML = s.cap; lg.style.animation = 'none'; void lg.offsetWidth; lg.style.animation = 'fadein .55s cubic-bezier(.16,1,.3,1) .08s both';
   document.getElementById('yourdata').classList.toggle('show', false);
   dotnav.querySelectorAll('button').forEach((b, j) => b.classList.toggle('on', j === i));
+  stlistEl.querySelectorAll('button').forEach((b, j) => b.classList.toggle('on', j === i));
   elDs.style.display = s.pop ? '' : 'none';
   elSex.style.display = s.csex ? '' : 'none';
   elTimeline.style.display = s.time ? '' : 'none';
@@ -590,12 +910,16 @@ let down = null, dragging = false, last = null, hovered = null, hoverT = 0, sele
 function setNdc(e) { const r = canvas.getBoundingClientRect(); ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); }
 function pick(e) { setNdc(e); ray.setFromCamera(ndc, camera); const h = ray.intersectObjects(STATIONS[Math.max(0, curStation)].picks(), false); return h.length ? h[0].object : null; }
 function setHover(m) { if (hovered && hovered !== m && hovered !== (selected && selected.mesh)) hovered.material = hovered.userData.mat0; if (m && m !== (selected && selected.mesh)) m.material = hiMat; hovered = m; }
-canvas.addEventListener('pointerdown', e => { earthIntro = false; if (demoActive) stopTour(); down = { x: e.clientX, y: e.clientY, touch: e.pointerType === 'touch' }; last = { x: e.clientX, y: e.clientY }; dragging = false; });
+canvas.addEventListener('pointerdown', e => { earthIntro = false; scrollAnimId++; if (demoActive) stopTour(); if (storyMode) storyScrollV = 0; down = { x: e.clientX, y: e.clientY, touch: e.pointerType === 'touch', axis: null }; last = { x: e.clientX, y: e.clientY }; dragging = false; });
+addEventListener('pointercancel', () => { down = null; dragging = false; });   // browser claimed the gesture (iOS scroll) — keep state clean
 canvas.addEventListener('pointermove', e => {
   if (down) {
     if (Math.abs(e.clientX - down.x) > 4 || Math.abs(e.clientY - down.y) > 4) dragging = true;
-    if (storyMode === 'idle') { galGroup.rotation.y = clamp(galGroup.rotation.y + (e.clientX - last.x) * 0.004, -0.7, 0.7); galGroup.rotation.x = clamp(galGroup.rotation.x + (e.clientY - last.y) * 0.004, -0.38, 0.38); last = { x: e.clientX, y: e.clientY }; return; }
-    if (down.touch) return;   // on touch, let the page scroll (travel); don't rotate
+    if (storyMode === 'idle') { if (!storyCards.some(c => c.focus > 0)) { const dy = (e.clientY - last.y) * 0.02; storyScroll -= dy; storyScrollV = -dy; } last = { x: e.clientX, y: e.clientY }; return; }
+    if (down.touch) {   // touch: horizontal drags spin the world, vertical drags scroll the journey (touch-action: pan-y)
+      if (!down.axis) { const adx = Math.abs(e.clientX - down.x), ady = Math.abs(e.clientY - down.y); if (adx > 6 || ady > 6) down.axis = adx > ady ? 'h' : 'v'; }
+      if (down.axis !== 'h') { last = { x: e.clientX, y: e.clientY }; return; }
+    }
     const sp = STATIONS[Math.max(0, curStation)].spin; sp.rotation.y += (e.clientX - last.x) * 0.005; sp.rotation.x = clamp(sp.rotation.x + (e.clientY - last.y) * 0.005, -1.2, 1.2); last = { x: e.clientX, y: e.clientY }; return;
   }
   if (storyMode) { if (storyMode === 'idle') { setNdc(e); ray.setFromCamera(ndc, camera); canvas.style.cursor = ray.intersectObjects(storyPick, false).length ? 'pointer' : ''; } return; }
@@ -606,7 +930,7 @@ canvas.addEventListener('pointermove', e => {
 });
 addEventListener('pointerup', e => {
   const click = down && !dragging; down = null; if (!click) return;
-  if (storyMode) { if (storyMode === 'idle') { setNdc(e); ray.setFromCamera(ndc, camera); const h = ray.intersectObjects(storyPick, false); if (h.length) { const card = h[0].object.userData.card; if (card.kind === 'final') qov.classList.add('show'); else { const w = card.focus; storyCards.forEach(c => { if (c !== card) c.focus = 0; }); card.focus = w === 0 ? 1 : w === 1 ? 2 : 0; } } else storyCards.forEach(c => c.focus = 0); storyCards.forEach(c => setCardHi(c, c.focus > 0)); } return; }
+  if (storyMode) { if (storyMode === 'idle') { setNdc(e); ray.setFromCamera(ndc, camera); const h = ray.intersectObjects(storyPick, false); if (h.length) { const card = h[0].object.userData.card; if (card.kind === 'final') openQuote(); else { const w = card.focus; storyCards.forEach(c => { if (c !== card) c.focus = 0; }); card.focus = w === 0 ? 1 : w === 1 ? 2 : 0; } } else storyCards.forEach(c => c.focus = 0); storyCards.forEach(c => setCardHi(c, c.focus > 0)); document.getElementById('story-hud').classList.toggle('focused', storyCards.some(c => c.focus > 0)); } return; }
   const m = pick(e);
   if (m && m.userData.url) { open(m.userData.url, '_blank'); return; }
   if (m && m.userData.tip) { if (selected && selected.mesh) selected.mesh.material = selected.mesh.userData.mat0; selected = { mesh: m, tip: m.userData.tip }; m.material = hiMat; showInfo(m.userData.tip()); }
@@ -629,18 +953,30 @@ function stop() { if (timer) { clearInterval(timer); timer = null; } playBtn.inn
 function play() { earthIntro = false; if (timer) return stop(); playBtn.innerHTML = '&#10073;&#10073;'; timer = setInterval(() => { const s = STATIONS[Math.max(0, curStation)]; const K = s.spin === dietSpin ? DIET.yearsF.length : s.spin === cancerSpin ? CAN.years.length : OB.layers[pop].years.length; setTime(tNorm >= 0.999 ? 0 : Math.min(1, tNorm + 1 / (K - 1))); }, 520); }
 playBtn.addEventListener('click', play);
 
-// quote overlay
+// quote overlay — animated open/close, scroll lock, Escape
 const qov = document.getElementById('quote-overlay');
-document.getElementById('open-quote').addEventListener('click', () => qov.classList.add('show'));
-document.getElementById('yd-cta').addEventListener('click', () => qov.classList.add('show'));
-document.getElementById('collab-cta').addEventListener('click', () => { location.href = 'mailto:Bookhaali@gmail.com?subject=' + encodeURIComponent('Research collaboration') + '&body=' + encodeURIComponent('Topic (obesity / early-onset cancer / diet / NCDs / review):\n\nA bit about your project:'); });
+function openQuote() { qov.classList.add('show'); if (!document.body.classList.contains('story-on')) document.body.style.overflow = 'hidden'; }
+function closeQuote() { qov.classList.remove('show'); if (!document.body.classList.contains('story-on')) document.body.style.overflow = ''; }
+document.getElementById('open-quote').addEventListener('click', openQuote);
+document.getElementById('yd-cta').addEventListener('click', openQuote);
+addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (qov.classList.contains('show')) { closeQuote(); return; }
+  if (demoActive) { stopTour(); return; }
+  if (storyMode === 'idle') returnFromStory();
+});
+document.getElementById('q-copy').addEventListener('click', e => { const b = e.currentTarget; const done = () => { b.textContent = 'Copied'; setTimeout(() => { b.textContent = 'Copy email'; }, 1600); }; if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText('bookhaali@gmail.com').then(done, done); else done(); });
+document.getElementById('collab-cta').addEventListener('click', () => { location.href = 'mailto:bookhaali@gmail.com?subject=' + encodeURIComponent('Research collaboration') + '&body=' + encodeURIComponent('Topic (obesity / early-onset cancer / diet / NCDs / review):\n\nA bit about your project:'); });
 let mStudies = 10;
 document.querySelectorAll('#mchips .mchip').forEach(b => b.addEventListener('click', () => { document.querySelectorAll('#mchips .mchip').forEach(x => x.classList.toggle('on', x === b)); gMethod = b.dataset.m; document.getElementById('mstudies').style.display = gMethod === 'meta' ? '' : 'none'; drawCollab(mStudies); }));
 document.getElementById('mstudies').addEventListener('input', e => { mStudies = +e.target.value; if (gMethod === 'meta') drawCollab(mStudies); });
 let hintHidden = false;
-addEventListener('scroll', () => { if (!hintHidden && scrollY > 40) { hintHidden = true; const h = document.querySelector('.hint'); if (h) { h.style.transition = 'opacity .6s'; h.style.opacity = '0'; } } }, { passive: true });
-document.getElementById('close-quote').addEventListener('click', () => qov.classList.remove('show'));
-qov.addEventListener('click', e => { if (e.target === qov) qov.classList.remove('show'); });
+addEventListener('scroll', () => {
+  if (stlistEl.classList.contains('show')) stlistEl.classList.remove('show');
+  if (!hintHidden && scrollY > 40) { hintHidden = true; const h = document.querySelector('.hint'); if (h) { h.style.transition = 'opacity .6s'; h.style.opacity = '0'; } }
+}, { passive: true });
+document.getElementById('close-quote').addEventListener('click', closeQuote);
+qov.addEventListener('click', e => { if (e.target === qov) closeQuote(); });
 
 // ====================================================================
 // STORY GALAXY (seamless 3D flight into a gallery of floating, flippable figure cards)
@@ -715,16 +1051,17 @@ function drawRose(ctx, W, H) {
     const lr = RR + 44; ctx.fillStyle = SD_COL[c]; ctx.font = '500 19px JetBrains Mono'; ctx.textAlign = Math.cos(mid) < -0.3 ? 'right' : Math.cos(mid) > 0.3 ? 'left' : 'center'; ctx.fillText(SD_CATS[c], cx + Math.cos(mid) * lr, cy + Math.sin(mid) * lr + 5);
   }
 }
+const TAPW = matchMedia('(hover: none)').matches ? 'tap' : 'click';
 function drawSlogan(ctx, W, H) {
   ctx.textAlign = 'center'; ctx.fillStyle = '#ECEBE4'; ctx.font = '700 58px JetBrains Mono';
-  ctx.fillText('Now imagine what', W / 2, H * 0.32); ctx.fillText('I could do with', W / 2, H * 0.32 + 74);
+  ctx.fillText('Now imagine what', W / 2, H * 0.32); ctx.fillText("I'll do with", W / 2, H * 0.32 + 74);
   ctx.fillStyle = '#8DB0E4'; ctx.fillText('your data.', W / 2, H * 0.32 + 152);
-  ctx.fillStyle = '#9C9B91'; ctx.font = '400 32px JetBrains Mono'; ctx.fillText('tap to start your project', W / 2, H * 0.80); ctx.textAlign = 'left';
+  ctx.fillStyle = '#9C9B91'; ctx.font = '400 32px JetBrains Mono'; ctx.fillText(TAPW + ' to start a project', W / 2, H * 0.80); ctx.textAlign = 'left';
 }
 function drawCardBack(ctx, W, H, title, story) {
   ctx.textAlign = 'left'; ctx.fillStyle = '#8DB0E4'; ctx.font = '700 50px JetBrains Mono'; const ty = wrapText(ctx, title, 100, 170, W - 200, 62);
   ctx.fillStyle = '#C9C8C0'; ctx.font = '400 36px JetBrains Mono'; wrapText(ctx, story, 100, ty + 84, W - 200, 56);
-  ctx.fillStyle = '#6E6D64'; ctx.font = '400 28px JetBrains Mono'; ctx.fillText('click to flip back', 100, H - 76);
+  ctx.fillStyle = '#6E6D64'; ctx.font = '400 28px JetBrains Mono'; ctx.fillText(TAPW + ' to flip back', 100, H - 76);
 }
 function heatColor(t) { const A = [16, 42, 67], B = [111, 177, 224], C = [232, 116, 59]; let r, g, b; if (t < 0.5) { const u = t / 0.5; r = A[0] + (B[0] - A[0]) * u; g = A[1] + (B[1] - A[1]) * u; b = A[2] + (B[2] - A[2]) * u; } else { const u = (t - 0.5) / 0.5; r = B[0] + (C[0] - B[0]) * u; g = B[1] + (C[1] - B[1]) * u; b = B[2] + (C[2] - B[2]) * u; } return 'rgb(' + (r | 0) + ',' + (g | 0) + ',' + (b | 0) + ')'; }
 function drawHeat(ctx, W, H) {
@@ -769,61 +1106,76 @@ const CARD_GEO = new THREE.PlaneGeometry(3.0, 1.8);
 const GALP = new THREE.Vector3(0, 0, -640);
 const galGroup = new THREE.Group(); galGroup.position.copy(GALP); galGroup.visible = false; scene.add(galGroup);
 const SMRING = innerWidth / innerHeight < 0.95; const RX = SMRING ? 4.7 : 7.4, RY = SMRING ? 5.6 : 4.3;
-(function () { const n = 1100, pos = new Float32Array(n * 3), col = new Float32Array(n * 3), c1 = new THREE.Color(0xF5E1C2), c2 = new THREE.Color(0x8DB0E4); for (let i = 0; i < n; i++) { const t = Math.pow(Math.random(), 0.6), arm = Math.floor(Math.random() * 2), ang = t * 7 + arm * Math.PI + (Math.random() - 0.5) * 0.55, rad = t * 44; pos[i * 3] = Math.cos(ang) * rad; pos[i * 3 + 1] = Math.sin(ang) * rad * 0.62; pos[i * 3 + 2] = -30 + (Math.random() - 0.5) * 5; const cc = c1.clone().lerp(c2, t); col[i * 3] = cc.r; col[i * 3 + 1] = cc.g; col[i * 3 + 2] = cc.b; } const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3)); const gs = new THREE.Points(g, new THREE.PointsMaterial({ size: 0.55, vertexColors: true, transparent: true, opacity: 0.85, depthWrite: false, blending: THREE.AdditiveBlending })); galGroup.add(gs); galGroup.userData.spin = gs; })();
-const storyPlanet = new THREE.Mesh(new THREE.SphereGeometry(3.0, 48, 48), new THREE.MeshStandardMaterial({ color: 0x3f7e72, roughness: 0.85, metalness: 0.1, emissive: 0x16302a, emissiveIntensity: 0.35 })); storyPlanet.position.set(-13, 6.5, -22); galGroup.add(storyPlanet);
-const storyRing = new THREE.Mesh(new THREE.RingGeometry(3.7, 5.0, 64), new THREE.MeshBasicMaterial({ color: 0x9ec0ee, transparent: true, opacity: 0.16, side: THREE.DoubleSide })); storyRing.position.copy(storyPlanet.position); storyRing.rotation.set(1.15, 0.3, 0); galGroup.add(storyRing);
-const storyMoon = new THREE.Mesh(new THREE.SphereGeometry(0.5, 24, 24), new THREE.MeshStandardMaterial({ color: 0xc8c4bc, roughness: 1 })); galGroup.add(storyMoon); let storyMoonA = 0;
-const corridor = (function () { const n = 1500, g = new THREE.BufferGeometry(), pos = new Float32Array(n * 6); for (let i = 0; i < n; i++) { const x = (Math.random() - 0.5) * 86, y = (Math.random() - 0.5) * 60, z = -195 - Math.random() * 460, len = 2.5 + Math.random() * 6; pos[i * 6] = x; pos[i * 6 + 1] = y; pos[i * 6 + 2] = z; pos[i * 6 + 3] = x; pos[i * 6 + 4] = y; pos[i * 6 + 5] = z + len; } g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); const ls = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0x9ec0ee, transparent: true, opacity: 0 })); ls.visible = false; scene.add(ls); return ls; })();
+const solarPlanets = []; let heroPlanet = null;
+(function buildStoryWorld() {
+  const LAND = !SMRING;
+  // faint distant galaxy + a couple of far planets, off to the side, for depth (we flew INTO a galaxy)
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: nebulaTexture(0x3E5C8E), transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })); halo.scale.set(74, 54, 1); halo.position.set(LAND ? 18 : -14, LAND ? 12 : 17, -64); galGroup.add(halo);
+  [{ x: 21, y: -13, z: -50, r: 1.4, c: 0x9B8DE4 }, { x: 25, y: 15, z: -58, r: 1.1, c: 0x6FC8A3 }].forEach(d => { const g = makePlanet(galGroup, { x: d.x, y: d.y, z: d.z, r: d.r, color: d.c, glow: d.c, glowI: 0.6 }); g.traverse(o => { if (o.material) { o.material.fog = false; o.material.needsUpdate = true; } }); });
+  // the hero: a big closeup planet beside the cards (right on wide screens, top on tall ones)
+  const hp = LAND ? new THREE.Vector3(13.5, -0.3, -3) : new THREE.Vector3(0.5, 11.5, -3), hr = LAND ? 6.8 : 5.2;
+  heroPlanet = makePlanet(galGroup, { x: hp.x, y: hp.y, z: hp.z, r: hr, color: 0x35617e, glow: 0x6FB1E0, glowI: 1.0, ring: 0x9ec0ee, moons: 0 });
+  heroPlanet.traverse(o => { if (o.material) { o.material.fog = false; o.material.needsUpdate = true; } });
+  galGroup.userData.hero = heroPlanet.userData.spin;
+  galGroup.add(new THREE.PointLight(0xCFE2F6, 2.6, 260).translateX(hp.x - 11).translateY(hp.y + 8).translateZ(hp.z + 15));
+  galGroup.add(new THREE.PointLight(0x46659a, 0.8, 240).translateX(hp.x + 9).translateY(hp.y - 4).translateZ(hp.z + 6));
+})();;
+const corridor = (function () { const n = 2300, g = new THREE.BufferGeometry(), pos = new Float32Array(n * 6); for (let i = 0; i < n; i++) { const x = (Math.random() - 0.5) * 92, y = (Math.random() - 0.5) * 64, z = -195 - Math.random() * 470, len = 4 + Math.random() * 12; pos[i * 6] = x; pos[i * 6 + 1] = y; pos[i * 6 + 2] = z; pos[i * 6 + 3] = x; pos[i * 6 + 4] = y; pos[i * 6 + 5] = z + len; } g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); const ls = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0x9ec0ee, transparent: true, opacity: 0 })); ls.visible = false; scene.add(ls); return ls; })();
+// speed streaks for the cinematic flight (shown only while travelling)
+const demoStreaks = (function () { const n = 900, g = new THREE.BufferGeometry(), pos = new Float32Array(n * 6); for (let i = 0; i < n; i++) { const x = (Math.random() - 0.5) * 70, y = (Math.random() - 0.5) * 44, z = 6 - Math.random() * 300, len = 1.4 + Math.random() * 3.4; pos[i * 6] = x; pos[i * 6 + 1] = y; pos[i * 6 + 2] = z; pos[i * 6 + 3] = x; pos[i * 6 + 4] = y; pos[i * 6 + 5] = z + len; } g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); const ls = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0xAEC9F2, transparent: true, opacity: 0, fog: false })); ls.visible = false; scene.add(ls); return ls; })();
 const storyCards = [], storyPick = [];
 const CARD_LO = 0.72, CARD_HI = 2.4;
 function makeFigCard(frontDraw, title, story) {
   const flip = new THREE.Group(), backDraw = c => drawCardBack(c, 1500, 900, title, story);
-  const fm = new THREE.Mesh(CARD_GEO, new THREE.MeshBasicMaterial({ map: cardCanvas(frontDraw, CARD_LO), transparent: true }));
-  const bm = new THREE.Mesh(CARD_GEO, new THREE.MeshBasicMaterial({ map: cardCanvas(backDraw, CARD_LO), transparent: true })); bm.rotation.y = Math.PI;
+  const fm = new THREE.Mesh(CARD_GEO, new THREE.MeshBasicMaterial({ map: cardCanvas(frontDraw, CARD_LO), transparent: true, fog: false }));
+  const bm = new THREE.Mesh(CARD_GEO, new THREE.MeshBasicMaterial({ map: cardCanvas(backDraw, CARD_LO), transparent: true, fog: false })); bm.rotation.y = Math.PI;
   flip.add(fm, bm);
   const card = { flip: flip, focus: 0, phase: Math.random() * 6.28, home: new THREE.Vector3(), kind: 'fig', homeScale: 1, cs: 1, frontDraw: frontDraw, backDraw: backDraw, fm: fm, bm: bm, hi: false };
   fm.userData.card = card; bm.userData.card = card; storyPick.push(fm, bm); return card;
 }
 function setCardHi(card, on) {
   if (card.kind === 'final' || on === card.hi) return; card.hi = on;
-  if (on) { card.loF = card.fm.material.map; card.loB = card.bm.material.map; card.fm.material.map = cardCanvas(card.frontDraw, CARD_HI); card.bm.material.map = cardCanvas(card.backDraw, CARD_HI); }
-  else { card.fm.material.map.dispose(); card.bm.material.map.dispose(); card.fm.material.map = card.loF; card.bm.material.map = card.loB; }
-  card.fm.material.needsUpdate = true; card.bm.material.needsUpdate = true;
+  if (on) {
+    card.loF = card.fm.material.map; card.loB = card.bm.material.map;
+    card.fm.material.map = cardCanvas(card.frontDraw, CARD_HI); card.fm.material.needsUpdate = true;
+    // stagger the second 4K texture off the click frame so opening a card never hitches
+    setTimeout(() => { if (card.hi && card.bm.material.map === card.loB) { card.bm.material.map = cardCanvas(card.backDraw, CARD_HI); card.bm.material.needsUpdate = true; } }, 120);
+  } else {
+    if (card.fm.material.map !== card.loF) card.fm.material.map.dispose();
+    if (card.bm.material.map !== card.loB) card.bm.material.map.dispose();
+    card.fm.material.map = card.loF; card.bm.material.map = card.loB;
+    card.fm.material.needsUpdate = true; card.bm.material.needsUpdate = true;
+  }
 }
+const COL_X = SMRING ? 0 : -6.6, COL_TOP = SMRING ? 2.0 : 3.8, CARD_GAP = 2.75;
+let storyScroll = 0, storyScrollV = 0;
 const FIGS = [
-  [drawBarS, 'Start simple.', 'This is just today’s plate as bars. Refined grains lead, sugary drinks have caught right up. Sometimes the clearest story is the plainest one.'],
-  [drawStream, 'All of it, flowing.', 'Now every food is a flowing ribbon across 35 years. Watch the pink band of sugary drinks swell while the greens quietly thin out.'],
-  [drawDonut, 'The whole plate.', 'The same year as one circle, so you can feel each food as a slice of the whole. Perfect when proportion is the point.'],
-  [drawBump, 'The overtaking.', 'Here I rank them every single year. You can literally watch sugary drinks climb past whole grains and keep on rising.'],
-  [drawWaffle, 'A hundred plates.', 'Picture a hundred plates of what the world eats today. Each little square is one. The sugary and refined ones now crowd the grid.'],
-  [drawTraj, 'A journey.', 'I plot the healthy share against the unhealthy one, year by year. Follow the dot and you feel the world drift the wrong way.'],
-  [drawLollipop, 'Then and now.', 'Each line runs from 1990 to today. Slide right and the food grew heavier on the plate, slide left and it got lighter. Quick and honest.'],
-  [drawRadar, 'Every food at once.', 'The whole diet on six spokes. The blue outline is 1990, the warm shape is now. You can watch it bulge toward the heavy foods.'],
-  [drawHeat, 'As heat.', 'Every square is one food in one year, and brighter means a bigger share. Your eye lands straight on the hot corner, sugary drinks, lately.'],
-  [drawRose, 'In the round.', 'The same numbers as a bloom. Dashed is 1990, solid is today. You can see the balance tip as the warm wedges push outward.']
+  [drawBarS, 'Today, plainly.', 'Just today’s plate as bars. Refined grains lead and sugary drinks have caught right up. The plainest read is often the clearest.'],
+  [drawStream, 'All of it, flowing.', 'Every food becomes a flowing ribbon across 35 years. The pink band of sugary drinks swells while the greens quietly thin out.'],
+  [drawDonut, 'The whole plate.', 'One year as a single circle, so you feel each food as a slice of the whole. Best when proportion is the point.'],
+  [drawBump, 'The overtaking.', 'Rank the foods every year and the lines start to cross. You can watch sugary drinks climb past whole grains and keep rising.'],
+  [drawWaffle, 'A hundred plates.', 'Picture a hundred plates of what the world eats today. Each square is one. The sugary and refined ones now crowd the grid.'],
+  [drawTraj, 'A journey.', 'Plot the healthy share against the unhealthy one, year by year. Follow the dot and you feel the world drift the wrong way.'],
+  [drawLollipop, 'Then and now.', 'Each line runs from 1990 to today. Slide right and the food grew heavier on the plate, slide left and it got lighter.'],
+  [drawRadar, 'Every food at once.', 'The whole diet on six spokes. The blue outline is 1990, the warm shape is now. Watch it bulge toward the heavy foods.'],
+  [drawHeat, 'As heat.', 'Every square is one food in one year, brighter means a bigger share. Your eye lands straight on the hot corner.'],
+  [drawRose, 'In the round.', 'The same numbers as a bloom. Dashed is 1990, solid is today. You can see the balance tip as the warm wedges push out.']
 ];
-FIGS.forEach((d, i) => { const card = makeFigCard(d[0], d[1], d[2]); const a = -Math.PI / 2 + i / FIGS.length * 6.2832; card.home.set(Math.cos(a) * RX, Math.sin(a) * RY, (i % 2 ? 0.7 : -0.7)); card.flip.position.copy(card.home); galGroup.add(card.flip); storyCards.push(card); });
-const finalCard = makeFigCard(drawSlogan, '', ''); finalCard.kind = 'final'; finalCard.homeScale = 1.3; finalCard.cs = 1.3; finalCard.home.set(0, 0, 1.2); finalCard.flip.position.copy(finalCard.home); finalCard.flip.scale.setScalar(1.3); finalCard.fm.material.map = cardCanvas(drawSlogan, 1.6); finalCard.fm.material.needsUpdate = true; galGroup.add(finalCard.flip); storyCards.push(finalCard);
+FIGS.forEach((d, i) => { const card = makeFigCard(d[0], d[1], d[2]); card.idx = i + 1; card.home.set(COL_X, COL_TOP - card.idx * CARD_GAP, 0); card.flip.position.copy(card.home); galGroup.add(card.flip); storyCards.push(card); });
+const finalCard = makeFigCard(drawSlogan, '', ''); finalCard.kind = 'final'; finalCard.idx = 0; finalCard.home.set(COL_X, COL_TOP, 0); finalCard.flip.position.copy(finalCard.home); finalCard.fm.material.map = cardCanvas(drawSlogan, 1.6); finalCard.fm.material.needsUpdate = true; galGroup.add(finalCard.flip); storyCards.push(finalCard);
+const STORY_MAXSCROLL = (storyCards.length - 1) * CARD_GAP;
 // data constellation: light pulses flow from "your data" out to every story
-const conCenter = new THREE.Vector3(0, 0, 1.2); let storyParts = null;
-(function () {
-  const figs = storyCards.filter(c => c.kind === 'fig'), lp = new Float32Array(figs.length * 6);
-  figs.forEach((c, i) => { lp[i * 6] = conCenter.x; lp[i * 6 + 1] = conCenter.y; lp[i * 6 + 2] = conCenter.z; lp[i * 6 + 3] = c.home.x; lp[i * 6 + 4] = c.home.y; lp[i * 6 + 5] = c.home.z; });
-  const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.BufferAttribute(lp, 3));
-  galGroup.add(new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: 0x6FB1E0, transparent: true, opacity: 0.13, depthWrite: false })));
-  const PPL = 5, parts = []; figs.forEach(c => { for (let k = 0; k < PPL; k++) parts.push({ to: c.home, t: k / PPL }); });
-  const pg = new THREE.BufferGeometry(), pp = new Float32Array(parts.length * 3); pg.setAttribute('position', new THREE.BufferAttribute(pp, 3));
-  storyParts = { parts: parts, geo: pg, arr: pp };
-  galGroup.add(new THREE.Points(pg, new THREE.PointsMaterial({ color: 0xBCD4F5, size: 0.18, transparent: true, opacity: 0.92, depthWrite: false, blending: THREE.AdditiveBlending })));
-})();
+let storyParts = null;
 const GALVIEW = GALP.clone().add(new THREE.Vector3(0, 0, 17));
 const RETURN_DUR = 4600, RET_CP = new THREE.Vector3(50, 18, -80), STORY_ZERO = new THREE.Vector3(0, 0, 0);
-let storyMode = null, storyT0 = 0; const STORY_DUR = 4400, flightStart = new THREE.Vector3(), flightStartTgt = new THREE.Vector3();
+let storyMode = null, storyT0 = 0, storyReveal = 0; const STORY_DUR = 5200, flightStart = new THREE.Vector3(), flightStartTgt = new THREE.Vector3();
 function enterStory() {
   if (storyMode) return;
+  if (demoActive) stopTour(true);   // a manual story entry must cleanly terminate the tour, or it relaunches on return
   flightStart.copy(camera.position); flightStartTgt.copy(curTarget);
-  storyMode = 'in'; storyT0 = performance.now(); galGroup.visible = true; corridor.visible = true; corridor.material.opacity = 0; galGroup.rotation.set(0, 0, 0);
-  storyCards.forEach(c => { c.focus = 0; });
+  storyMode = 'in'; storyT0 = performance.now(); galGroup.visible = true; corridor.visible = true; corridor.material.opacity = 0; galGroup.rotation.set(0, 0, 0); storyScroll = 0; storyScrollV = 0; document.body.style.overflow = 'hidden';
+  storyReveal = 0;
+  storyCards.forEach(c => { c.focus = 0; c.cs = 0.0001; c.flip.scale.setScalar(0.0001); c.fm.material.opacity = 0; c.bm.material.opacity = 0; });   // hidden until we fly in
   document.body.classList.add('story-on'); document.getElementById('story-hud').classList.add('show');
 }
 function returnFromStory() {
@@ -833,11 +1185,12 @@ function returnFromStory() {
 }
 document.getElementById('story-trigger').addEventListener('click', enterStory);
 document.getElementById('sh-return').addEventListener('click', returnFromStory);
-document.getElementById('sh-start').addEventListener('click', () => qov.classList.add('show'));
+document.getElementById('sh-start').addEventListener('click', openQuote);
 
 const BASE = { '1': [400, 900], '2': [1500, 4000], '3': [3000, 8000], '5': [12000, 40000], '6': [20000, 60000] }; // NT$, Taiwan market
 const INC = { '1': 'One submission-ready figure, one revision.', '2': 'Full analysis, clean code, a results summary.', '3': 'Analysis plus every figure, two revisions.', '5': 'Cleaning through to a manuscript-ready study.', '6': 'A custom interactive dashboard like this one.' };
-const qSel = { need: '1', data: '1', time: '1', cur: 'ntd' };
+const TURN = { '1': [2, 4], '2': [4, 9], '3': [5, 12], '5': [14, 35], '6': [12, 30] };   // days
+const qSel = { need: '3', data: '1', time: '1.15', cur: 'usd' };   // anchor on the real typical engagement, not the cheapest item
 function quoteUpdate() {
   const b = BASE[qSel.need], mult = parseFloat(qSel.data) * parseFloat(qSel.time);
   const lo = b[0] * mult, hi = b[1] * mult; let sym, lov, hiv;
@@ -845,7 +1198,9 @@ function quoteUpdate() {
   else { sym = 'NT$'; lov = Math.round(lo / 100) * 100; hiv = Math.round(hi / 100) * 100; }
   document.getElementById('q-num').textContent = sym + lov.toLocaleString() + ' - ' + hiv.toLocaleString();
   document.getElementById('q-inc').textContent = INC[qSel.need];
-  document.getElementById('q-cta').href = 'mailto:Bookhaali@gmail.com?subject=' + encodeURIComponent('Project scope inquiry') + '&body=' + encodeURIComponent('Need: ' + document.querySelector('[data-q=need] .opt.on').textContent + '\nData: ' + document.querySelector('[data-q=data] .opt.on').textContent + '\nTimeline: ' + document.querySelector('[data-q=time] .opt.on').textContent + '\n\nProject details:');
+  const td = TURN[qSel.need], tf = qSel.time === '1.4' ? 0.6 : qSel.time === '1.15' ? 0.85 : 1;
+  document.getElementById('q-turn').textContent = 'Typical turnaround ' + Math.max(1, Math.round(td[0] * tf)) + ' to ' + Math.round(td[1] * tf) + ' days';
+  document.getElementById('q-cta').href = 'mailto:bookhaali@gmail.com?subject=' + encodeURIComponent('Project scope inquiry') + '&body=' + encodeURIComponent('Need: ' + document.querySelector('[data-q=need] .opt.on').textContent + '\nData: ' + document.querySelector('[data-q=data] .opt.on').textContent + '\nTimeline: ' + document.querySelector('[data-q=time] .opt.on').textContent + '\n\nProject details:');
 }
 document.querySelectorAll('.q').forEach(q => q.querySelectorAll('.opt').forEach(o => o.addEventListener('click', () => { q.querySelectorAll('.opt').forEach(x => x.classList.remove('on')); o.classList.add('on'); qSel[q.dataset.q] = o.dataset.v; quoteUpdate(); })));
 quoteUpdate();
@@ -856,6 +1211,20 @@ for (let i = 0; i < N; i++) { const d = document.createElement('div'); d.classNa
 
 // ---- init ----
 buildScatter(); buildSurface(); buildDiet(); buildCancer(); setTime(1); drawLag(); drawForecast(); drawCollab(META.length); drawStoryTable();
+document.getElementById('sh-hint').textContent = 'drag or scroll to browse. ' + TAPW + ' a figure to open it.';
+// pre-upload the heavy canvas textures so first arrival at a world doesn't hitch
+[lagPlane.tex, fcPlane.tex, forest.tex, funnel.tex, storyTablePlane.tex].forEach(t => renderer.initTexture(t));
+storyCards.forEach(c => { renderer.initTexture(c.fm.material.map); renderer.initTexture(c.bm.material.map); });
+// re-render canvas-baked text once the webfont is ready (otherwise 3D typography keeps the fallback font forever)
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => {
+  scene.traverse(o => { if (o.userData && o.userData.kind === 'label' && o.userData.set && o.userData.text) o.userData.set(o.userData.text); });
+  drawLag(); drawForecast(); drawCollab(mStudies); drawStoryTable();
+  storyCards.forEach(c => {
+    if (c.kind === 'final') { c.fm.material.map.dispose(); c.fm.material.map = cardCanvas(drawSlogan, 1.6); }
+    else if (!c.hi) { c.fm.material.map.dispose(); c.bm.material.map.dispose(); c.fm.material.map = cardCanvas(c.frontDraw, CARD_LO); c.bm.material.map = cardCanvas(c.backDraw, CARD_LO); }
+    c.fm.material.needsUpdate = true; c.bm.material.needsUpdate = true;
+  });
+});
 
 // ---- loop ----
 const scrollFrac = () => { const h = document.body.scrollHeight - innerHeight; return h > 0 ? clamp(scrollY / h, 0, 1) : 0; };
@@ -871,32 +1240,45 @@ function updateDataHint() {
 }
 function animate() {
   requestAnimationFrame(animate);
-  const fit = clamp(1.5 / Math.max(0.42, innerWidth / innerHeight), 1, 2.0);   // pull back on narrow/portrait screens
+  const nowT = performance.now(), dt = Math.min(0.1, Math.max(0.001, (nowT - _lastT) / 1000)); _lastT = nowT;
+  const K = k => 1 - Math.pow(1 - k, dt * 60);   // framerate-independent equivalent of a per-frame lerp factor
+  const PORT = innerWidth / innerHeight < 0.8;
+  const fit = clamp(1.5 / Math.max(0.42, innerWidth / innerHeight), 1, PORT ? 1.7 : 2.0);   // portrait: fill the screen instead of retreating
+  if (twinkleMat && !REDUCE) twinkleMat.uniforms.uT.value = nowT * 0.001;
+  if (!REDUCE) updateOrbiters(dt * 60);
   if (storyMode) {
     for (const g of WORLD_GROUPS) g.visible = false;
     galGroup.visible = true; corridor.visible = true;
-    const now = performance.now(), tms = now * 0.001, aspect = innerWidth / innerHeight, TAN = 0.3839, ringDist = Math.max((RX + 1.7) / (TAN * aspect), (RY + 1.1) / TAN, 15) * 1.06, focusZ = ringDist - Math.max(2.925 / (0.9 * TAN * aspect), 1.755 / (0.9 * TAN)), galView = GALVIEW.clone(); galView.z = GALP.z + ringDist;
-    if (storyMode === 'in') { const e = smooth(clamp((now - storyT0) / STORY_DUR, 0, 1)), it = 1 - e, cx = (flightStart.x + galView.x) / 2 - 50, cy = (flightStart.y + galView.y) / 2 + 20, cz = (flightStart.z + galView.z) / 2; camera.position.set(it * it * flightStart.x + 2 * it * e * cx + e * e * galView.x, it * it * flightStart.y + 2 * it * e * cy + e * e * galView.y, it * it * flightStart.z + 2 * it * e * cz + e * e * galView.z); curTarget.lerpVectors(flightStartTgt, GALP, e); corridor.material.opacity = Math.sin(e * Math.PI) * 0.95; if (e >= 1) storyMode = 'idle'; }
-    else if (storyMode === 'idle') { camera.position.lerp(galView, 0.05); curTarget.lerp(GALP, 0.05); corridor.material.opacity *= 0.9; }
-    else { const raw = clamp((now - storyT0) / RETURN_DUR, 0, 1), t = smooth(raw), it = 1 - t, ep = STATIONS[0].camPos.clone().multiplyScalar(fit); globePivot.visible = true; camera.position.set(it * it * flightStart.x + 2 * it * t * RET_CP.x + t * t * ep.x, it * it * flightStart.y + 2 * it * t * RET_CP.y + t * t * ep.y, it * it * flightStart.z + 2 * it * t * RET_CP.z + t * t * ep.z); curTarget.lerpVectors(flightStartTgt, STORY_ZERO, smooth(clamp(raw / 0.62, 0, 1))); corridor.material.opacity = Math.max(0, Math.sin(clamp(raw / 0.6, 0, 1) * Math.PI)) * 0.9; if (raw >= 1) { storyMode = null; galGroup.visible = false; corridor.visible = false; curStation = 0; onStation(0); document.body.classList.remove('story-on'); try { scrollTo(0, 0); } catch (er) {} } }
+    const now = performance.now(), tms = now * 0.001, aspect = innerWidth / innerHeight, TAN = 0.3839, ARRIVE = SMRING ? 23 : 17, focusZ = ARRIVE - Math.max(2.925 / (0.9 * TAN * aspect), 1.755 / (0.9 * TAN)), galView = GALVIEW.clone(); galView.z = GALP.z + ARRIVE;
+    if (storyMode === 'in') { const e = smooth(clamp((now - storyT0) / STORY_DUR, 0, 1)), it = 1 - e, cx = (flightStart.x + galView.x) / 2 - 16, cy = (flightStart.y + galView.y) / 2 + 11, cz = (flightStart.z + galView.z) / 2; camera.position.set(it * it * flightStart.x + 2 * it * e * cx + e * e * galView.x, it * it * flightStart.y + 2 * it * e * cy + e * e * galView.y, it * it * flightStart.z + 2 * it * e * cz + e * e * galView.z); curTarget.lerpVectors(flightStartTgt, GALP, e); corridor.material.opacity = Math.sin(e * Math.PI) * 1.05; galGroup.visible = e > 0.52; storyReveal = smooth(clamp((e - 0.66) / 0.34, 0, 1)); if (e >= 1) storyMode = 'idle'; }
+    else if (storyMode === 'idle') { camera.position.lerp(galView, K(0.05)); curTarget.lerp(GALP, K(0.05)); corridor.material.opacity *= Math.pow(0.9, dt * 60); storyReveal += (1 - storyReveal) * K(0.08); }
+    else { const raw = clamp((now - storyT0) / RETURN_DUR, 0, 1), t = smooth(raw), it = 1 - t, ep = STATIONS[0].camPos.clone().multiplyScalar(fit); globePivot.visible = true; globePivot.scale.setScalar(Math.max(0.001, 1 - storyReveal)); camera.position.set(it * it * flightStart.x + 2 * it * t * RET_CP.x + t * t * ep.x, it * it * flightStart.y + 2 * it * t * RET_CP.y + t * t * ep.y, it * it * flightStart.z + 2 * it * t * RET_CP.z + t * t * ep.z); curTarget.lerpVectors(flightStartTgt, STORY_ZERO, smooth(clamp(raw / 0.62, 0, 1))); corridor.material.opacity = Math.max(0, Math.sin(clamp(raw / 0.6, 0, 1) * Math.PI)) * 0.9; storyReveal = 1 - smooth(clamp(raw / 0.45, 0, 1)); if (raw >= 1) { storyMode = null; galGroup.visible = false; corridor.visible = false; curStation = 0; onStation(0); document.body.classList.remove('story-on'); document.body.style.overflow = ''; try { scrollTo(0, 0); } catch (er) {} } }
     camera.lookAt(curTarget);
     let anyFocus = false;
-    for (const c of storyCards) { const f = c.focus; if (f) anyFocus = true; const tx = f ? 0 : c.home.x, ty = f ? 0 : c.home.y + Math.sin(tms * 0.6 + c.phase) * 0.13, tz = f ? focusZ : c.home.z; c.flip.position.lerp(new THREE.Vector3(tx, ty, tz), 0.12); const ts = f ? 1.95 : c.homeScale; c.cs += (ts - c.cs) * 0.12; c.flip.scale.setScalar(c.cs); const tr = f === 2 ? Math.PI : 0; c.flip.rotation.y += (tr - c.flip.rotation.y) * 0.14; }
-    if (anyFocus) { galGroup.rotation.y += -galGroup.rotation.y * 0.1; galGroup.rotation.x += -galGroup.rotation.x * 0.1; }
-    storyPlanet.rotation.y += 0.0016; storyMoonA += 0.012; storyMoon.position.set(storyPlanet.position.x + Math.cos(storyMoonA) * 5.2, storyPlanet.position.y + Math.sin(storyMoonA) * 1.6, storyPlanet.position.z + Math.sin(storyMoonA) * 5.2);
-    if (storyParts) { const a = storyParts.arr, ps = storyParts.parts; for (let i = 0; i < ps.length; i++) { ps[i].t += 0.0045; if (ps[i].t > 1) ps[i].t -= 1; const tt = ps[i].t, to = ps[i].to; a[i * 3] = conCenter.x + (to.x - conCenter.x) * tt; a[i * 3 + 1] = conCenter.y + (to.y - conCenter.y) * tt; a[i * 3 + 2] = conCenter.z + (to.z - conCenter.z) * tt; } storyParts.geo.attributes.position.needsUpdate = true; }
-    if (galGroup.userData.spin) galGroup.userData.spin.rotation.z += 0.0003;
-    renderer.render(scene, camera); return;
+    for (const c of storyCards) { const f = c.focus; if (f) anyFocus = true; const colY = COL_TOP - c.idx * CARD_GAP + storyScroll; const tx = f ? 0 : COL_X, ty = f ? 0 : colY, tz = f ? focusZ : 0; c.flip.position.lerp(_v3s.set(tx, ty, tz), K(f ? 0.12 : 0.3)); const ts = (f ? 1.95 : 1) * storyReveal; c.cs += (ts - c.cs) * K(0.18); c.flip.scale.setScalar(Math.max(0.0001, c.cs)); c.fm.material.opacity = storyReveal; c.bm.material.opacity = storyReveal; const tr = f === 2 ? Math.PI : 0; c.flip.rotation.y += (tr - c.flip.rotation.y) * K(0.14); }
+    if (!down) storyScroll += storyScrollV * dt * 60; storyScrollV *= Math.pow(0.9, dt * 60); if (storyScroll < 0) { storyScroll += -storyScroll * K(0.2); if (!down) storyScrollV = 0; } else if (storyScroll > STORY_MAXSCROLL) { storyScroll += (STORY_MAXSCROLL - storyScroll) * K(0.2); if (!down) storyScrollV = 0; }
+    if (anyFocus) { galGroup.rotation.y += -galGroup.rotation.y * K(0.1); galGroup.rotation.x += -galGroup.rotation.x * K(0.1); }
+    if (galGroup.userData.hero && !REDUCE) galGroup.userData.hero.rotation.y += 0.0009 * dt * 60;
+    render(); return;
   }
   let focus, zoom = 1;
   if (introActive) focus = 0;
   else if (demoActive) {
     const beat = DWELL + TRAVEL, el = performance.now() - demoStart, idx = Math.floor(el / beat);
-    if (idx >= N - 1) { const dw = el - (N - 1) * beat; focus = N - 1; zoom = 1 - 0.18 * Math.sin(Math.PI * clamp(dw / DWELL, 0, 1)); if (dw > DWELL + 600) stopTour(); }
-    else { const ph = el - idx * beat; if (ph < DWELL) { focus = idx; zoom = 1 - 0.18 * Math.sin(Math.PI * (ph / DWELL)); } else focus = idx + smooth((ph - DWELL) / TRAVEL); }
+    if (idx >= N - 1) {
+      const dw = el - (N - 1) * beat; focus = N - 1; orbitDwell(STATIONS[N - 1], clamp(dw / DWELL, 0, 1), fit);
+      if (dw > DWELL + 500 && !demoEnding) { demoEnding = true; stopTour(true); enterStory(); }   // grand finale: swoop into the galaxy
+    } else {
+      const ph = el - idx * beat;
+      if (ph < DWELL) { focus = idx; orbitDwell(STATIONS[idx], ph / DWELL, fit); }
+      else { const e = smooth((ph - DWELL) / TRAVEL); focus = idx + e; travelArc(STATIONS[idx], STATIONS[idx + 1], e, fit); }
+    }
   }
   else focus = scrollFrac() * (N - 1);
-  for (let k = 0; k < WORLD_GROUPS.length; k++) WORLD_GROUPS[k].visible = Math.abs(focus - k) < 0.95;   // one world per beat (no bleed-through)
+  for (let k = 0; k < WORLD_GROUPS.length; k++) {   // one world per beat — grown in/out smoothly instead of popping at the boundary
+    const g = WORLD_GROUPS[k], d = Math.abs(focus - k); g.visible = d < 0.95;
+    if (g.visible) { const w = 1 - smooth(clamp((d - 0.6) / 0.35, 0, 1)); g.scale.setScalar(Math.max(0.001, w)); }
+  }
   moon.visible = focus < 1.8;
   if (introActive) {
     const t = Math.min(1, (performance.now() - introStart) / 3200), e = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
@@ -904,23 +1286,48 @@ function animate() {
     camera.position.lerpVectors(introFrom, end, e); camera.lookAt(0, 0, 0);
     if (t > 0.5) document.getElementById('intro').classList.add('gone');
     if (t >= 1 || scrollY > 12) { introActive = false; curTarget.copy(STATIONS[0].camTarget); curStation = 0; onStation(0); document.getElementById('intro').classList.add('gone'); startEarthIntro(); }
+  } else if (demoActive) {
+    camera.position.lerp(demoPos, K(0.16)); curTarget.lerp(demoTgt, K(0.16));
+    const fwd = demoTgt.clone().sub(camera.position).normalize();
+    rollCur = demoRoll;
+    camera.up.copy(_up0).applyAxisAngle(fwd, rollCur); camera.lookAt(curTarget);
+    if (Math.abs(camera.fov - demoFov) > 0.04) { camera.fov += (demoFov - camera.fov) * K(0.22); camera.updateProjectionMatrix(); }
+    demoStreaks.visible = true; demoStreaks.material.opacity += ((demoFov > BF() + 1 ? 0.45 : 0) - demoStreaks.material.opacity) * K(0.1);
+    const cs = Math.round(focus); if (cs !== curStation) { curStation = cs; onStation(cs); yearEl.textContent = yearLabel(); }
   } else {
-    const i = Math.min(N - 2, Math.max(0, Math.floor(focus))), e = demoActive ? (focus - i) : smooth(focus - i);
+    // ease out of an interrupted cinematic flight instead of snapping roll/FOV in one frame
+    if (Math.abs(rollCur) > 0.0006) {
+      rollCur += (0 - rollCur) * K(0.12);
+      const fwd = curTarget.clone().sub(camera.position).normalize();
+      camera.up.copy(_up0).applyAxisAngle(fwd, rollCur);
+    } else { rollCur = 0; camera.up.set(0, 1, 0); }
+    if (Math.abs(camera.fov - BF()) > 0.05) { camera.fov += (BF() - camera.fov) * K(0.15); camera.updateProjectionMatrix(); }
+    if (demoStreaks.visible) { demoStreaks.material.opacity *= Math.pow(0.85, dt * 60); if (demoStreaks.material.opacity < 0.01) { demoStreaks.visible = false; demoStreaks.material.opacity = 0; } }
+    const i = Math.min(N - 2, Math.max(0, Math.floor(focus))), e = smooth(focus - i);
     desiredTarget.lerpVectors(STATIONS[i].camTarget, STATIONS[i + 1].camTarget, e);
     desiredPos.lerpVectors(STATIONS[i].camPos, STATIONS[i + 1].camPos, e);
     const ff = fit * zoom; if (Math.abs(ff - 1) > 0.001) desiredPos.sub(desiredTarget).multiplyScalar(ff).add(desiredTarget);
-    const lp = demoActive ? 0.07 : 0.1;
-    camera.position.lerp(desiredPos, lp); curTarget.lerp(desiredTarget, lp); camera.lookAt(curTarget);
+    if (PORT) desiredTarget.y -= 0.55;   // sit the world above the bottom controls on phones
+    camera.position.lerp(desiredPos, K(REDUCE ? 0.3 : 0.1)); curTarget.lerp(desiredTarget, K(REDUCE ? 0.3 : 0.1)); camera.lookAt(curTarget);
     const cs = Math.round(focus); if (cs !== curStation) { curStation = cs; onStation(cs); yearEl.textContent = yearLabel(); }
   }
   if (earthIntro) { if (curStation !== 0 || performance.now() - earthIntroT0 > 5000) { earthIntro = false; if (curStation === 0) setTime(1); } else setTime(clamp((performance.now() - earthIntroT0 - 400) / 4200, 0, 1)); }
-  globe.rotation.y += 0.0006; aboutSpin.rotation.y += 0.0012; finalSpin.rotation.y += 0.0022; moon.rotation.y += 0.0008; rankSpin.rotation.y += 0.0014;
-  toolsGroup.rotation.y = Math.sin(performance.now() * 0.00045) * 0.13;
-  for (const m of spikes) { if (!m.visible) continue; const u = m.userData; u.cur += (u.target - u.cur) * 0.16; m.scale.y = u.cur; }
+  if (!REDUCE) {
+    const f60 = dt * 60;
+    globe.rotation.y += 0.0006 * f60; aboutSpin.rotation.y += 0.0012 * f60; finalSpin.rotation.y += 0.0022 * f60; moon.rotation.y += 0.0008 * f60; rankSpin.rotation.y += 0.0014 * f60;
+    regSpin.rotation.y += 0.0016 * f60; netSpin.rotation.y += 0.0011 * f60; dagSpin.rotation.y = Math.sin(nowT * 0.0003) * 0.18; updateNetPulse(f60);
+    toolsGroup.rotation.y = Math.sin(nowT * 0.00045) * 0.13;
+  }
+  for (const m of spikes) { if (!m.visible) continue; const u = m.userData; u.cur += (u.target - u.cur) * K(0.16); m.scale.y = u.cur; }
   if (hotSpike && globePivot.visible) { const b = hotSpike.position, len = Math.hypot(b.x, b.y, b.z), ux = b.x / len, uy = b.y / len, uz = b.z / len, h = hotSpike.userData.cur; hotMarker.position.set(b.x + ux * (h + 0.02), b.y + uy * (h + 0.02), b.z + uz * (h + 0.02)); hotMarker.scale.setScalar(1 + 0.4 * Math.sin(performance.now() * 0.005)); hotLabel.position.set(b.x + ux * (h + 0.14), b.y + uy * (h + 0.14), b.z + uz * (h + 0.14)); }
-  for (const m of dietFoods) { const u = m.userData; u.cur += (u.target - u.cur) * 0.16; m.scale.setScalar(u.cur); }
-  renderer.render(scene, camera);
+  for (const m of dietFoods) { const u = m.userData; u.cur += (u.target - u.cur) * K(0.16); m.scale.setScalar(u.cur); if (u.lab) u.lab.position.y = m.position.y + 0.32 * u.cur + 0.32; }
+  // fade the chrome while the camera is moving between worlds, restore when settled (speed in units/s, not units/frame)
+  const moved = camera.position.distanceTo(_prevCam); _prevCam.copy(camera.position);
+  if (moved / dt > 0.85) { _settleT = 0; if (!_navBusy) { _navBusy = true; document.body.classList.add('nav-busy'); } }
+  else if (_navBusy && (_settleT += dt) > 0.27) { _navBusy = false; document.body.classList.remove('nav-busy'); }
+  render();
 }
+let _navBusy = false, _settleT = 0, _lastT = performance.now(); const _prevCam = new THREE.Vector3(), _v3s = new THREE.Vector3();
 animate();
 addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 window.__dbg = { THREE, scene, camera, STATIONS };
