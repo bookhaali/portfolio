@@ -15,14 +15,14 @@
     W = cv.width = Math.floor(innerWidth * dpr);
     H = cv.height = Math.floor(innerHeight * dpr);
     cv.style.width = innerWidth + 'px'; cv.style.height = innerHeight + 'px';
-    const n = Math.max(70, Math.min(240, Math.round(innerWidth * innerHeight / 8500)));
+    const n = Math.max(90, Math.min(320, Math.round(innerWidth * innerHeight / 6500)));
     stars = [];
     for (let i = 0; i < n; i++) {
-      const warm = Math.random() > 0.82;
+      const warm = Math.random() > 0.82, bright = Math.random() > 0.78;
       stars.push({
         x: Math.random() * W, y: Math.random() * H,
-        r: (0.4 + Math.random() * 1.25) * dpr,
-        base: 0.12 + Math.random() * 0.5,
+        r: ((bright ? 0.9 : 0.45) + Math.random() * 1.15) * dpr,
+        base: bright ? (0.55 + Math.random() * 0.4) : (0.22 + Math.random() * 0.4),
         sp: 0.5 + Math.random() * 1.3, ph: Math.random() * 6.283,
         vx: (Math.random() - 0.5) * 0.05 * dpr,
         vy: (-0.02 - Math.random() * 0.05) * dpr,

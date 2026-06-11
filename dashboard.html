@@ -44,7 +44,7 @@
   nav.top a.primary{background:var(--accent);color:#0D0D0C;font-weight:700;border:1px solid var(--accent)}
   nav.top a.primary:hover{background:#A6C4EE}
 
-  main{max-width:1180px;margin:0 auto;padding:2.2rem 1.6rem 4rem}
+  main{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:2.2rem 1.6rem 4rem}
   .kicker{font-size:.64rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
   h1{font-family:var(--disp);font-size:clamp(1.5rem,3.4vw,2.2rem);font-weight:700;letter-spacing:-.02em;margin:.5rem 0 .4rem}
   .lede{font-size:.74rem;color:var(--muted);max-width:660px;line-height:1.7}
@@ -122,9 +122,11 @@
     nav.top a{padding:7px 8px;font-size:.58rem;letter-spacing:.02em}
     nav.top a.home{display:none}   /* the brand already links home */
   }
+  #stars{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.85}
 </style>
 </head>
 <body>
+<canvas id="stars" aria-hidden="true"></canvas>
 <header class="site">
   <a class="brand" href="index.html"><div class="name">Abdiwahab Ali</div><div class="role">Health data analyst &middot; Doctoral researcher &middot; Taipei</div></a>
   <nav class="top">
@@ -391,6 +393,7 @@ addEventListener('resize',()=>scheduleAll());
 S.pins = ['TON','USA','CHN'].filter(iso=>OB.countries[iso]);
 drawAll();
 </script>
+<script src="assets/stars.js"></script>
 <script data-goatcounter="https://bookhaali.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
