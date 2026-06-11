@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Figure Studio · interactive study figures · Abdiwahab Ali</title>
+<meta name="description" content="Interactive recreations of figures from my epidemiology studies — diet quality, the double burden, adolescent and adult obesity. Recomputed live in the browser.">
+<meta name="theme-color" content="#0D0D0C">
+<meta name="color-scheme" content="dark">
+<meta property="og:title" content="Figure Studio — interactive study figures">
+<meta property="og:description" content="Recreated, interactive figures from my epidemiology work. Pick the cut, drag the controls, read the numbers.">
+<meta property="og:image" content="https://bookhaali.github.io/portfolio/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0D0C'/%3E%3Ccircle cx='32' cy='36' r='13' fill='none' stroke='%238DB0E4' stroke-width='3'/%3E%3Cline x1='32' y1='23' x2='32' y2='10' stroke='%23E8743B' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='42' y1='28' x2='49' y2='19' stroke='%238DB0E4' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='22' y1='28' x2='16' y2='21' stroke='%235FC9C0' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0D0D0C; --surface:#151513; --text:#ECEBE4; --muted:#9C9B91; --faint:#6E6D64;
+    --border:#2A2924; --accent:#8DB0E4; --accent-soft:#18222E; --warm:#D98A6E; --cool:#7BBFA0;
+    --glass:rgba(15,15,13,.55); --glass-bd:rgba(236,235,228,.1);
+    --r-s:4px; --r-l:10px;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --disp:'Space Grotesk','JetBrains Mono',system-ui,sans-serif;
+  }
+  html{background:var(--bg);scrollbar-width:thin;scrollbar-color:var(--border) transparent;scroll-behavior:smooth}
+  ::selection{background:rgba(141,176,228,.3);color:var(--text)}
+  body{background:var(--bg);color:var(--text);font-family:var(--mono);-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--r-s)}
+
+  header.site{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:1rem;
+    padding:1rem 1.4rem;background:rgba(13,13,12,.85);backdrop-filter:blur(14px) saturate(1.2);border-bottom:1px solid var(--glass-bd)}
+  .brand{text-decoration:none;color:var(--text);line-height:1.1;flex:0 0 auto}
+  .brand .name{font-size:.9rem;font-weight:700}
+  .brand .role{font-size:.62rem;color:var(--muted);margin-top:.15rem}
+  nav.top{display:flex;gap:.3rem;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  nav.top a{font-size:.64rem;letter-spacing:.03em;text-decoration:none;color:var(--muted);border:1px solid transparent;border-radius:var(--r-s);padding:7px 10px;transition:color .18s,border-color .18s;white-space:nowrap}
+  nav.top a:hover,nav.top a.on{color:var(--text);border-color:var(--border)}
+  nav.top a.primary{background:var(--accent);color:#0D0D0C;font-weight:700;border:1px solid var(--accent)}
+  nav.top a.primary:hover{background:#A6C4EE}
+
+  main{max-width:1180px;margin:0 auto;padding:2rem 1.4rem 4rem}
+  .kicker{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+  h1{font-family:var(--disp);font-size:clamp(1.5rem,3.4vw,2.2rem);font-weight:700;letter-spacing:-.02em;margin:.45rem 0 .5rem}
+  .lede{font-size:.72rem;color:var(--muted);max-width:680px;line-height:1.7}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-top:1.8rem}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-l);padding:1.1rem 1.2rem;display:flex;flex-direction:column;min-width:0}
+  .card h2{font-family:var(--disp);font-size:1.02rem;font-weight:600;letter-spacing:-.01em}
+  .card .sub{font-size:.64rem;color:var(--muted);margin-top:.25rem;line-height:1.5;min-height:2.1em}
+  .ctl{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.85rem 0 .6rem}
+  .seg{display:inline-flex;border:1px solid var(--border);border-radius:var(--r-s);overflow:hidden}
+  .seg button{font-family:var(--mono);font-size:.62rem;color:var(--muted);background:none;border:none;padding:7px 11px;cursor:pointer;transition:background .15s,color .15s}
+  .seg button.on{background:var(--text);color:var(--bg);font-weight:700}
+  .seg.alt button.on{background:var(--accent-soft);color:var(--text)}
+  select{font-family:var(--mono);font-size:.64rem;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:var(--r-s);padding:7px 9px;cursor:pointer;max-width:62vw}
+  .chips{display:flex;flex-wrap:wrap;gap:.35rem}
+  .chip{font-family:var(--mono);font-size:.6rem;color:var(--muted);background:none;border:1px solid var(--border);border-radius:999px;padding:5px 10px;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+  .chip.on{color:var(--text);border-color:var(--faint);background:#1d1c19}
+  canvas.chart{width:100%;display:block;cursor:crosshair;margin-top:.2rem}
+  .legend{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:.6rem;font-size:.6rem;color:var(--muted)}
+  .legend i{display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+  .readout{font-size:.62rem;color:var(--faint);margin-top:.5rem;min-height:1.2em}
+  .readout b{color:var(--text);font-variant-numeric:tabular-nums}
+
+  .foot{margin-top:2.4rem;font-size:.64rem;color:var(--faint);line-height:1.8;border-top:1px solid var(--border);padding-top:1.4rem}
+  .foot a.btn{display:inline-block;margin-top:.6rem;background:var(--accent);color:#0D0D0C;font-weight:700;text-decoration:none;padding:11px 18px;border-radius:var(--r-s);font-size:.68rem}
+  .foot a.btn:hover{background:#A6C4EE}
+
+  #tip{position:fixed;z-index:99;pointer-events:none;background:var(--glass);backdrop-filter:blur(10px);border:1px solid var(--glass-bd);border-radius:4px;padding:5px 9px;font-size:.6rem;color:var(--text);display:none;white-space:nowrap}
+
+  @media(max-width:840px){ .grid{grid-template-columns:1fr} }
+  @media(max-width:560px){
+    header.site{padding:.8rem 1rem}
+    .brand .role{display:none}
+    nav.top a{padding:6px 8px;font-size:.6rem}
+    main{padding:1.4rem 1rem 3rem}
+    select{max-width:78vw}
+  }
+</style>
+</head>
+<body>
+<header class="site">
+  <a class="brand" href="index.html"><div class="name">Abdiwahab Ali</div><div class="role">Health data analyst · Taipei</div></a>
+  <nav class="top">
+    <a href="index.html">Journey</a>
+    <a href="research.html">Research</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="studio.html" class="on">Studio</a>
+    <a href="notes.html">Notes</a>
+    <a href="index.html#hire" class="primary">Hire me</a>
+  </nav>
+</header>
+
+<main>
+  <div class="kicker">Figure studio</div>
+  <h1>My study figures, rebuilt to play with.</h1>
+  <p class="lede">Four headline figures from my epidemiology work, recreated as live charts instead of flat images. Every line is recomputed in your browser from the aggregated study outputs, so you can change the cut, hover for exact numbers, and see how the picture moves. Methods and code live on my <a href="https://github.com/bookhaali" target="_blank" rel="noopener">GitHub</a>.</p>
+
+  <div class="grid">
+
+    <!-- 1. DIET QUALITY LIFE COURSE -->
+    <div class="card" id="diet">
+      <h2>Diet quality across the life course</h2>
+      <div class="sub">Mean diet-quality score over time, younger adults vs older adults. Four validated indices; pick one.</div>
+      <div class="ctl">
+        <div class="seg alt" id="d-index"></div>
+        <div class="seg" id="d-sex"></div>
+      </div>
+      <canvas class="chart" id="d-cv" height="240"></canvas>
+      <div class="legend"><span><i style="background:#8DB0E4"></i>ages 15–49</span><span><i style="background:#D98A6E"></i>ages 50+</span></div>
+      <div class="readout" id="d-read"></div>
+    </div>
+
+    <!-- 2. AFRICA DOUBLE BURDEN -->
+    <div class="card" id="burden">
+      <h2>The double burden, country by country</h2>
+      <div class="sub">Obesity rising while underweight falls, 1990–2022. Watch the lines cross. Choose a country and sex.</div>
+      <div class="ctl">
+        <select id="b-country" aria-label="Country"></select>
+        <div class="seg" id="b-sex"></div>
+      </div>
+      <canvas class="chart" id="b-cv" height="240"></canvas>
+      <div class="legend"><span><i style="background:#D98A6E"></i>obesity</span><span><i style="background:#7BBFA0"></i>underweight</span></div>
+      <div class="readout" id="b-read"></div>
+    </div>
+
+    <!-- 3. ADULT TREND -->
+    <div class="card" id="adult">
+      <h2>Adult prevalence, three decades</h2>
+      <div class="sub">Modelled adult prevalence by country, 1990–2022, with its average annual rate of change. Choose a country and sex.</div>
+      <div class="ctl">
+        <select id="a-country" aria-label="Country"></select>
+        <div class="seg" id="a-sex"></div>
+      </div>
+      <canvas class="chart" id="a-cv" height="240"></canvas>
+      <div class="readout" id="a-read"></div>
+    </div>
+
+    <!-- 4. ADOLESCENT VELOCITY -->
+    <div class="card" id="velocity">
+      <h2>Where it is rising fastest</h2>
+      <div class="sub">Adolescent obesity: today's level (x) against how fast it is climbing (y). Each dot is a country; hover or tap. Filter by region.</div>
+      <div class="ctl"><div class="chips" id="v-reg"></div></div>
+      <canvas class="chart" id="v-cv" height="250"></canvas>
+      <div class="readout" id="v-read">x: latest prevalence · y: average annual change (AAPC) · top-right = high and still climbing</div>
+    </div>
+
+  </div>
+
+  <p class="foot">
+    Sources: Global Dietary Database and NCD Risk Factor Collaboration (NCD-RisC) estimates. Figures are recreated from my own aggregated study outputs; the underlying inputs are public. Built without chart libraries.
+    <br><span>Want your study figures or a dataset turned into something like this?</span>
+    <br><a class="btn" href="index.html#hire">Work with me</a>
+  </p>
+</main>
+
+<div id="tip"></div>
+
+<script src="data/studio.js"></script>
+<script src="data/atlas.js"></script>
+<script>
+const D = window.STUDIO_DATA, OB = window.ATLAS_DATA;
+const $ = id => document.getElementById(id);
+const REGC = { 'African':'#D9A05C','Americas':'#7FA8D6','Eastern Mediterranean':'#C98A70','European':'#9C92D6','South-East Asia':'#7BBFA0','Western Pacific':'#D08294' };
+const tip = $('tip');
+if (!CanvasRenderingContext2D.prototype.roundRect) CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){r=Math.min(r,w/2,h/2);this.moveTo(x+r,y);this.arcTo(x+w,y,x+w,y+h,r);this.arcTo(x+w,y+h,x,y+h,r);this.arcTo(x,y+h,x,y,r);this.arcTo(x,y,x+w,y,r);this.closePath();};
+
+// fixed-height canvas (design height cached once so DPR scaling can't compound)
+function fit(cv){ if(!cv.dataset.dh) cv.dataset.dh=cv.getAttribute('height'); const dpr=Math.min(2,devicePixelRatio||1), h=+cv.dataset.dh, w=cv.clientWidth||300; cv.width=w*dpr; cv.height=h*dpr; cv.style.height=h+'px'; const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h); return {ctx,w,h}; }
+function seg(host, items, val, on, alt){ host.innerHTML=''; items.forEach(it=>{ const b=document.createElement('button'); b.textContent=it.label; b.className=it.v===val()?'on':''; b.onclick=()=>{ on(it.v); [...host.children].forEach(c=>c.classList.toggle('on',c===b)); }; host.appendChild(b); }); }
+function gridY(ctx,m,w,Y,max,step){ ctx.font='400 9px JetBrains Mono'; ctx.fillStyle='#55544D'; ctx.textAlign='left'; for(let v=step; v<max; v+=step){ ctx.strokeStyle='#1D1C19'; ctx.beginPath(); ctx.moveTo(m.l,Y(v)); ctx.lineTo(w-m.r,Y(v)); ctx.stroke(); ctx.fillText(v,4,Y(v)+3); } }
+function line(ctx,s,X,Y,col,wd){ ctx.strokeStyle=col; ctx.lineWidth=wd||2; ctx.beginPath(); let started=false; s.forEach((v,i)=>{ if(v==null)return; const x=X(i),y=Y(v); started?ctx.lineTo(x,y):ctx.moveTo(x,y); started=true; }); ctx.stroke(); }
+function dot(ctx,x,y,col,r){ ctx.fillStyle=col; ctx.beginPath(); ctx.arc(x,y,r||3,0,7); ctx.fill(); }
+
+/* ---------- 1. DIET ---------- */
+const ds = { ix:'AHEI', sex:'Both' };
+function drawDiet(){
+  const {ctx,w,h}=fit($('d-cv')); const ys=D.diet.years;
+  const a=D.diet.score[ds.ix][ds.sex]['15-49'], b=D.diet.score[ds.ix][ds.sex]['50+'];
+  const all=[...a,...b].filter(v=>v!=null); const min=Math.floor(Math.min(...all)/5)*5-2, max=Math.ceil(Math.max(...all)/5)*5+2;
+  const m={l:30,r:12,t:10,b:20}, iw=w-m.l-m.r, ih=h-m.t-m.b;
+  const X=i=>m.l+i/(ys.length-1)*iw, Y=v=>m.t+ih-(v-min)/(max-min)*ih;
+  ctx.font='400 9px JetBrains Mono'; ctx.fillStyle='#55544D'; ctx.textAlign='left';
+  for(let v=Math.ceil(min/5)*5; v<max; v+=5){ ctx.strokeStyle='#1D1C19'; ctx.beginPath(); ctx.moveTo(m.l,Y(v)); ctx.lineTo(w-m.r,Y(v)); ctx.stroke(); ctx.fillText(v,4,Y(v)+3); }
+  ctx.fillText(ys[0],m.l,h-6); ctx.textAlign='right'; ctx.fillText(ys[ys.length-1],w-m.r,h-6); ctx.textAlign='left';
+  line(ctx,a,X,Y,'#8DB0E4',2.2); line(ctx,b,X,Y,'#D98A6E',2.2);
+  a.forEach((v,i)=>v!=null&&dot(ctx,X(i),Y(v),'#8DB0E4',2.6)); b.forEach((v,i)=>v!=null&&dot(ctx,X(i),Y(v),'#D98A6E',2.6));
+  const la=a[a.length-1], lb=b[b.length-1];
+  $('d-read').innerHTML = `${ds.ix} · ${ds.sex.toLowerCase()} · ${ys[ys.length-1]}: <b>${lb}</b> at 50+ vs <b>${la}</b> at 15–49 (higher = better quality).`;
+}
+seg($('d-index'), ['AHEI','DASH','aMED','PDQS'].map(v=>({label:v,v})), ()=>ds.ix, v=>{ds.ix=v;drawDiet();}, true);
+seg($('d-sex'), ['Both','Men','Women'].map(v=>({label:v,v})), ()=>ds.sex, v=>{ds.sex=v;drawDiet();});
+
+/* ---------- 2. AFRICA DOUBLE BURDEN ---------- */
+const bs = { c:(D.africa.order.includes('Nigeria')?'Nigeria':D.africa.order[0]), sex:'Women' };
+(function(){ const sel=$('b-country'); D.africa.order.forEach(n=>{ const o=document.createElement('option'); o.value=o.textContent=n; sel.appendChild(o); }); sel.value=bs.c; sel.onchange=()=>{bs.c=sel.value;drawBurden();}; })();
+let bHits=[];
+function drawBurden(){
+  const {ctx,w,h}=fit($('b-cv')); const ys=D.africa.years, L=D.africa.loc[bs.c];
+  const ob=L.obese[bs.sex], un=L.under[bs.sex]; bHits=[];
+  const max=Math.max(10,...ob.filter(v=>v!=null),...un.filter(v=>v!=null))*1.12;
+  const m={l:30,r:12,t:10,b:20}, iw=w-m.l-m.r, ih=h-m.t-m.b;
+  const X=i=>m.l+i/(ys.length-1)*iw, Y=v=>m.t+ih-v/max*ih;
+  gridY(ctx,m,w,Y,max,max>40?20:10);
+  ctx.fillStyle='#55544D'; ctx.font='400 9px JetBrains Mono'; ctx.textAlign='left'; ctx.fillText(ys[0],m.l,h-6); ctx.textAlign='right'; ctx.fillText(ys[ys.length-1],w-m.r,h-6); ctx.textAlign='left';
+  line(ctx,ob,X,Y,'#D98A6E',2.4); line(ctx,un,X,Y,'#7BBFA0',2.4);
+  ob.forEach((v,i)=>{ if(v!=null){bHits.push({x:X(i),y:Y(v),yr:ys[i],ob:v,un:un[i]});} });
+  const lo=ob[ob.length-1], lu=un[un.length-1];
+  $('b-read').innerHTML = `${bs.c} · ${bs.sex.toLowerCase()} · ${ys[ys.length-1]}: obesity <b>${lo}%</b>, underweight <b>${lu}%</b>.`;
+}
+seg($('b-sex'), ['Women','Men'].map(v=>({label:v,v})), ()=>bs.sex, v=>{bs.sex=v;drawBurden();});
+
+/* ---------- 3. ADULT TREND ---------- */
+const as = { c:(D.adult.order.includes('United States')?'United States':D.adult.order[0]), sex:'Both' };
+(function(){ const sel=$('a-country'); D.adult.order.forEach(n=>{ const o=document.createElement('option'); o.value=o.textContent=n; sel.appendChild(o); }); sel.value=as.c; sel.onchange=()=>{as.c=sel.value;drawAdult();}; })();
+function drawAdult(){
+  const {ctx,w,h}=fit($('a-cv')); const ys=D.adult.years, C=D.adult.c[as.c]; const s=C[as.sex];
+  const max=Math.max(8,...s.filter(v=>v!=null))*1.15;
+  const m={l:30,r:12,t:10,b:20}, iw=w-m.l-m.r, ih=h-m.t-m.b;
+  const X=i=>m.l+i/(ys.length-1)*iw, Y=v=>m.t+ih-v/max*ih;
+  gridY(ctx,m,w,Y,max,max>40?20:max>20?10:5);
+  ctx.fillStyle='#55544D'; ctx.font='400 9px JetBrains Mono'; ctx.textAlign='left'; ctx.fillText(ys[0],m.l,h-6); ctx.textAlign='right'; ctx.fillText(ys[ys.length-1],w-m.r,h-6); ctx.textAlign='left';
+  // area fill
+  ctx.fillStyle='rgba(141,176,228,.12)'; ctx.beginPath(); let st=false; s.forEach((v,i)=>{ if(v==null)return; const x=X(i),y=Y(v); st?ctx.lineTo(x,y):ctx.moveTo(x,y); st=true; }); ctx.lineTo(X(s.length-1),Y(0)); ctx.lineTo(X(0),Y(0)); ctx.closePath(); ctx.fill();
+  line(ctx,s,X,Y,'#8DB0E4',2.4);
+  const lv=s[s.length-1]; dot(ctx,X(s.length-1),Y(lv),'#8DB0E4',3.4);
+  const aapc=C.aapc;
+  $('a-read').innerHTML = `${as.c} · ${as.sex.toLowerCase()} · ${ys[0]}: <b>${s[0]}%</b> → ${ys[ys.length-1]}: <b>${lv}%</b>` + (aapc!=null?` · <b>${aapc>=0?'+':''}${aapc}%/yr</b> average change`:'');
+}
+seg($('a-sex'), ['Both','Men','Women'].map(v=>({label:v,v})), ()=>as.sex, v=>{as.sex=v;drawAdult();});
+
+/* ---------- 4. ADOLESCENT VELOCITY (from atlas) ---------- */
+const vs = { reg:null }; let vHits=[];
+function vrows(){ const out=[]; for(const iso in OB.countries){ const c=OB.countries[iso], r=c.adol; if(!r||r.aapc==null)continue; if(vs.reg&&c.region!==vs.reg)continue; out.push({iso,name:c.name,region:c.region,end:r.series[r.series.length-1],aapc:r.aapc}); } return out; }
+function drawVel(){
+  const {ctx,w,h}=fit($('v-cv')); const data=vrows(); vHits=[];
+  const xmax=Math.max(10,...data.map(d=>d.end))*1.06, ymin=Math.min(0,...data.map(d=>d.aapc))-.4, ymax=Math.max(...data.map(d=>d.aapc))+.4;
+  const m={l:32,r:12,t:12,b:22}, iw=w-m.l-m.r, ih=h-m.t-m.b;
+  const X=v=>m.l+v/xmax*iw, Y=v=>m.t+ih-(v-ymin)/(ymax-ymin)*ih;
+  ctx.strokeStyle='#1D1C19'; ctx.beginPath(); ctx.moveTo(m.l,Y(0)); ctx.lineTo(w-m.r,Y(0)); ctx.stroke();
+  ctx.font='400 9px JetBrains Mono'; ctx.fillStyle='#55544D'; ctx.textAlign='left'; ctx.fillText('0',22,Y(0)+3); ctx.fillText('prevalence →',m.l,h-6);
+  ctx.save(); ctx.translate(9,m.t+ih/2); ctx.rotate(-Math.PI/2); ctx.textAlign='center'; ctx.fillText('faster rise →',0,0); ctx.restore();
+  data.forEach(d=>{ const x=X(d.end),y=Y(d.aapc); ctx.globalAlpha=.66; dot(ctx,x,y,REGC[d.region]||'#888',3); ctx.globalAlpha=1; vHits.push({x,y,d}); });
+}
+(function(){ const host=$('v-reg'); const mk=(label,val)=>{ const b=document.createElement('button'); b.className='chip'+(val===vs.reg?' on':''); b.textContent=label; b.onclick=()=>{ vs.reg=vs.reg===val?null:val; [...host.children].forEach(c=>c.classList.remove('on')); if(vs.reg)b.classList.add('on'); else host.firstChild.classList.add('on'); drawVel(); }; return b; };
+  const all=mk('All regions',null); all.classList.add('on'); host.appendChild(all);
+  Object.keys(REGC).forEach(r=>host.appendChild(mk(r,r)));
+})();
+function nearest(hits,e,cv){ const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top; let best=null,bd=160; hits.forEach(h=>{ const dd=(h.x-x)**2+(h.y-y)**2; if(dd<bd){bd=dd;best=h;} }); return best; }
+$('v-cv').addEventListener('mousemove',e=>{ const b=nearest(vHits,e,$('v-cv')); if(b){ tip.style.display='block'; tip.style.left=(e.clientX+12)+'px'; tip.style.top=(e.clientY-8)+'px'; tip.textContent=`${b.d.name} · ${b.d.end.toFixed(1)}% · ${b.d.aapc>=0?'+':''}${b.d.aapc.toFixed(2)}%/yr`; } else tip.style.display='none'; });
+$('v-cv').addEventListener('mouseleave',()=>tip.style.display='none');
+$('b-cv').addEventListener('mousemove',e=>{ const b=nearest(bHits,e,$('b-cv')); if(b){ tip.style.display='block'; tip.style.left=(e.clientX+12)+'px'; tip.style.top=(e.clientY-8)+'px'; tip.textContent=`${b.yr}: obesity ${b.ob}% · underweight ${b.un}%`; } else tip.style.display='none'; });
+$('b-cv').addEventListener('mouseleave',()=>tip.style.display='none');
+
+/* draw all + coalesced resize */
+function drawAll(){ drawDiet(); drawBurden(); drawAdult(); drawVel(); }
+let raf=null; addEventListener('resize',()=>{ if(raf)return; raf=requestAnimationFrame(()=>{ raf=null; drawAll(); }); });
+drawAll();
+// fonts can shift metrics; redraw once they're ready
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(drawAll);
+</script>
+<script data-goatcounter="https://bookhaali.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>

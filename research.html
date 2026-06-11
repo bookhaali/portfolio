@@ -83,11 +83,23 @@
   .figs img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92)}
   .lock{display:flex;align-items:center;gap:.45rem;font-size:.6rem;color:var(--faint)}
   .lock svg{flex:none;opacity:.7}
+  .lock.open{color:var(--accent)}
+  a.figs{cursor:pointer;text-decoration:none}
+  a.figs .fig{transition:border-color .2s}
+  a.figs:hover .fig{border-color:var(--accent)}
+  a.figs .fig{position:relative}
+  a.figs .fig::after{content:'▶';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:#fff;background:rgba(13,13,12,.5);opacity:0;transition:opacity .2s}
+  a.figs:hover .fig::after{opacity:1}
   .chips{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:auto}
   .chip{font-size:.6rem;color:var(--muted);border:1px solid var(--border);border-radius:3px;padding:3px 8px}
   .scale{display:flex;gap:1.1rem;flex-wrap:wrap}
   .scale div b{display:block;font-size:.92rem;color:var(--text);font-variant-numeric:tabular-nums;font-weight:700}
   .scale div span{font-size:.58rem;color:var(--faint);letter-spacing:.04em}
+  .skills{display:flex;flex-direction:column;gap:1.1rem;margin-top:.2rem}
+  .skillcol{display:flex;flex-direction:column;gap:.5rem}
+  .sk-h{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+  .sk-row{display:flex;flex-wrap:wrap;gap:.4rem}
+  .skills .chip{font-size:.66rem;padding:6px 12px;color:var(--text)}
 
   .note{display:flex;gap:.7rem;align-items:flex-start;background:var(--accent-soft);border:1px solid rgba(141,176,228,.25);border-radius:var(--r-l);padding:1rem 1.2rem;margin:1.4rem 0 0;font-size:.72rem;color:var(--muted);line-height:1.7;max-width:760px}
   .note b{color:var(--text);font-weight:500}
@@ -128,6 +140,7 @@
     <a href="index.html" class="home">Journey</a>
     <a href="research.html" class="on">Research</a>
     <a href="dashboard.html">Dashboard</a>
+    <a href="studio.html">Studio</a>
     <a href="notes.html">Notes</a>
     <a href="index.html#hire" class="primary">Hire me</a>
   </nav>
@@ -167,23 +180,23 @@
   </div>
 
   <h2>Active studies</h2>
-  <p class="sub">Figures are blurred until each study is published. The published papers above are open access, and the <a href="dashboard.html">dashboard</a> uses public data.</p>
+  <p class="sub">Raw figures stay blurred until each study is published &mdash; but four of them have a fully interactive recreation in the <a href="studio.html">figure studio</a> (click any unlocked card). The published papers above are open access.</p>
 
   <div class="grid">
     <div class="proj">
       <div class="top"><span class="code">STUDY 01</span><span class="badge prep">in preparation</span></div>
       <h3>Child and adolescent obesity</h3>
       <p class="desc">Global trend analysis of obesity in children and adolescents, 1990 to 2024, stratified by sex and age band.</p>
-      <div class="figs"><div class="fig"><img src="assets/research/p8_f1.jpg" alt="blurred figure"></div><div class="fig"><img src="assets/research/p1_f1.jpg" alt="blurred figure"></div><div class="fig"><img src="assets/research/p8_f2.jpg" alt="blurred figure"></div></div>
-      <div class="lock"><svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="#6E6D64"/><path d="M3 5V3.5C3 2.4 3.9 1.5 5 1.5C6.1 1.5 7 2.4 7 3.5V5" stroke="#6E6D64"/></svg>figures blurred until publication</div>
+      <a class="figs figlink" href="studio.html#velocity"><div class="fig"><img src="assets/research/p8_f1.jpg" alt="blurred figure"></div><div class="fig"><img src="assets/research/p1_f1.jpg" alt="blurred figure"></div><div class="fig"><img src="assets/research/p8_f2.jpg" alt="blurred figure"></div></a>
+      <div class="lock open"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M3 2.2v6.6l5.5-3.3z" fill="#8DB0E4"/></svg>open the interactive figure &rarr;</div>
       <div class="chips"><span class="chip">AAPC trends</span><span class="chip">NCD-RisC</span><span class="chip">R</span></div>
     </div>
     <div class="proj">
       <div class="top"><span class="code">STUDY 02</span><span class="badge prep">in preparation</span></div>
       <h3>Global diet quality</h3>
       <p class="desc">Multi-country analysis of dietary trends across age groups, 1990 to 2018.</p>
-      <div class="figs"><div class="fig"><img src="assets/research/p2_f1.jpg" alt="blurred figure"></div><div class="fig"><img src="assets/research/p2_f2.jpg" alt="blurred figure"></div><div class="fig"><img src="assets/research/p2_f3.jpg" alt="blurred figure"></div></div>
-      <div class="lock"><svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="#6E6D64"/><path d="M3 5V3.5C3 2.4 3.9 1.5 5 1.5C6.1 1.5 7 2.4 7 3.5V5" stroke="#6E6D64"/></svg>figures blurred until publication</div>
+      <a class="figs figlink" href="studio.html#diet"><div class="fig"><img src="assets/research/p2_f1.jpg" alt="blurred figure"></div><div class="fig"><img src="assets/research/p2_f2.jpg" alt="blurred figure"></div><div class="fig"><img src="assets/research/p2_f3.jpg" alt="blurred figure"></div></a>
+      <div class="lock open"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M3 2.2v6.6l5.5-3.3z" fill="#8DB0E4"/></svg>open the interactive figure &rarr;</div>
       <div class="chips"><span class="chip">diet indices</span><span class="chip">trend analysis</span><span class="chip">R</span></div>
     </div>
     <div class="proj">
@@ -198,16 +211,16 @@
       <div class="top"><span class="code">STUDY 04</span><span class="badge prep">in preparation</span></div>
       <h3>Obesity in Africa</h3>
       <p class="desc">Trend analysis across the continent&rsquo;s 54 countries and three age groups.</p>
-      <div class="figs"><div class="fig"><img src="assets/research/p6_f1.jpg" alt="blurred figure"></div><div class="fig"><img src="assets/research/p6_f2.jpg" alt="blurred figure"></div><div class="fig"><img src="assets/research/p6_f3.jpg" alt="blurred figure"></div></div>
-      <div class="lock"><svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="#6E6D64"/><path d="M3 5V3.5C3 2.4 3.9 1.5 5 1.5C6.1 1.5 7 2.4 7 3.5V5" stroke="#6E6D64"/></svg>figures blurred until publication</div>
+      <a class="figs figlink" href="studio.html#burden"><div class="fig"><img src="assets/research/p6_f1.jpg" alt="blurred figure"></div><div class="fig"><img src="assets/research/p6_f2.jpg" alt="blurred figure"></div><div class="fig"><img src="assets/research/p6_f3.jpg" alt="blurred figure"></div></a>
+      <div class="lock open"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M3 2.2v6.6l5.5-3.3z" fill="#8DB0E4"/></svg>open the interactive figure &rarr;</div>
       <div class="chips"><span class="chip">AAPC trends</span><span class="chip">maps</span><span class="chip">R</span></div>
     </div>
     <div class="proj">
       <div class="top"><span class="code">STUDY 05</span><span class="badge prep">conference poster &middot; 2026</span></div>
       <h3>Adult obesity</h3>
       <p class="desc">Long-term national trend analysis with sensitivity and method-comparison checks.</p>
-      <div class="figs"><div class="fig"><img src="assets/research/p7_f1.jpg" alt="blurred figure"></div><div class="fig"><img src="assets/research/p7_f2.jpg" alt="blurred figure"></div><div class="fig"><img src="assets/research/p7_f3.jpg" alt="blurred figure"></div></div>
-      <div class="lock"><svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="#6E6D64"/><path d="M3 5V3.5C3 2.4 3.9 1.5 5 1.5C6.1 1.5 7 2.4 7 3.5V5" stroke="#6E6D64"/></svg>figures blurred until publication</div>
+      <a class="figs figlink" href="studio.html#adult"><div class="fig"><img src="assets/research/p7_f1.jpg" alt="blurred figure"></div><div class="fig"><img src="assets/research/p7_f2.jpg" alt="blurred figure"></div><div class="fig"><img src="assets/research/p7_f3.jpg" alt="blurred figure"></div></a>
+      <div class="lock open"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M3 2.2v6.6l5.5-3.3z" fill="#8DB0E4"/></svg>open the interactive figure &rarr;</div>
       <div class="chips"><span class="chip">AAPC trends</span><span class="chip">sensitivity analyses</span><span class="chip">R</span></div>
     </div>
     <div class="proj">
@@ -220,10 +233,19 @@
     </div>
   </div>
 
+  <h2>Methods &amp; tools</h2>
+  <p class="sub">The analytical stack behind the studies above and the dashboards I build. Pipelines and reproducible code on <a href="https://github.com/bookhaali" target="_blank" rel="noopener">GitHub</a>.</p>
+  <div class="skills">
+    <div class="skillcol"><span class="sk-h">Languages</span><div class="sk-row"><span class="chip">R</span><span class="chip">Python</span><span class="chip">Stata</span><span class="chip">SQL</span></div></div>
+    <div class="skillcol"><span class="sk-h">Methods</span><div class="sk-row"><span class="chip">Joinpoint regression</span><span class="chip">AAPC trend analysis</span><span class="chip">Meta-analysis</span><span class="chip">Systematic &amp; scoping review</span><span class="chip">Survival analysis</span><span class="chip">Sensitivity analysis</span><span class="chip">Biostatistics</span></div></div>
+    <div class="skillcol"><span class="sk-h">Data &amp; visualisation</span><div class="sk-row"><span class="chip">ggplot2</span><span class="chip">Interactive dashboards</span><span class="chip">Choropleth maps</span><span class="chip">Reproducible pipelines</span><span class="chip">NCD-RisC · GBD · GDD · WHO</span></div></div>
+  </div>
+
   <div class="cta">
     <h2>Work with me</h2>
     <div class="row">
       <a class="btn" href="index.html#hire">Start a project</a>
+      <a class="btn ghost" href="studio.html">Figure studio</a>
       <a class="btn ghost" href="dashboard.html">Live dashboard</a>
       <a class="btn ghost" href="assets/Abdiwahab_Ali_CV.pdf" download>Download CV (PDF)</a>
     </div>
