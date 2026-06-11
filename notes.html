@@ -125,7 +125,8 @@ document.getElementById('t-regions').textContent = topRegs.join(' and ');
 
 (function draw() {
   const cv = document.getElementById('chart'), dpr = Math.min(2, devicePixelRatio || 1);
-  const w = cv.clientWidth, h = +cv.getAttribute('height');
+  if (!cv.dataset.dh) cv.dataset.dh = cv.getAttribute('height');   // fixed design height — cv.height writes would otherwise compound on each resize redraw
+  const w = cv.clientWidth, h = +cv.dataset.dh;
   cv.width = w * dpr; cv.height = h * dpr; cv.style.height = h + 'px';
   const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const max = Math.max(...fast.flatMap(f => f.s), ...L.global) * 1.12;

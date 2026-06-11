@@ -219,13 +219,14 @@ function rows() {
   for (const iso in OB.countries) {
     const c = OB.countries[iso], r = c[S.pop]; if (!r) continue;
     if (S.region && c.region !== S.region) continue;
-    if (S.q && !c.name.toLowerCase().includes(S.q)) continue;
     out.push({ iso, name:c.name, region:c.region, s:r.series, y0:r.series[0], y1:r.series[S.yi], end:r.series[r.series.length-1], aapc:r.aapc==null?0:r.aapc, chg:r.series[S.yi]-r.series[0] });
   }
   return out;
 }
+if (!CanvasRenderingContext2D.prototype.roundRect) CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r){ r=Math.min(r,w/2,h/2); this.moveTo(x+r,y); this.arcTo(x+w,y,x+w,y+h,r); this.arcTo(x+w,y+h,x,y+h,r); this.arcTo(x,y+h,x,y,r); this.arcTo(x,y,x+w,y,r); this.closePath(); };
 function setupCanvas(cv) {
-  const dpr = Math.min(2, devicePixelRatio||1), w = cv.clientWidth, h = +cv.getAttribute('height');
+  if (!cv.dataset.dh) cv.dataset.dh = cv.getAttribute('height');   // design height, fixed — cv.height writes would otherwise compound each redraw
+  const dpr = Math.min(2, devicePixelRatio||1), h = +cv.dataset.dh, w = cv.clientWidth || 300;
   cv.width = w*dpr; cv.height = h*dpr; cv.style.height = h+'px';
   const ctx = cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
   return { ctx, w, h };
@@ -297,7 +298,8 @@ function spark(cv, s) {
   s.forEach((v,i)=>{ const x=2+i/(s.length-1)*88, y=20-(v/mx)*18; i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.stroke();
 }
 function drawTable() {
-  const data = rows();
+  let data = rows();
+  if (S.q) data = data.filter(d => d.name.toLowerCase().includes(S.q));
   const { k, dir } = S.sort;
   data.sort((a,b)=> k==='name' ? a.name.localeCompare(b.name)*dir : ((a[k]??-1e9)-(b[k]??-1e9))*dir );
   const lim = S.showAll ? data.length : 25;
@@ -314,7 +316,7 @@ function drawTable() {
     tb.appendChild(tr);
   });
   $('more').textContent = S.showAll ? 'show top 25' : `show all ${data.length}`;
-  $('tbltitle').textContent = (S.region||'All countries') + ' · ' + (S.pop==='adol'?'youth 5–19':'adults 20+');
+  $('tbltitle').textContent = (S.region||'All countries') + ' · ' + (S.pop==='adol'?'youth 5–19':'adults 20+') + (S.q?` · “${S.q}” (${data.length})`:'');
 }
 function drawKpis() {
   const ys = years(), g = OB.layers[S.pop].global, data = rows();
@@ -322,7 +324,7 @@ function drawKpis() {
   const hi = data.reduce((a,b)=>(b.y1??-1)>(a.y1??-1)?b:a, {y1:-1,name:'·'});
   $('k2').textContent = fmt1(hi.y1); $('k2s').textContent = hi.name;
   const fr = data.reduce((a,b)=>b.aapc>a.aapc?b:a, {aapc:-1e9,name:'·'});
-  $('k3').textContent = '+'+fr.aapc.toFixed(2)+'%'; $('k3s').textContent = fr.name + ' · AAPC';
+  $('k3').textContent = fr.aapc<=-1e9 ? '·' : (fr.aapc>=0?'+':'')+fr.aapc.toFixed(2)+'%'; $('k3s').textContent = fr.name + ' · AAPC';
   const n10 = data.filter(d=>d.y1>=10).length;
   $('k4').textContent = n10; $('k4s').textContent = `of ${data.length} ${S.region?'in '+S.region:'worldwide'}`;
 }
@@ -353,7 +355,8 @@ $('popseg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=
   $('popseg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
   const n = years().length-1; $('yr').max=n; if(S.yi>n)S.yi=n; $('yr').value=S.yi; drawAll();
 }));
-$('yr').addEventListener('input',e=>{ stop(); S.yi=+e.target.value; drawAll(); });
+let _raf=null; function scheduleAll(){ if(_raf) return; _raf=requestAnimationFrame(()=>{ _raf=null; drawAll(); }); }
+$('yr').addEventListener('input',e=>{ stop(); S.yi=+e.target.value; scheduleAll(); });
 let timer=null;
 function stop(){ if(timer){clearInterval(timer);timer=null;$('play').innerHTML='&#9654;';} }
 $('play').addEventListener('click',()=>{
@@ -361,7 +364,7 @@ $('play').addEventListener('click',()=>{
   $('play').innerHTML='&#10073;&#10073;';
   timer=setInterval(()=>{ S.yi = S.yi>=years().length-1?0:S.yi+1; $('yr').value=S.yi; drawAll(); },420);
 });
-$('q').addEventListener('input',e=>{ S.q=e.target.value.trim().toLowerCase(); drawAll(); });
+$('q').addEventListener('input',e=>{ S.q=e.target.value.trim().toLowerCase(); drawTable(); });
 $('hdr').querySelectorAll('th[data-k]').forEach(th=>th.addEventListener('click',()=>{
   const k=th.dataset.k; if(S.sort.k===k)S.sort.dir*=-1; else S.sort={k,dir:k==='name'?1:-1};
   $('hdr').querySelectorAll('th').forEach(x=>x.classList.toggle('on',x===th)); drawTable();
@@ -380,7 +383,7 @@ $('scat').addEventListener('click',e=>{
   let best=null,bd=144; scatHits.forEach(h=>{ const dd=(h.x-x)**2+(h.y-y)**2; if(dd<bd){bd=dd;best=h;} });
   if(best) togglePin(best.iso);
 });
-addEventListener('resize',()=>drawAll());
+addEventListener('resize',()=>scheduleAll());
 // defaults: a telling comparison out of the box
 S.pins = ['TON','USA','CHN'].filter(iso=>OB.countries[iso]);
 drawAll();
