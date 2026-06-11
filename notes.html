@@ -82,20 +82,20 @@
 
 <main>
   <div class="kicker">Field notes</div>
-  <h1>Short, honest data stories.</h1>
-  <p class="lede">One a month. Public data, small questions, straight answers. Every number below is computed live in your browser from the source dataset, so the chart can't drift from the text.</p>
+  <h1>Short data stories.</h1>
+  <p class="lede">One a month, from public data. Every number below is computed in your browser from the source dataset, so the chart cannot drift from the text.</p>
 
   <article>
     <div class="meta">Nº 01 · June 2026 · NCD-RisC, 1990–2024</div>
-    <h2>Youth obesity didn't rise everywhere equally. It moved to new neighborhoods.</h2>
-    <p>The global headline is familiar by now: <b id="t-global">…</b> of the world's school-age children and adolescents live with obesity, up from <b id="t-global0">…</b> in 1990. A four-fold rise reads like a global story, but "global" is doing a lot of work in that sentence.</p>
-    <p>Rank countries by how <i>fast</i> obesity is rising (annual percent change, not absolute level) and the league table is not the one most people expect. The fastest movers aren't the countries famous for high prevalence. They are <b id="t-fastlist">…</b>: places that started near zero in 1990 and are compounding hardest now.</p>
+    <h2>Youth obesity is rising fastest where prevalence is still low.</h2>
+    <p><b id="t-global">…</b> of the world's school-age children and adolescents live with obesity, up from <b id="t-global0">…</b> in 1990. The global average hides where the rise is happening.</p>
+    <p>Ranked by annual percent change instead of level, the fastest-rising countries are <b id="t-fastlist">…</b>: countries that started near zero in 1990.</p>
     <figure>
       <canvas id="chart" height="260"></canvas>
-      <figcaption id="figcap">The five fastest-rising countries (by AAPC, 1990–2024) against the global mean (dashed). Computed from NCD-RisC age-standardised estimates the moment you loaded this page.</figcaption>
+      <figcaption id="figcap">The five fastest-rising countries (AAPC, 1990–2024) and the global mean (dashed). Computed from NCD-RisC estimates when the page loads.</figcaption>
     </figure>
-    <p>The pattern under it: <b id="t-regions">…</b> dominate the top of the velocity table. High-income countries hold most of the <i>level</i>; lower- and middle-income countries hold most of the <i>acceleration</i>. Prevention budgets are still mostly aimed at the first list.</p>
-    <p>That's the gap a velocity view exposes, and it's why I rarely chart prevalence without charting its slope next to it. Levels tell you where the problem is. Slopes tell you where it's going to be.</p>
+    <p>Most of the 20 fastest-rising countries are in <b id="t-regions">…</b>. High-income countries have the highest levels; the fastest growth is elsewhere.</p>
+    <p>This is why I chart the trend next to the level. Levels show where the problem is. Trends show where it will be.</p>
     <div class="method"><b>Method note.</b> Data: NCD Risk Factor Collaboration age-standardised obesity prevalence, ages 5–19, 200 countries, 1990–2024. Velocity = average annual percent change (AAPC) over the full window. No smoothing, no exclusions; the five series above are plotted exactly as published. Explore the full dataset in the <a href="dashboard.html">interactive dashboard</a>.</div>
   </article>
 
@@ -120,7 +120,7 @@ document.getElementById('t-global').textContent = L.global[L.global.length - 1].
 document.getElementById('t-global0').textContent = L.global[0].toFixed(1) + '%';
 document.getElementById('t-fastlist').textContent = fast.map(f => f.name).join(', ');
 const regCount = {}; rows.slice().sort((a, b) => b.aapc - a.aapc).slice(0, 20).forEach(f => regCount[f.region] = (regCount[f.region] || 0) + 1);
-const topRegs = Object.entries(regCount).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([r, n]) => `the ${r} region (${n} of the 20 fastest)`);
+const topRegs = Object.entries(regCount).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([r, n]) => `the ${r} region (${n})`);
 document.getElementById('t-regions').textContent = topRegs.join(' and ');
 
 (function draw() {

@@ -815,11 +815,11 @@ let finalPts = null;
 const off = (p, dx, dy, dz) => p.clone().add(new THREE.Vector3(dx, dy, dz));
 const STATIONS = [
   { name: 'Earth', cap: '<b>Each spike is a country.</b> Press play to run 35 years.', spin: globe, picks: () => spikes, camPos: new THREE.Vector3(0, 0.35, 3.7), camTarget: new THREE.Vector3(0, 0, 0), pop: 1, time: 1, spinIdle: 0.0006 },
-  { name: 'Burden / velocity', cap: '<b>High, and still rising.</b> Up and right is the corner to watch.', spin: scatterSpin, picks: () => scatterPoints, camPos: off(SCATTER, 0, 1.8, 10.5), camTarget: SCATTER.clone(), pop: 1 },
-  { name: 'Early-onset shift', cap: '<b>Cancer is striking earlier.</b> The young ridge grows year by year.', spin: rankSpin, picks: () => [], camPos: off(RANK, 0, 3.6, 9.5), camTarget: off(RANK, 0, 0.9, 0) },
+  { name: 'Burden / velocity', cap: '<b>High, and still rising.</b>', spin: scatterSpin, picks: () => scatterPoints, camPos: off(SCATTER, 0, 1.8, 10.5), camTarget: SCATTER.clone(), pop: 1 },
+  { name: 'Early-onset shift', cap: '<b>Cancer is striking earlier.</b>', spin: rankSpin, picks: () => [], camPos: off(RANK, 0, 3.6, 9.5), camTarget: off(RANK, 0, 0.9, 0) },
   { name: 'Diet', cap: '<b>Protective foods shrink, risk foods grow.</b>', spin: dietSpin, picks: () => dietFoods, camPos: off(DIETP, 0, 0.35, 10.6), camTarget: off(DIETP, 0, 0.3, 0), time: 1 },
   { name: 'Cancer', cap: '<b>13 obesity-linked cancers.</b> Warm ridges are rising.', spin: cancerSpin, picks: () => cancerLines, camPos: off(CANP, -1.4, 4.2, 16.5), camTarget: off(CANP, 0, -0.2, -0.6), time: 1, csex: 1 },
-  { name: 'Obesity drives cancer', cap: '<b>Obesity today, cancer tomorrow.</b> Slide the lag, watch r climb.', spin: lagPlane.group, picks: () => [], camPos: off(LAGP, 0, 0, 6.4), camTarget: LAGP.clone(), pop: 1, wide: 1.75, aux: { label: 'lag', min: 0, max: 15, on: v => { lag = v; drawLag(); document.getElementById('aux-val').textContent = v + ' yr'; } } },
+  { name: 'Obesity drives cancer', cap: '<b>Obesity today, cancer tomorrow.</b> Slide the lag.', spin: lagPlane.group, picks: () => [], camPos: off(LAGP, 0, 0, 6.4), camTarget: LAGP.clone(), pop: 1, wide: 1.75, aux: { label: 'lag', min: 0, max: 15, on: v => { lag = v; drawLag(); document.getElementById('aux-val').textContent = v + ' yr'; } } },
   { name: 'Forecast', cap: '<b>On course for ~22% of youth by 2050.</b>', spin: fcPlane.group, picks: () => [], camPos: off(FCP, 0, 0, 6.4), camTarget: FCP.clone(), pop: 1, wide: 1.75 },
   { name: 'Causal thinking', cap: '<b>Backdoor paths, closed before estimating.</b>', spin: dagSpin, picks: () => dagPicks, camPos: off(DAGP, 0, 0.4, 9.6), camTarget: off(DAGP, 0, 0.2, 0) },
   { name: 'Multivariable model', cap: '<b>Many inputs, one outcome.</b> A live OLS fit, residuals shown.', spin: regSpin, picks: () => [], camPos: off(REGP, 0, 0.5, 10.0), camTarget: off(REGP, 0, 0.1, 0), spinIdle: 0.0016 },
