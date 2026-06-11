@@ -147,7 +147,7 @@ let tNorm = 1, pop = 'adol', csex = 'both', lag = 0;
 let introActive = false, introStart = 0; const introFrom = new THREE.Vector3(0.6, 3.0, 12);
 const warpBack = location.search.indexOf('warp=back') >= 0; let arriveActive = true, arriveT0 = 0; const ARRIVE_START = new THREE.Vector3(0, 10, -560);
 if (arriveActive) { document.body.classList.add('story-on'); document.body.style.overflow = 'hidden'; const _i0 = document.getElementById('intro'); if (_i0) _i0.classList.add('gone'); }
-function showArrivalCue() { const el = document.getElementById('intro'); if (!el) return; el.classList.remove('gone'); const hide = () => { el.classList.add('gone'); removeEventListener('wheel', hide); removeEventListener('pointerdown', hide); removeEventListener('scroll', hide); }; addEventListener('wheel', hide, { passive: true }); addEventListener('pointerdown', hide); addEventListener('scroll', hide, { passive: true }); }
+function showArrivalCue() { const el = document.getElementById('intro'); if (!el) return; document.documentElement.classList.remove('arriving'); el.classList.remove('gone'); const hide = () => { el.classList.add('gone'); removeEventListener('wheel', hide); removeEventListener('pointerdown', hide); removeEventListener('scroll', hide); }; addEventListener('wheel', hide, { passive: true }); addEventListener('pointerdown', hide); addEventListener('scroll', hide, { passive: true }); }
 const obIdx = () => Math.round(tNorm * (OB.layers[pop].years.length - 1));
 const dietIdx = () => Math.round(tNorm * (DIET.yearsF.length - 1));
 const canIdx = () => Math.round(tNorm * (CAN.years.length - 1));
@@ -170,7 +170,7 @@ function finishEarth() {
   const fill = document.getElementById('loader-fill'); if (fill) fill.style.width = '100%';
   loader.classList.add('gone');
   if (REDUCE) {   // vestibular safety: no auto camera flight, land directly on Earth
-    introActive = false; document.getElementById('intro').classList.add('gone');
+    introActive = false; if (warpBack) document.getElementById('intro').classList.add('gone'); else showArrivalCue();
     curTarget.copy(STATIONS[0].camTarget); curStation = 0; onStation(0); setTime(1);
     try { scrollTo(0, 0); } catch (e) {} return;
   }
