@@ -62,3 +62,21 @@
     else if (!reduce && !raf) raf = requestAnimationFrame(frame);
   });
 })();
+
+/* "Journey" links on the content pages travel back to Earth with the return flight */
+(function () {
+  const links = document.querySelectorAll('a[href="index.html"]');
+  if (!links.length) return;
+  let fade = null;
+  function go() {
+    if (!fade) {
+      fade = document.createElement('div'); fade.id = 'leave-fade';
+      fade.style.cssText = 'position:fixed;inset:0;background:var(--bg,#0D0D0C);opacity:0;pointer-events:none;z-index:9999;transition:opacity .4s ease';
+      document.body.appendChild(fade);
+      void fade.offsetWidth;
+    }
+    fade.style.opacity = '1'; fade.style.pointerEvents = 'auto';
+    setTimeout(function () { location.assign('index.html?warp=back'); }, 380);
+  }
+  links.forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); go(); }); });
+})();

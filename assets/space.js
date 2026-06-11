@@ -145,6 +145,8 @@ function showInfo(o) {
 // ---- shared state ----
 let tNorm = 1, pop = 'adol', csex = 'both', lag = 0;
 let introActive = false, introStart = 0; const introFrom = new THREE.Vector3(0.6, 3.0, 12);
+let arriveActive = (location.search.indexOf('warp=back') >= 0), arriveT0 = 0; const ARRIVE_START = new THREE.Vector3(0, 10, -560);
+if (arriveActive) { document.body.classList.add('story-on'); document.body.style.overflow = 'hidden'; const _i0 = document.getElementById('intro'); if (_i0) _i0.classList.add('gone'); }
 const obIdx = () => Math.round(tNorm * (OB.layers[pop].years.length - 1));
 const dietIdx = () => Math.round(tNorm * (DIET.yearsF.length - 1));
 const canIdx = () => Math.round(tNorm * (CAN.years.length - 1));
@@ -171,6 +173,8 @@ function finishEarth() {
     curTarget.copy(STATIONS[0].camTarget); curStation = 0; onStation(0); setTime(1);
     try { scrollTo(0, 0); } catch (e) {} return;
   }
+  if (arriveActive && REDUCE) { arriveActive = false; const _w = document.getElementById('warp-fade'); if (_w) _w.style.opacity = '0'; document.body.classList.remove('story-on'); document.body.style.overflow = ''; }
+  if (arriveActive) { arriveT0 = performance.now(); try { scrollTo(0, 0); } catch (e) {} return; }
   introActive = true; introStart = performance.now(); try { scrollTo(0, 0); } catch (e) {}
 }
 // progressive earth: a 124 KB preview unblocks the loader fast; the 2.5 MB texture swaps in silently
@@ -1224,6 +1228,7 @@ function returnFromStory() {
   storyMode = 'out'; storyT0 = performance.now(); document.getElementById('story-hud').classList.remove('show');
 }
 document.getElementById('story-trigger').addEventListener('click', enterStory);
+{ const _nr = document.getElementById('nav-research'); if (_nr) _nr.addEventListener('click', e => { e.preventDefault(); enterStory(); }); }
 document.getElementById('sh-return').addEventListener('click', returnFromStory);
 document.getElementById('sh-start').addEventListener('click', openQuote);
 
@@ -1299,6 +1304,23 @@ function animate() {
     corridor.material.opacity = Math.sin(e * Math.PI) * 1.15;
     if (warpFade) warpFade.style.opacity = clamp((e - 0.62) / 0.32, 0, 1);
     if (e >= 1 && !warpDone) { warpDone = true; location.assign('research.html'); }
+    render(); return;
+  }
+  if (arriveActive) {
+    for (const g of WORLD_GROUPS) g.visible = false;
+    globePivot.visible = true; corridor.visible = true;
+    if (!arriveT0) { globePivot.scale.setScalar(0.001); if (warpFade) warpFade.style.opacity = '1'; render(); return; }
+    const raw = clamp((nowT - arriveT0) / RETURN_DUR, 0, 1), t = smooth(raw), it = 1 - t;
+    const ep = STATIONS[0].camPos.clone().multiplyScalar(fit);
+    camera.position.set(
+      it * it * ARRIVE_START.x + 2 * it * t * RET_CP.x + t * t * ep.x,
+      it * it * ARRIVE_START.y + 2 * it * t * RET_CP.y + t * t * ep.y,
+      it * it * ARRIVE_START.z + 2 * it * t * RET_CP.z + t * t * ep.z);
+    curTarget.lerpVectors(STORY_ZERO, STATIONS[0].camTarget, t); camera.lookAt(curTarget);
+    globePivot.scale.setScalar(Math.max(0.001, smooth(clamp((raw - 0.2) / 0.8, 0, 1))));
+    corridor.material.opacity = Math.max(0, Math.sin(clamp(raw / 0.62, 0, 1) * Math.PI)) * 1.05;
+    if (warpFade) warpFade.style.opacity = Math.max(0, 1 - raw / 0.38);
+    if (raw >= 1) { arriveActive = false; globePivot.scale.setScalar(1); curStation = 0; onStation(0); curTarget.copy(STATIONS[0].camTarget); document.body.classList.remove('story-on'); document.body.style.overflow = ''; corridor.visible = false; if (warpFade) warpFade.style.opacity = '0'; startEarthIntro(); try { scrollTo(0, 0); } catch (e) {} }
     render(); return;
   }
   let focus, zoom = 1;

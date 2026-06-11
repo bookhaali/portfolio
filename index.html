@@ -230,6 +230,7 @@
 
   /* storyteller trigger */
   #warp-fade{position:fixed;inset:0;background:var(--bg);opacity:0;pointer-events:none;z-index:300}
+  html.warp-back #warp-fade{opacity:1}
   .story-trigger{position:fixed;left:50%;bottom:1.9rem;transform:translateX(-50%);z-index:18;opacity:0;pointer-events:none;transition:opacity .6s;
     font-family:var(--mono);font-size:.74rem;font-weight:700;letter-spacing:.04em;color:#0D0D0C;background:var(--accent);border:none;border-radius:var(--r-s);padding:13px 22px;cursor:pointer}
   .story-trigger.show{opacity:1;pointer-events:auto}
@@ -334,6 +335,7 @@
   #fallback .fb-links a:hover{border-color:var(--accent)}
   #fallback .fb-note{color:var(--faint);margin-top:2rem;font-size:.7rem;line-height:1.65}
 </style>
+<script>if(location.search.indexOf('warp=back')>=0)document.documentElement.classList.add('warp-back');</script>
 <script>(function(){try{var c=document.createElement('canvas');if(c.getContext('webgl')||c.getContext('experimental-webgl'))document.documentElement.classList.add('webgl-ok');}catch(e){}})();</script>
 </head>
 <body>
@@ -423,7 +425,7 @@
   </div>
 
   <div class="top-right">
-    <a class="ghost" href="research.html">Research</a>
+    <a class="ghost" href="research.html" id="nav-research">Research</a>
     <button id="open-quote" class="primary">Hire me</button>
   </div>
 
