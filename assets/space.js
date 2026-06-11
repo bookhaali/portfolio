@@ -15,7 +15,9 @@ const remap = (v, r, a, b) => a + (v - r.min) / ((r.max - r.min) || 1) * (b - a)
 const canvas = document.getElementById('space');
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const MOBILE = matchMedia('(pointer: coarse)').matches || innerWidth < 760;
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: !MOBILE, powerPreference: 'high-performance' });
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: !MOBILE, powerPreference: 'high-performance' }); }
+catch (e) { document.documentElement.classList.remove('webgl-ok'); const _l = document.getElementById('loader'); if (_l) _l.style.display = 'none'; throw e; }
 renderer.setPixelRatio(Math.min(MOBILE ? 1.5 : 2, devicePixelRatio || 1));
 renderer.setSize(innerWidth, innerHeight); renderer.setClearColor(0x0D0D0C, 1);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;

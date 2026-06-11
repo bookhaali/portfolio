@@ -322,9 +322,38 @@
     .sh-actions{flex-direction:column;align-items:center;gap:.5rem;bottom:calc(1rem + env(safe-area-inset-bottom))}
     .sh-actions button{max-width:82vw;width:auto;white-space:nowrap;font-size:.68rem;padding:12px 26px}
   }
+  /* static hero shown when WebGL/JS can't run the 3D journey (and crawlable for SEO) */
+  #fallback{position:fixed;inset:0;z-index:600;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;padding:2rem 1.6rem;overflow:auto;font-family:var(--mono)}
+  html.webgl-ok #fallback{display:none}
+  #fallback .fb-inner{max-width:640px}
+  #fallback h1{font-family:var(--disp);font-size:clamp(2rem,7vw,3.1rem);font-weight:700;letter-spacing:-.02em;line-height:1.05}
+  #fallback .fb-role{color:var(--muted);margin-top:.6rem;font-size:.9rem;letter-spacing:.02em}
+  #fallback .fb-lede{color:var(--muted);margin-top:1.5rem;line-height:1.75;font-size:.92rem}
+  #fallback .fb-links{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.9rem}
+  #fallback .fb-links a{color:var(--accent);text-decoration:none;border:1px solid var(--border);border-radius:var(--r-s);padding:9px 14px;font-size:.78rem;transition:border-color .18s}
+  #fallback .fb-links a:hover{border-color:var(--accent)}
+  #fallback .fb-note{color:var(--faint);margin-top:2rem;font-size:.7rem;line-height:1.65}
 </style>
+<script>(function(){try{var c=document.createElement('canvas');if(c.getContext('webgl')||c.getContext('experimental-webgl'))document.documentElement.classList.add('webgl-ok');}catch(e){}})();</script>
 </head>
 <body>
+<section id="fallback" aria-label="Abdiwahab Ali — overview">
+  <div class="fb-inner">
+    <h1>Abdiwahab Ali</h1>
+    <p class="fb-role">Health Data Analyst &amp; Epidemiology Researcher &middot; Taipei</p>
+    <p class="fb-lede">I turn public-health data into interactive, publication-ready analysis &mdash; obesity, diet and cancer epidemiology across 190+ countries and 35 years of trends. R &middot; Python &middot; Stata &middot; joinpoint regression &middot; meta-analysis &middot; interactive dashboards.</p>
+    <nav class="fb-links">
+      <a href="research.html">Research</a>
+      <a href="dashboard.html">Live dashboard</a>
+      <a href="studio.html">Figure studio</a>
+      <a href="assets/Abdiwahab_Ali_CV.pdf">CV (PDF)</a>
+      <a href="mailto:bookhaali@gmail.com">Email</a>
+      <a href="https://www.linkedin.com/in/bookhaali/" rel="noopener">LinkedIn</a>
+      <a href="https://orcid.org/0009-0007-4069-2282" rel="noopener">ORCID</a>
+    </nav>
+    <p class="fb-note">This page opens with an interactive 3D data journey. If it hasn&rsquo;t appeared, your browser or device may not support WebGL &mdash; every section is reachable from the links above.</p>
+  </div>
+</section>
 <h1 class="sr-only">Abdiwahab Ali, health data analyst and epidemiology doctoral researcher in Taipei</h1>
 <p class="sr-only">An interactive 3D journey through thirteen data worlds: global obesity, burden and velocity, the early-onset shift, diet, obesity-related cancers, lag correlation, forecasts to 2050, causal diagrams, multivariable models, comorbidity networks, meta-analysis methods, publications, and data storytelling. Scroll to travel between worlds. Contact: bookhaali@gmail.com</p>
 <canvas id="space" role="img" aria-label="Interactive 3D data journey: thirteen worlds of public-health analysis. Scroll to travel."></canvas>
