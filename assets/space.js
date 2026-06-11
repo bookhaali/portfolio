@@ -150,8 +150,8 @@ const prevMaxCache = {};
 function obPrevMax(d) { if (prevMaxCache[d]) return prevMaxCache[d]; let m = 0; for (const k in OB.countries) { const r = OB.countries[k][d]; if (r) for (const v of r.series) if (v > m) m = v; } return prevMaxCache[d] = m; }
 
 function countryTip(iso, idx) {
-  const c = OB.countries[iso], r = c[pop];
-  return { name: c.name, sub: c.region, valHTML: r ? r.series[idx].toFixed(1) + '%<small> &nbsp;' + OB.layers[pop].years[idx] + '</small>' : 'no estimate', series: r ? r.series : null, hiIdx: idx };
+  const c = OB.countries[iso], r = c[pop], ag = pop === 'adol' ? 'ages 5-19' : 'ages 20+';
+  return { name: c.name, sub: c.region + ' · ' + ag, valHTML: r ? r.series[idx].toFixed(1) + '%<small> &nbsp;' + ag + ' · ' + OB.layers[pop].years[idx] + '</small>' : 'no estimate', series: r ? r.series : null, hiIdx: idx };
 }
 
 // ====================================================================
@@ -205,7 +205,7 @@ function refreshSpikes() {
     spikeColor(clamp(v / cmax, 0, 1), _spikeCol); m.userData.mat0.color.copy(_spikeCol);
     if (v > maxV) { maxV = v; maxM = m; maxIso = m.userData.iso; }
   }
-  if (maxM) { hotSpike = maxM; hotIso = maxIso; hotMarker.visible = hotLabel.visible = true; hotLabel.userData.set('highest  ' + OB.countries[maxIso].name + ' ' + maxV.toFixed(0) + '%'); }
+  if (maxM) { hotSpike = maxM; hotIso = maxIso; hotMarker.visible = hotLabel.visible = true; hotLabel.userData.set('highest  ' + OB.countries[maxIso].name + ' ' + maxV.toFixed(0) + '% · ' + (pop === 'adol' ? 'ages 5-19' : 'ages 20+')); }
 }
 const moon = new THREE.Mesh(new THREE.SphereGeometry(0.27, 48, 48), new THREE.MeshStandardMaterial({ color: 0x9a9893, roughness: 0.95 })); moon.position.set(3.4, 1.9, -7); moon.add(atmosphere(0.302, 0x9EC0EE, 3.2, 0.22)); scene.add(moon);
 
