@@ -123,6 +123,26 @@
     nav.top a.home{display:none}   /* the brand already links home */
   }
   #stars{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.85}
+  /* ---- merged study-figures section (.sf scopes it so it can't touch the dashboard's own .card/.seg) ---- */
+  .sf{margin-top:2.8rem;border-top:1px solid var(--border);padding-top:2rem}
+  .sf>h2{font-family:var(--disp);font-size:1.3rem;font-weight:700;letter-spacing:-.01em;margin:0 0 .3rem}
+  .sf>.sf-sub{font-size:.72rem;color:var(--muted);margin-bottom:1.4rem;max-width:660px;line-height:1.6}
+  .sf .grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+  .sf .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-l);padding:1.1rem 1.2rem;display:flex;flex-direction:column;min-width:0}
+  .sf .card h2{font-family:var(--disp);font-size:1.02rem;font-weight:600;letter-spacing:-.01em}
+  .sf .card .sub{font-size:.64rem;color:var(--muted);margin-top:.25rem;line-height:1.5;min-height:2.1em}
+  .sf .ctl{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.85rem 0 .6rem}
+  .sf .seg{display:inline-flex;border:1px solid var(--border);border-radius:var(--r-s);overflow:hidden}
+  .sf .seg button{font-family:var(--mono);font-size:.62rem;color:var(--muted);background:none;border:none;padding:7px 11px;cursor:pointer;transition:background .15s,color .15s}
+  .sf .seg button.on{background:var(--text);color:var(--bg);font-weight:700}
+  .sf .seg.alt button.on{background:var(--accent-soft);color:var(--text)}
+  .sf select{font-family:var(--mono);font-size:.64rem;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:var(--r-s);padding:7px 9px;cursor:pointer;max-width:62vw}
+  .sf canvas.chart{width:100%;display:block;cursor:crosshair;margin-top:.2rem}
+  .sf .legend{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:.6rem;font-size:.6rem;color:var(--muted)}
+  .sf .legend i{display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+  .sf .readout{font-size:.62rem;color:var(--faint);margin-top:.5rem;min-height:1.2em}
+  .sf .readout b{color:var(--text);font-variant-numeric:tabular-nums}
+  @media(max-width:840px){ .sf .grid{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -133,8 +153,7 @@
     <a href="index.html" class="home">Journey</a>
     <a href="research.html">Research</a>
     <a href="dashboard.html" class="on">Dashboard</a>
-    <a href="studio.html">Studio</a>
-    <a href="notes.html">Notes</a>
+        <a href="notes.html">Notes</a>
     <a href="index.html#hire" class="primary">Hire me</a>
   </nav>
 </header>
@@ -201,6 +220,36 @@
     </div>
     <button class="more" id="more">show all</button>
   </div>
+
+  <section class="sf">
+    <h2>Figures from my studies</h2>
+    <p class="sf-sub">Beyond the atlas above: headline figures from my other work &mdash; diet quality across the life course, Africa&rsquo;s double burden, and adult prevalence &mdash; rebuilt as live charts. Pick the cut, hover for the numbers.</p>
+    <div class="grid">
+      <div class="card" id="diet">
+        <h2>Diet quality across the life course</h2>
+        <div class="sub">Mean diet-quality score over time, younger adults vs older adults. Four validated indices; pick one.</div>
+        <div class="ctl"><div class="seg alt" id="d-index"></div><div class="seg" id="d-sex"></div></div>
+        <canvas class="chart" id="d-cv" height="240"></canvas>
+        <div class="legend"><span><i style="background:#8DB0E4"></i>ages 15&ndash;49</span><span><i style="background:#D98A6E"></i>ages 50+</span></div>
+        <div class="readout" id="d-read"></div>
+      </div>
+      <div class="card" id="burden">
+        <h2>The double burden, country by country</h2>
+        <div class="sub">Obesity rising while underweight falls, 1990&ndash;2022. Watch the lines cross. Choose a country and sex.</div>
+        <div class="ctl"><select id="b-country" aria-label="Country"></select><div class="seg" id="b-sex"></div></div>
+        <canvas class="chart" id="b-cv" height="240"></canvas>
+        <div class="legend"><span><i style="background:#D98A6E"></i>obesity</span><span><i style="background:#7BBFA0"></i>underweight</span></div>
+        <div class="readout" id="b-read"></div>
+      </div>
+      <div class="card" id="adult">
+        <h2>Adult prevalence, three decades</h2>
+        <div class="sub">Modelled adult prevalence by country, 1990&ndash;2022, with its average annual rate of change. Choose a country and sex.</div>
+        <div class="ctl"><select id="a-country" aria-label="Country"></select><div class="seg" id="a-sex"></div></div>
+        <canvas class="chart" id="a-cv" height="240"></canvas>
+        <div class="readout" id="a-read"></div>
+      </div>
+    </div>
+  </section>
 
   <p class="foot">
     Source: NCD Risk Factor Collaboration (NCD-RisC) age-standardised obesity prevalence estimates, 1990&ndash;2024. Built without chart libraries; reproducible inputs and exportable views.
@@ -393,7 +442,83 @@ addEventListener('resize',()=>scheduleAll());
 S.pins = ['TON','USA','CHN'].filter(iso=>OB.countries[iso]);
 drawAll();
 </script>
+<script src="data/studio.js"></script>
+<script>
+(function () {
+  const D = window.STUDIO_DATA; if (!D) return;
+  const $ = id => document.getElementById(id);
+  if (!CanvasRenderingContext2D.prototype.roundRect) CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){r=Math.min(r,w/2,h/2);this.moveTo(x+r,y);this.arcTo(x+w,y,x+w,y+h,r);this.arcTo(x+w,y+h,x,y+h,r);this.arcTo(x,y+h,x,y,r);this.arcTo(x,y,x+w,y,r);this.closePath();};
+  const tip=(()=>{ const d=document.createElement('div'); d.style.cssText='position:fixed;z-index:99;pointer-events:none;background:var(--glass);backdrop-filter:blur(10px);border:1px solid var(--glass-bd);border-radius:4px;padding:5px 9px;font-size:.6rem;color:var(--text);display:none;white-space:nowrap'; document.body.appendChild(d); return d; })();
+  function fit(cv){ if(!cv.dataset.dh) cv.dataset.dh=cv.getAttribute('height'); const dpr=Math.min(2,devicePixelRatio||1), h=+cv.dataset.dh, w=cv.clientWidth||300; cv.width=w*dpr; cv.height=h*dpr; cv.style.height=h+'px'; const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h); return {ctx,w,h}; }
+  function seg(host, items, val, on){ host.innerHTML=''; items.forEach(it=>{ const b=document.createElement('button'); b.textContent=it.label; b.className=it.v===val()?'on':''; b.onclick=()=>{ on(it.v); [...host.children].forEach(c=>c.classList.toggle('on',c===b)); }; host.appendChild(b); }); }
+  function gridY(ctx,m,w,Y,max,step){ ctx.font='400 9px JetBrains Mono'; ctx.fillStyle='#55544D'; ctx.textAlign='left'; for(let v=step; v<max; v+=step){ ctx.strokeStyle='#1D1C19'; ctx.beginPath(); ctx.moveTo(m.l,Y(v)); ctx.lineTo(w-m.r,Y(v)); ctx.stroke(); ctx.fillText(v,4,Y(v)+3); } }
+  function line(ctx,s,X,Y,col,wd){ ctx.strokeStyle=col; ctx.lineWidth=wd||2; ctx.beginPath(); let started=false; s.forEach((v,i)=>{ if(v==null)return; const x=X(i),y=Y(v); started?ctx.lineTo(x,y):ctx.moveTo(x,y); started=true; }); ctx.stroke(); }
+  function dot(ctx,x,y,col,r){ ctx.fillStyle=col; ctx.beginPath(); ctx.arc(x,y,r||3,0,7); ctx.fill(); }
+
+  const ds = { ix:'AHEI', sex:'Both' };
+  function drawDiet(){
+    const {ctx,w,h}=fit($('d-cv')); const ys=D.diet.years;
+    const a=D.diet.score[ds.ix][ds.sex]['15-49'], b=D.diet.score[ds.ix][ds.sex]['50+'];
+    const all=[...a,...b].filter(v=>v!=null); const min=Math.floor(Math.min(...all)/5)*5-2, max=Math.ceil(Math.max(...all)/5)*5+2;
+    const m={l:30,r:12,t:10,b:20}, iw=w-m.l-m.r, ih=h-m.t-m.b;
+    const X=i=>m.l+i/(ys.length-1)*iw, Y=v=>m.t+ih-(v-min)/(max-min)*ih;
+    ctx.font='400 9px JetBrains Mono'; ctx.fillStyle='#55544D'; ctx.textAlign='left';
+    for(let v=Math.ceil(min/5)*5; v<max; v+=5){ ctx.strokeStyle='#1D1C19'; ctx.beginPath(); ctx.moveTo(m.l,Y(v)); ctx.lineTo(w-m.r,Y(v)); ctx.stroke(); ctx.fillText(v,4,Y(v)+3); }
+    ctx.fillText(ys[0],m.l,h-6); ctx.textAlign='right'; ctx.fillText(ys[ys.length-1],w-m.r,h-6); ctx.textAlign='left';
+    line(ctx,a,X,Y,'#8DB0E4',2.2); line(ctx,b,X,Y,'#D98A6E',2.2);
+    a.forEach((v,i)=>v!=null&&dot(ctx,X(i),Y(v),'#8DB0E4',2.6)); b.forEach((v,i)=>v!=null&&dot(ctx,X(i),Y(v),'#D98A6E',2.6));
+    const la=a[a.length-1], lb=b[b.length-1];
+    $('d-read').innerHTML = ds.ix+' · '+ds.sex.toLowerCase()+' · '+ys[ys.length-1]+': <b>'+lb+'</b> at 50+ vs <b>'+la+'</b> at 15–49 (higher = better quality).';
+  }
+  seg($('d-index'), ['AHEI','DASH','aMED','PDQS'].map(v=>({label:v,v})), ()=>ds.ix, v=>{ds.ix=v;drawDiet();});
+  seg($('d-sex'), ['Both','Men','Women'].map(v=>({label:v,v})), ()=>ds.sex, v=>{ds.sex=v;drawDiet();});
+
+  const bs = { c:(D.africa.order.includes('Nigeria')?'Nigeria':D.africa.order[0]), sex:'Women' };
+  (function(){ const sel=$('b-country'); D.africa.order.forEach(nm=>{ const o=document.createElement('option'); o.value=o.textContent=nm; sel.appendChild(o); }); sel.value=bs.c; sel.onchange=()=>{bs.c=sel.value;drawBurden();}; })();
+  let bHits=[];
+  function drawBurden(){
+    const {ctx,w,h}=fit($('b-cv')); const ys=D.africa.years, L=D.africa.loc[bs.c];
+    const ob=L.obese[bs.sex], un=L.under[bs.sex]; bHits=[];
+    const max=Math.max(10,...ob.filter(v=>v!=null),...un.filter(v=>v!=null))*1.12;
+    const m={l:30,r:12,t:10,b:20}, iw=w-m.l-m.r, ih=h-m.t-m.b;
+    const X=i=>m.l+i/(ys.length-1)*iw, Y=v=>m.t+ih-v/max*ih;
+    gridY(ctx,m,w,Y,max,max>40?20:10);
+    ctx.fillStyle='#55544D'; ctx.font='400 9px JetBrains Mono'; ctx.textAlign='left'; ctx.fillText(ys[0],m.l,h-6); ctx.textAlign='right'; ctx.fillText(ys[ys.length-1],w-m.r,h-6); ctx.textAlign='left';
+    line(ctx,ob,X,Y,'#D98A6E',2.4); line(ctx,un,X,Y,'#7BBFA0',2.4);
+    ob.forEach((v,i)=>{ if(v!=null){bHits.push({x:X(i),y:Y(v),yr:ys[i],ob:v,un:un[i]});} });
+    const lo=ob[ob.length-1], lu=un[un.length-1];
+    $('b-read').innerHTML = bs.c+' · '+bs.sex.toLowerCase()+' · '+ys[ys.length-1]+': obesity <b>'+lo+'%</b>, underweight <b>'+lu+'%</b>.';
+  }
+  seg($('b-sex'), ['Women','Men'].map(v=>({label:v,v})), ()=>bs.sex, v=>{bs.sex=v;drawBurden();});
+  function nearest(hits,e,cv){ const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top; let best=null,bd=160; hits.forEach(h=>{ const dd=(h.x-x)**2+(h.y-y)**2; if(dd<bd){bd=dd;best=h;} }); return best; }
+  $('b-cv').addEventListener('mousemove',e=>{ const b=nearest(bHits,e,$('b-cv')); if(b){ tip.style.display='block'; tip.style.left=(e.clientX+12)+'px'; tip.style.top=(e.clientY-8)+'px'; tip.textContent=b.yr+': obesity '+b.ob+'% · underweight '+b.un+'%'; } else tip.style.display='none'; });
+  $('b-cv').addEventListener('mouseleave',()=>tip.style.display='none');
+
+  const ast = { c:(D.adult.order.includes('United States')?'United States':D.adult.order[0]), sex:'Both' };
+  (function(){ const sel=$('a-country'); D.adult.order.forEach(nm=>{ const o=document.createElement('option'); o.value=o.textContent=nm; sel.appendChild(o); }); sel.value=ast.c; sel.onchange=()=>{ast.c=sel.value;drawAdult();}; })();
+  function drawAdult(){
+    const {ctx,w,h}=fit($('a-cv')); const ys=D.adult.years, C=D.adult.c[ast.c]; const s=C[ast.sex];
+    const max=Math.max(8,...s.filter(v=>v!=null))*1.15;
+    const m={l:30,r:12,t:10,b:20}, iw=w-m.l-m.r, ih=h-m.t-m.b;
+    const X=i=>m.l+i/(ys.length-1)*iw, Y=v=>m.t+ih-v/max*ih;
+    gridY(ctx,m,w,Y,max,max>40?20:max>20?10:5);
+    ctx.fillStyle='#55544D'; ctx.font='400 9px JetBrains Mono'; ctx.textAlign='left'; ctx.fillText(ys[0],m.l,h-6); ctx.textAlign='right'; ctx.fillText(ys[ys.length-1],w-m.r,h-6); ctx.textAlign='left';
+    ctx.fillStyle='rgba(141,176,228,.12)'; ctx.beginPath(); let st=false; s.forEach((v,i)=>{ if(v==null)return; const x=X(i),y=Y(v); st?ctx.lineTo(x,y):ctx.moveTo(x,y); st=true; }); ctx.lineTo(X(s.length-1),Y(0)); ctx.lineTo(X(0),Y(0)); ctx.closePath(); ctx.fill();
+    line(ctx,s,X,Y,'#8DB0E4',2.4);
+    const lv=s[s.length-1]; dot(ctx,X(s.length-1),Y(lv),'#8DB0E4',3.4);
+    const aapc=C.aapc;
+    $('a-read').innerHTML = ast.c+' · '+ast.sex.toLowerCase()+' · '+ys[0]+': <b>'+s[0]+'%</b> → '+ys[ys.length-1]+': <b>'+lv+'%</b>'+(aapc!=null?' · <b>'+(aapc>=0?'+':'')+aapc+'%/yr</b> average change':'');
+  }
+  seg($('a-sex'), ['Both','Men','Women'].map(v=>({label:v,v})), ()=>ast.sex, v=>{ast.sex=v;drawAdult();});
+
+  function drawAll(){ drawDiet(); drawBurden(); drawAdult(); }
+  let raf2=null; addEventListener('resize',()=>{ if(raf2)return; raf2=requestAnimationFrame(()=>{ raf2=null; drawAll(); }); });
+  drawAll();
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(drawAll);
+})();
+</script>
 <script src="assets/stars.js"></script>
+
 <script src="assets/nav.js"></script>
 <script data-goatcounter="https://bookhaali.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
