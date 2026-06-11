@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Obesity Atlas — live dashboard demo · Abdiwahab Ali</title>
+<meta name="description" content="Interactive obesity dashboard: 200 countries, 35 years, NCD-RisC estimates. A live demo of the dashboards I build for clients.">
+<meta name="theme-color" content="#0D0D0C">
+<meta name="color-scheme" content="dark">
+<meta property="og:title" content="Obesity Atlas — live dashboard demo">
+<meta property="og:description" content="200 countries, 35 years, fully interactive. A live demo of the dashboards I build.">
+<meta property="og:image" content="https://bookhaali.github.io/portfolio/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0D0C'/%3E%3Ccircle cx='32' cy='36' r='13' fill='none' stroke='%238DB0E4' stroke-width='3'/%3E%3Cline x1='32' y1='23' x2='32' y2='10' stroke='%23E8743B' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='42' y1='28' x2='49' y2='19' stroke='%238DB0E4' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='22' y1='28' x2='16' y2='21' stroke='%235FC9C0' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0D0D0C; --surface:#151513; --text:#ECEBE4; --muted:#9C9B91; --faint:#6E6D64;
+    --border:#2A2924; --accent:#8DB0E4; --accent-soft:#18222E; --warm:#D98A6E;
+    --glass:rgba(15,15,13,.55); --glass-bd:rgba(236,235,228,.1);
+    --r-s:4px; --r-l:10px;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --disp:'Space Grotesk','JetBrains Mono',system-ui,sans-serif;
+  }
+  html{background:var(--bg);scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+  ::selection{background:rgba(141,176,228,.3);color:var(--text)}
+  body{background:var(--bg);color:var(--text);font-family:var(--mono);-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--r-s)}
+
+  header.site{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+    padding:1.1rem 1.9rem;background:rgba(13,13,12,.82);backdrop-filter:blur(14px) saturate(1.2);border-bottom:1px solid var(--glass-bd)}
+  .brand{text-decoration:none;color:var(--text)}
+  .brand .name{font-size:.92rem;font-weight:700}
+  .brand .role{font-size:.66rem;color:var(--muted);margin-top:.15rem}
+  nav.top{display:flex;gap:.6rem;align-items:center}
+  nav.top a{font-size:.66rem;letter-spacing:.04em;text-decoration:none;color:var(--muted);border:1px solid transparent;border-radius:var(--r-s);padding:8px 12px;transition:color .18s,border-color .18s}
+  nav.top a:hover{color:var(--text);border-color:var(--border)}
+  nav.top a.on{color:var(--text);border-color:var(--border)}
+  nav.top a.primary{background:var(--accent);color:#0D0D0C;font-weight:700;border:1px solid var(--accent)}
+  nav.top a.primary:hover{background:#A6C4EE}
+
+  main{max-width:1180px;margin:0 auto;padding:2.2rem 1.6rem 4rem}
+  .kicker{font-size:.64rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+  h1{font-family:var(--disp);font-size:clamp(1.5rem,3.4vw,2.2rem);font-weight:700;letter-spacing:-.02em;margin:.5rem 0 .4rem}
+  .lede{font-size:.74rem;color:var(--muted);max-width:660px;line-height:1.7}
+
+  .bar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:1.6rem 0 1rem;position:sticky;top:64px;z-index:40;
+    background:var(--glass);backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--glass-bd);border-radius:var(--r-l);padding:.6rem .7rem}
+  .seg{display:flex;border:1px solid var(--border);border-radius:var(--r-s);overflow:hidden}
+  .seg button{background:none;border:none;border-left:1px solid var(--border);font-family:var(--mono);font-size:.68rem;color:var(--muted);padding:8px 12px;cursor:pointer;transition:background .15s,color .15s}
+  .seg button:first-child{border-left:none}
+  .seg button:hover{color:var(--text)}
+  .seg button.on{background:var(--text);color:var(--bg);font-weight:700}
+  .chips{display:flex;gap:.35rem;flex-wrap:wrap}
+  .rchip{font-family:var(--mono);font-size:.62rem;color:var(--muted);background:none;border:1px solid var(--border);border-radius:99px;padding:6px 11px;cursor:pointer;transition:all .15s}
+  .rchip:hover{color:var(--text)}
+  .rchip.on{border-color:var(--accent);color:var(--text);background:var(--accent-soft)}
+  .timeline{display:flex;align-items:center;gap:.55rem;margin-left:auto}
+  .play{width:32px;height:32px;border-radius:var(--r-s);border:1px solid var(--border);background:none;color:var(--accent);cursor:pointer;font-size:.74rem;display:flex;align-items:center;justify-content:center}
+  .play:hover{border-color:var(--accent);background:var(--accent-soft)}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:170px;height:24px;background:transparent;cursor:pointer}
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--border)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent);margin-top:-5.5px}
+  input[type=range]::-moz-range-track{height:2px;background:var(--border)}
+  input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-radius:50%;background:var(--accent)}
+  .year{font-family:var(--disp);font-size:1.05rem;font-weight:700;min-width:54px;text-align:right;font-variant-numeric:tabular-nums}
+
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r-l);overflow:hidden;margin-bottom:1rem}
+  .kpi{background:var(--surface);padding:1rem 1.2rem}
+  .kpi b{display:block;font-family:var(--disp);font-size:1.55rem;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1.1}
+  .kpi span{font-size:.62rem;color:var(--muted)}
+  .kpi small{display:block;font-size:.6rem;color:var(--faint);margin-top:.2rem}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+  @media(max-width:880px){.grid2{grid-template-columns:1fr}.timeline{margin-left:0}}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-l);padding:1rem 1.2rem}
+  .card h2{font-family:var(--disp);font-size:.95rem;font-weight:600;margin-bottom:.2rem}
+  .card .hint{font-size:.6rem;color:var(--faint);margin-bottom:.6rem}
+  canvas.chart{width:100%;display:block;cursor:crosshair}
+
+  .pins{display:flex;gap:.4rem;flex-wrap:wrap;margin:.2rem 0 .8rem}
+  .pin{display:inline-flex;align-items:center;gap:.45rem;font-size:.64rem;border:1px solid var(--border);border-radius:99px;padding:5px 7px 5px 11px;color:var(--text)}
+  .pin i{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .pin button{background:none;border:none;color:var(--faint);cursor:pointer;font-family:var(--mono);font-size:.7rem;padding:0 3px}
+  .pin button:hover{color:var(--text)}
+
+  .tablewrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-l);overflow:hidden}
+  .thead{display:flex;align-items:center;gap:.8rem;padding:.8rem 1.2rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
+  .thead h2{font-family:var(--disp);font-size:.95rem;font-weight:600;margin-right:auto}
+  .search{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-s);color:var(--text);font-family:var(--mono);font-size:.7rem;padding:8px 12px;width:210px}
+  .search::placeholder{color:var(--faint)}
+  table{width:100%;border-collapse:collapse;font-size:.7rem}
+  th{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);text-align:right;padding:.65rem .9rem;cursor:pointer;user-select:none;white-space:nowrap}
+  th:first-child,td:first-child{text-align:left;padding-left:1.2rem}
+  th.on{color:var(--accent)}
+  td{padding:.5rem .9rem;text-align:right;border-top:1px solid #1D1C19;font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+  td.name{color:var(--text);cursor:pointer}
+  td.name:hover{color:var(--accent)}
+  td .reg{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:.55rem;vertical-align:baseline}
+  tr:hover td{background:rgba(141,176,228,.04)}
+  td.up{color:#E0A24A} td.dn{color:#7BBFA0}
+  .more{display:block;width:100%;background:none;border:none;border-top:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:.66rem;padding:12px;cursor:pointer}
+  .more:hover{color:var(--text)}
+
+  .foot{font-size:.62rem;color:var(--faint);line-height:1.8;margin-top:1.6rem;max-width:760px}
+  .foot a{color:var(--muted)}
+  .cta-line{margin-top:1.2rem}
+  .btn{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;background:var(--accent);color:#0D0D0C;border-radius:var(--r-s);padding:12px 22px}
+  .btn:hover{background:#A6C4EE}
+</style>
+</head>
+<body>
+<header class="site">
+  <a class="brand" href="index.html"><div class="name">Abdiwahab Ali</div><div class="role">Health data analyst &middot; Doctoral researcher &mdash; Taipei</div></a>
+  <nav class="top">
+    <a href="index.html">Journey</a>
+    <a href="research.html">Research</a>
+    <a href="dashboard.html" class="on">Dashboard</a>
+    <a href="notes.html">Notes</a>
+    <a href="index.html#hire" class="primary">Hire me</a>
+  </nav>
+</header>
+
+<main>
+  <div class="kicker">Live demo</div>
+  <h1>Obesity Atlas — 200 countries, 35 years, fully interactive</h1>
+  <p class="lede">This is a working sample of the "interactive dashboard" deliverable: real NCD-RisC estimates, filterable, animatable, exportable. Everything runs in your browser — no server, your clicks stay yours. Pin countries from any chart or the table to compare them.</p>
+
+  <div class="bar">
+    <div class="seg" id="popseg">
+      <button data-pop="adol" class="on">Youth 5&ndash;19</button>
+      <button data-pop="adult">Adults 20+</button>
+    </div>
+    <div class="chips" id="regchips"></div>
+    <div class="timeline">
+      <button class="play" id="play" aria-label="Play years">&#9654;</button>
+      <input type="range" id="yr" min="0" max="34" value="34" aria-label="Year">
+      <span class="year" id="yrlab">2024</span>
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><b id="k1">—</b><span>global prevalence</span><small id="k1s"></small></div>
+    <div class="kpi"><b id="k2">—</b><span>highest country</span><small id="k2s"></small></div>
+    <div class="kpi"><b id="k3">—</b><span>fastest annual rise</span><small id="k3s"></small></div>
+    <div class="kpi"><b id="k4">—</b><span>countries above 10%</span><small id="k4s"></small></div>
+  </div>
+
+  <div class="pins" id="pins"></div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Top 20 — <span id="rktitle">2024</span></h2>
+      <div class="hint">click a bar to pin it to the trend chart</div>
+      <canvas class="chart" id="rank" height="430"></canvas>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:1rem">
+        <h2>Trends, 1990&ndash;2024</h2>
+        <div class="hint">global mean + pinned countries · drag the year slider to move the cursor</div>
+        <canvas class="chart" id="trend" height="200"></canvas>
+      </div>
+      <div class="card">
+        <h2>Burden vs velocity</h2>
+        <div class="hint">x: latest prevalence · y: annual trend (AAPC) · hover for names, click to pin</div>
+        <canvas class="chart" id="scat" height="186"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="tablewrap">
+    <div class="thead">
+      <h2 id="tbltitle">All countries</h2>
+      <input class="search" id="q" type="search" placeholder="search country…">
+    </div>
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr id="hdr">
+        <th data-k="name">Country</th><th data-k="y0">1990</th><th data-k="y1" class="on">Latest ↓</th><th data-k="chg">Change</th><th data-k="aapc">AAPC %/yr</th><th>1990&ndash;2024</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    </div>
+    <button class="more" id="more">show all</button>
+  </div>
+
+  <p class="foot">
+    Source: NCD Risk Factor Collaboration (NCD-RisC) age-standardised obesity prevalence estimates, 1990&ndash;2024. Built by hand — no chart libraries — in the same pipeline style I use for client work: reproducible inputs, honest axes, exportable views.
+    <span class="cta-line"><a class="btn" href="index.html#hire">Build one for your data</a></span>
+  </p>
+</main>
+
+<script src="data/atlas.js"></script>
+<script>
+const OB = window.ATLAS_DATA;
+const REGC = { 'African':'#D9A05C','Americas':'#7FA8D6','Eastern Mediterranean':'#C98A70','European':'#9C92D6','South-East Asia':'#7BBFA0','Western Pacific':'#D08294' };
+const REGS = Object.keys(REGC);
+const PINC = ['#8DB0E4','#E0A24A','#7BBFA0','#D08294','#9C92D6'];
+const S = { pop:'adol', region:null, yi:OB.layers.adol.years.length-1, pins:[], q:'', sort:{k:'y1',dir:-1}, showAll:false };
+const $ = id => document.getElementById(id);
+const years = () => OB.layers[S.pop].years;
+const fmt1 = v => v==null?'—':v.toFixed(1)+'%';
+
+function rows() {
+  const out = [];
+  for (const iso in OB.countries) {
+    const c = OB.countries[iso], r = c[S.pop]; if (!r) continue;
+    if (S.region && c.region !== S.region) continue;
+    if (S.q && !c.name.toLowerCase().includes(S.q)) continue;
+    out.push({ iso, name:c.name, region:c.region, s:r.series, y0:r.series[0], y1:r.series[S.yi], end:r.series[r.series.length-1], aapc:r.aapc==null?0:r.aapc, chg:r.series[S.yi]-r.series[0] });
+  }
+  return out;
+}
+function setupCanvas(cv) {
+  const dpr = Math.min(2, devicePixelRatio||1), w = cv.clientWidth, h = +cv.getAttribute('height');
+  cv.width = w*dpr; cv.height = h*dpr; cv.style.height = h+'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+  return { ctx, w, h };
+}
+let rankHits = [], scatHits = [];
+
+function drawRank() {
+  const cv = $('rank'), { ctx, w, h } = setupCanvas(cv);
+  const data = rows().sort((a,b)=>b.y1-a.y1).slice(0,20);
+  rankHits = [];
+  const max = Math.max(10, ...data.map(d=>d.y1))*1.08, bh = (h-8)/20;
+  ctx.font = '500 11px JetBrains Mono';
+  data.forEach((d,i)=>{
+    const y = 4+i*bh, bw = (w-150)*(d.y1/max);
+    const pin = S.pins.indexOf(d.iso);
+    ctx.fillStyle = pin>=0 ? PINC[pin%PINC.length] : (REGC[d.region]||'#888');
+    ctx.globalAlpha = pin>=0?1:.78;
+    ctx.beginPath(); ctx.roundRect(112, y+2, Math.max(2,bw), bh-6, 3); ctx.fill(); ctx.globalAlpha = 1;
+    ctx.fillStyle = '#ECEBE4'; ctx.textAlign = 'right';
+    ctx.fillText(d.name.length>14?d.name.slice(0,13)+'…':d.name, 104, y+bh/2+4);
+    ctx.fillStyle = '#9C9B91'; ctx.textAlign = 'left';
+    ctx.fillText(d.y1.toFixed(1), 118+Math.max(2,bw), y+bh/2+4);
+    rankHits.push({ x:0, y, w, h:bh, iso:d.iso });
+  });
+}
+function drawTrend() {
+  const cv = $('trend'), { ctx, w, h } = setupCanvas(cv);
+  const ys = years(), g = OB.layers[S.pop].global;
+  const series = [{ name:'Global', s:g, col:'#ECEBE4', dash:[5,5] }];
+  S.pins.forEach((iso,i)=>{ const c = OB.countries[iso], r = c&&c[S.pop]; if (r) series.push({ name:c.name, s:r.series, col:PINC[i%PINC.length] }); });
+  const max = Math.max(10, ...series.flatMap(x=>x.s))*1.1;
+  const m = { l:34, r:10, t:8, b:20 }, iw = w-m.l-m.r, ih = h-m.t-m.b;
+  const X = i => m.l+i/(ys.length-1)*iw, Y = v => m.t+ih-(v/max)*ih;
+  ctx.font = '400 9px JetBrains Mono'; ctx.fillStyle = '#55544D';
+  const step = max>30?10:5;
+  for (let v=step; v<max; v+=step){ ctx.strokeStyle='#1D1C19'; ctx.beginPath(); ctx.moveTo(m.l,Y(v)); ctx.lineTo(w-m.r,Y(v)); ctx.stroke(); ctx.fillText(v+'%',4,Y(v)+3); }
+  ctx.fillText(ys[0], m.l, h-6); ctx.textAlign='right'; ctx.fillText(ys[ys.length-1], w-m.r, h-6); ctx.textAlign='left';
+  // year cursor
+  ctx.strokeStyle = 'rgba(236,235,228,.18)'; ctx.beginPath(); ctx.moveTo(X(S.yi),m.t); ctx.lineTo(X(S.yi),m.t+ih); ctx.stroke();
+  series.forEach(sr=>{
+    ctx.strokeStyle = sr.col; ctx.lineWidth = sr.name==='Global'?1.4:2; ctx.setLineDash(sr.dash||[]);
+    ctx.beginPath(); sr.s.forEach((v,i)=>{ i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v)); }); ctx.stroke(); ctx.setLineDash([]);
+    const v = sr.s[S.yi]; ctx.fillStyle = sr.col; ctx.beginPath(); ctx.arc(X(S.yi),Y(v),3,0,7); ctx.fill();
+  });
+}
+function drawScatter() {
+  const cv = $('scat'), { ctx, w, h } = setupCanvas(cv);
+  const data = rows(); scatHits = [];
+  const xmax = Math.max(10,...data.map(d=>d.end))*1.06;
+  const ymin = Math.min(0,...data.map(d=>d.aapc))-.4, ymax = Math.max(...data.map(d=>d.aapc))+.4;
+  const m = { l:34, r:10, t:8, b:20 }, iw = w-m.l-m.r, ih = h-m.t-m.b;
+  const X = v => m.l+v/xmax*iw, Y = v => m.t+ih-(v-ymin)/(ymax-ymin)*ih;
+  ctx.strokeStyle='#1D1C19'; ctx.beginPath(); ctx.moveTo(m.l,Y(0)); ctx.lineTo(w-m.r,Y(0)); ctx.stroke();
+  ctx.font='400 9px JetBrains Mono'; ctx.fillStyle='#55544D';
+  ctx.fillText('0',24,Y(0)+3); ctx.fillText('prevalence →',m.l,h-6);
+  ctx.save(); ctx.translate(8,m.t+ih/2); ctx.rotate(-Math.PI/2); ctx.textAlign='center'; ctx.fillText('AAPC →',0,0); ctx.restore();
+  data.forEach(d=>{
+    const x=X(d.end), y=Y(d.aapc), pin=S.pins.indexOf(d.iso), r=pin>=0?5:3;
+    ctx.fillStyle = pin>=0?PINC[pin%PINC.length]:(REGC[d.region]||'#888');
+    ctx.globalAlpha = pin>=0?1:.62; ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.fill(); ctx.globalAlpha=1;
+    scatHits.push({x,y,iso:d.iso,name:d.name});
+  });
+}
+function spark(cv, s) {
+  const dpr = Math.min(2, devicePixelRatio||1); cv.width=92*dpr; cv.height=22*dpr;
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+  const mx = Math.max(...s)||1;
+  ctx.strokeStyle='#8DB0E4'; ctx.lineWidth=1.2; ctx.beginPath();
+  s.forEach((v,i)=>{ const x=2+i/(s.length-1)*88, y=20-(v/mx)*18; i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.stroke();
+}
+function drawTable() {
+  const data = rows();
+  const { k, dir } = S.sort;
+  data.sort((a,b)=> k==='name' ? a.name.localeCompare(b.name)*dir : ((a[k]??-1e9)-(b[k]??-1e9))*dir );
+  const lim = S.showAll ? data.length : 25;
+  const tb = $('tbody'); tb.innerHTML = '';
+  data.slice(0,lim).forEach(d=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="name"><span class="reg" style="background:${REGC[d.region]||'#888'}"></span>${d.name}</td>
+      <td>${fmt1(d.y0)}</td><td style="color:var(--text)">${fmt1(d.y1)}</td>
+      <td class="${d.chg>=0?'up':'dn'}">${d.chg>=0?'+':''}${d.chg.toFixed(1)}</td>
+      <td class="${d.aapc>=0?'up':'dn'}">${d.aapc>=0?'+':''}${d.aapc.toFixed(2)}</td>
+      <td><canvas width="92" height="22" style="width:92px;height:22px"></canvas></td>`;
+    tr.querySelector('.name').addEventListener('click',()=>togglePin(d.iso));
+    spark(tr.querySelector('canvas'), d.s);
+    tb.appendChild(tr);
+  });
+  $('more').textContent = S.showAll ? 'show top 25' : `show all ${data.length}`;
+  $('tbltitle').textContent = (S.region||'All countries') + ' · ' + (S.pop==='adol'?'youth 5–19':'adults 20+');
+}
+function drawKpis() {
+  const ys = years(), g = OB.layers[S.pop].global, data = rows();
+  $('k1').textContent = fmt1(g[S.yi]); $('k1s').textContent = `${ys[0]}: ${fmt1(g[0])} → ${ys[S.yi]}`;
+  const hi = data.reduce((a,b)=>(b.y1??-1)>(a.y1??-1)?b:a, {y1:-1,name:'—'});
+  $('k2').textContent = fmt1(hi.y1); $('k2s').textContent = hi.name;
+  const fr = data.reduce((a,b)=>b.aapc>a.aapc?b:a, {aapc:-1e9,name:'—'});
+  $('k3').textContent = '+'+fr.aapc.toFixed(2)+'%'; $('k3s').textContent = fr.name + ' · AAPC';
+  const n10 = data.filter(d=>d.y1>=10).length;
+  $('k4').textContent = n10; $('k4s').textContent = `of ${data.length} ${S.region?'in '+S.region:'worldwide'}`;
+}
+function drawPins() {
+  const el = $('pins'); el.innerHTML='';
+  S.pins.forEach((iso,i)=>{
+    const c = OB.countries[iso]; if (!c) return;
+    const s = document.createElement('span'); s.className='pin';
+    s.innerHTML = `<i style="background:${PINC[i%PINC.length]}"></i>${c.name}<button aria-label="unpin">×</button>`;
+    s.querySelector('button').addEventListener('click',()=>togglePin(iso));
+    el.appendChild(s);
+  });
+}
+function togglePin(iso){ const i=S.pins.indexOf(iso); if(i>=0)S.pins.splice(i,1); else { if(S.pins.length>=5)S.pins.shift(); S.pins.push(iso); } drawAll(); }
+function drawAll(){ $('rktitle').textContent = years()[S.yi]; $('yrlab').textContent = years()[S.yi]; drawKpis(); drawRank(); drawTrend(); drawScatter(); drawTable(); drawPins(); }
+
+// region chips
+(function(){ const el = $('regchips');
+  const all = document.createElement('button'); all.className='rchip on'; all.textContent='All regions';
+  all.addEventListener('click',()=>{ S.region=null; document.querySelectorAll('.rchip').forEach(c=>c.classList.toggle('on',c===all)); drawAll(); });
+  el.appendChild(all);
+  REGS.forEach(r=>{ const b=document.createElement('button'); b.className='rchip'; b.textContent=r;
+    b.addEventListener('click',()=>{ S.region = S.region===r?null:r; document.querySelectorAll('.rchip').forEach(c=>c.classList.remove('on')); (S.region?b:all).classList.add('on'); drawAll(); });
+    el.appendChild(b); });
+})();
+$('popseg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+  if (b.dataset.pop===S.pop) return; S.pop=b.dataset.pop;
+  $('popseg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  const n = years().length-1; $('yr').max=n; if(S.yi>n)S.yi=n; $('yr').value=S.yi; drawAll();
+}));
+$('yr').addEventListener('input',e=>{ stop(); S.yi=+e.target.value; drawAll(); });
+let timer=null;
+function stop(){ if(timer){clearInterval(timer);timer=null;$('play').innerHTML='&#9654;';} }
+$('play').addEventListener('click',()=>{
+  if (timer) return stop();
+  $('play').innerHTML='&#10073;&#10073;';
+  timer=setInterval(()=>{ S.yi = S.yi>=years().length-1?0:S.yi+1; $('yr').value=S.yi; drawAll(); },420);
+});
+$('q').addEventListener('input',e=>{ S.q=e.target.value.trim().toLowerCase(); drawAll(); });
+$('hdr').querySelectorAll('th[data-k]').forEach(th=>th.addEventListener('click',()=>{
+  const k=th.dataset.k; if(S.sort.k===k)S.sort.dir*=-1; else S.sort={k,dir:k==='name'?1:-1};
+  $('hdr').querySelectorAll('th').forEach(x=>x.classList.toggle('on',x===th)); drawTable();
+}));
+$('more').addEventListener('click',()=>{ S.showAll=!S.showAll; drawTable(); });
+$('rank').addEventListener('click',e=>{ const r=e.target.getBoundingClientRect(), y=e.clientY-r.top; const hit=rankHits.find(h=>y>=h.y&&y<=h.y+h.h); if(hit)togglePin(hit.iso); });
+const tip=(()=>{ const d=document.createElement('div'); d.style.cssText='position:fixed;z-index:99;pointer-events:none;background:var(--glass);backdrop-filter:blur(10px);border:1px solid var(--glass-bd);border-radius:4px;padding:4px 9px;font-size:.62rem;color:var(--text);display:none'; document.body.appendChild(d); return d; })();
+$('scat').addEventListener('mousemove',e=>{
+  const r=e.target.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+  let best=null,bd=144; scatHits.forEach(h=>{ const dd=(h.x-x)**2+(h.y-y)**2; if(dd<bd){bd=dd;best=h;} });
+  if(best){ tip.style.display='block'; tip.style.left=(e.clientX+12)+'px'; tip.style.top=(e.clientY-8)+'px'; tip.textContent=best.name; } else tip.style.display='none';
+});
+$('scat').addEventListener('mouseleave',()=>tip.style.display='none');
+$('scat').addEventListener('click',e=>{
+  const r=e.target.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top;
+  let best=null,bd=144; scatHits.forEach(h=>{ const dd=(h.x-x)**2+(h.y-y)**2; if(dd<bd){bd=dd;best=h;} });
+  if(best) togglePin(best.iso);
+});
+addEventListener('resize',()=>drawAll());
+// defaults: a telling comparison out of the box
+S.pins = ['TON','USA','CHN'].filter(iso=>OB.countries[iso]);
+drawAll();
+</script>
+<script data-goatcounter="https://bookhaali.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>

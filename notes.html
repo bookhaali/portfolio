@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Field Notes — Abdiwahab Ali</title>
+<meta name="description" content="Short, honest data stories from public health datasets. One a month, computed live from the source data.">
+<meta name="theme-color" content="#0D0D0C">
+<meta name="color-scheme" content="dark">
+<meta property="og:title" content="Field Notes — Abdiwahab Ali">
+<meta property="og:description" content="Short, honest data stories from public health datasets.">
+<meta property="og:image" content="https://bookhaali.github.io/portfolio/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0D0C'/%3E%3Ccircle cx='32' cy='36' r='13' fill='none' stroke='%238DB0E4' stroke-width='3'/%3E%3Cline x1='32' y1='23' x2='32' y2='10' stroke='%23E8743B' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='42' y1='28' x2='49' y2='19' stroke='%238DB0E4' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='22' y1='28' x2='16' y2='21' stroke='%235FC9C0' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0D0D0C; --surface:#151513; --text:#ECEBE4; --muted:#9C9B91; --faint:#6E6D64;
+    --border:#2A2924; --accent:#8DB0E4; --accent-soft:#18222E; --warm:#D98A6E;
+    --glass:rgba(15,15,13,.55); --glass-bd:rgba(236,235,228,.1);
+    --r-s:4px; --r-l:10px;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --disp:'Space Grotesk','JetBrains Mono',system-ui,sans-serif;
+  }
+  html{background:var(--bg);scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+  ::selection{background:rgba(141,176,228,.3);color:var(--text)}
+  body{background:var(--bg);color:var(--text);font-family:var(--mono);-webkit-font-smoothing:antialiased;line-height:1.75}
+  a{color:var(--accent)}
+  header.site{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+    padding:1.1rem 1.9rem;background:rgba(13,13,12,.82);backdrop-filter:blur(14px) saturate(1.2);border-bottom:1px solid var(--glass-bd)}
+  .brand{text-decoration:none;color:var(--text)}
+  .brand .name{font-size:.92rem;font-weight:700}
+  .brand .role{font-size:.66rem;color:var(--muted);margin-top:.15rem}
+  nav.top{display:flex;gap:.6rem;align-items:center}
+  nav.top a{font-size:.66rem;letter-spacing:.04em;text-decoration:none;color:var(--muted);border:1px solid transparent;border-radius:var(--r-s);padding:8px 12px;transition:color .18s,border-color .18s}
+  nav.top a:hover{color:var(--text);border-color:var(--border)}
+  nav.top a.on{color:var(--text);border-color:var(--border)}
+  nav.top a.primary{background:var(--accent);color:#0D0D0C;font-weight:700;border:1px solid var(--accent)}
+  nav.top a.primary:hover{background:#A6C4EE}
+  main{max-width:680px;margin:0 auto;padding:3.4rem 1.6rem 4.5rem}
+  .kicker{font-size:.64rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+  h1{font-family:var(--disp);font-size:clamp(1.6rem,4vw,2.3rem);font-weight:700;letter-spacing:-.02em;margin:.5rem 0 .6rem}
+  .lede{font-size:.78rem;color:var(--muted)}
+  article{margin-top:3.2rem;border-top:1px solid var(--border);padding-top:2.4rem}
+  .meta{font-size:.62rem;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.8rem}
+  article h2{font-family:var(--disp);font-size:1.45rem;font-weight:700;letter-spacing:-.01em;line-height:1.3;margin-bottom:1.1rem}
+  article p{font-size:.8rem;color:var(--muted);margin-bottom:1.1rem}
+  article p b{color:var(--text);font-weight:500}
+  figure{margin:1.6rem 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-l);padding:1.1rem 1.2rem}
+  figcaption{font-size:.62rem;color:var(--faint);margin-top:.7rem;line-height:1.6}
+  canvas{width:100%;display:block}
+  .method{background:var(--accent-soft);border:1px solid rgba(141,176,228,.25);border-radius:var(--r-l);padding:1rem 1.2rem;font-size:.68rem;color:var(--muted);line-height:1.75;margin-top:1.8rem}
+  .method b{color:var(--text);font-weight:500}
+  .soon{margin-top:3rem;border-top:1px solid var(--border);padding-top:1.6rem;font-size:.7rem;color:var(--faint)}
+  footer{border-top:1px solid var(--border);margin-top:3rem;padding:1.6rem;display:flex;justify-content:center;gap:1.4rem;flex-wrap:wrap}
+  footer a{font-size:.64rem;color:var(--faint);text-decoration:none}
+  footer a:hover{color:var(--text)}
+</style>
+</head>
+<body>
+<header class="site">
+  <a class="brand" href="index.html"><div class="name">Abdiwahab Ali</div><div class="role">Health data analyst &middot; Doctoral researcher &mdash; Taipei</div></a>
+  <nav class="top">
+    <a href="index.html">Journey</a>
+    <a href="research.html">Research</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="notes.html" class="on">Notes</a>
+    <a href="index.html#hire" class="primary">Hire me</a>
+  </nav>
+</header>
+
+<main>
+  <div class="kicker">Field notes</div>
+  <h1>Short, honest data stories.</h1>
+  <p class="lede">One a month. Public data, small questions, straight answers — every number below is computed live in your browser from the source dataset, so the chart can't drift from the text.</p>
+
+  <article>
+    <div class="meta">Nº 01 · June 2026 · NCD-RisC, 1990–2024</div>
+    <h2>Youth obesity didn't rise everywhere equally. It moved to new neighborhoods.</h2>
+    <p>The global headline is familiar by now: <b id="t-global">…</b> of the world's school-age children and adolescents live with obesity, up from <b id="t-global0">…</b> in 1990. A four-fold rise reads like a global story — but "global" is doing a lot of work in that sentence.</p>
+    <p>Rank countries by how <i>fast</i> obesity is rising — annual percent change, not absolute level — and the league table is not the one most people expect. The fastest movers aren't the countries famous for high prevalence. They are <b id="t-fastlist">…</b> — places that started near zero in 1990 and are compounding hardest now.</p>
+    <figure>
+      <canvas id="chart" height="260"></canvas>
+      <figcaption id="figcap">The five fastest-rising countries (by AAPC, 1990–2024) against the global mean (dashed). Computed from NCD-RisC age-standardised estimates the moment you loaded this page.</figcaption>
+    </figure>
+    <p>The pattern under it: <b id="t-regions">…</b> dominate the top of the velocity table. High-income countries hold most of the <i>level</i>; lower- and middle-income countries hold most of the <i>acceleration</i>. Prevention budgets are still mostly aimed at the first list.</p>
+    <p>That's the gap a velocity view exposes, and it's why I rarely chart prevalence without charting its slope next to it. Levels tell you where the problem is. Slopes tell you where it's going to be.</p>
+    <div class="method"><b>Method note.</b> Data: NCD Risk Factor Collaboration age-standardised obesity prevalence, ages 5–19, 200 countries, 1990–2024. Velocity = average annual percent change (AAPC) over the full window. No smoothing, no exclusions; the five series above are plotted exactly as published. Explore the full dataset in the <a href="dashboard.html">interactive dashboard</a>.</div>
+  </article>
+
+  <p class="soon">Nº 02 lands next month. Want it in your inbox instead? <a href="mailto:bookhaali@gmail.com?subject=Field%20notes">Email me</a> and I'll send it directly.</p>
+</main>
+
+<footer>
+  <a href="https://www.linkedin.com/in/bookhaali/" target="_blank" rel="noopener">LinkedIn</a>
+  <a href="https://orcid.org/0009-0007-4069-2282" target="_blank" rel="noopener">ORCID</a>
+  <a href="https://github.com/bookhaali" target="_blank" rel="noopener">GitHub</a>
+  <a href="mailto:bookhaali@gmail.com">bookhaali@gmail.com</a>
+</footer>
+
+<script src="data/atlas.js"></script>
+<script>
+const OB = window.ATLAS_DATA, L = OB.layers.adol, ys = L.years;
+const PINC = ['#8DB0E4','#E0A24A','#7BBFA0','#D08294','#9C92D6'];
+const rows = Object.keys(OB.countries).map(iso => { const c = OB.countries[iso], r = c.adol; return r && r.aapc != null ? { name: c.name, region: c.region, s: r.series, aapc: r.aapc } : null; }).filter(Boolean);
+const fast = rows.slice().sort((a, b) => b.aapc - a.aapc).slice(0, 5);
+
+document.getElementById('t-global').textContent = L.global[L.global.length - 1].toFixed(1) + '%';
+document.getElementById('t-global0').textContent = L.global[0].toFixed(1) + '%';
+document.getElementById('t-fastlist').textContent = fast.map(f => f.name).join(', ');
+const regCount = {}; rows.slice().sort((a, b) => b.aapc - a.aapc).slice(0, 20).forEach(f => regCount[f.region] = (regCount[f.region] || 0) + 1);
+const topRegs = Object.entries(regCount).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([r, n]) => `the ${r} region (${n} of the 20 fastest)`);
+document.getElementById('t-regions').textContent = topRegs.join(' and ');
+
+(function draw() {
+  const cv = document.getElementById('chart'), dpr = Math.min(2, devicePixelRatio || 1);
+  const w = cv.clientWidth, h = +cv.getAttribute('height');
+  cv.width = w * dpr; cv.height = h * dpr; cv.style.height = h + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const max = Math.max(...fast.flatMap(f => f.s), ...L.global) * 1.12;
+  const m = { l: 36, r: 110, t: 10, b: 22 }, iw = w - m.l - m.r, ih = h - m.t - m.b;
+  const X = i => m.l + i / (ys.length - 1) * iw, Y = v => m.t + ih - v / max * ih;
+  ctx.font = '400 9px JetBrains Mono'; ctx.fillStyle = '#55544D';
+  for (let v = 5; v < max; v += 5) { ctx.strokeStyle = '#1D1C19'; ctx.beginPath(); ctx.moveTo(m.l, Y(v)); ctx.lineTo(w - m.r, Y(v)); ctx.stroke(); ctx.fillText(v + '%', 6, Y(v) + 3); }
+  ctx.fillText(ys[0], m.l, h - 6); ctx.fillText(ys[ys.length - 1], w - m.r - 24, h - 6);
+  ctx.strokeStyle = '#ECEBE4'; ctx.lineWidth = 1.3; ctx.setLineDash([5, 5]); ctx.beginPath();
+  L.global.forEach((v, i) => i ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v))); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = '#9C9B91'; ctx.fillText('Global', w - m.r + 8, Y(L.global[L.global.length - 1]) + 3);
+  fast.forEach((f, k) => {
+    ctx.strokeStyle = PINC[k]; ctx.lineWidth = 1.8; ctx.beginPath();
+    f.s.forEach((v, i) => i ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v))); ctx.stroke();
+    ctx.fillStyle = PINC[k]; ctx.fillText(f.name.length > 15 ? f.name.slice(0, 14) + '…' : f.name, w - m.r + 8, Y(f.s[f.s.length - 1]) + 3);
+  });
+  addEventListener('resize', draw, { once: true });
+})();
+</script>
+<script data-goatcounter="https://bookhaali.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>

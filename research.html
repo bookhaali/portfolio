@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Research — Abdiwahab Ali</title>
+<meta name="description" content="Eight active epidemiology studies, three peer-reviewed papers, ~2,000 publication figures. Most of it under embargo — the shape of the work isn't.">
+<meta name="theme-color" content="#0D0D0C">
+<meta name="color-scheme" content="dark">
+<meta property="og:title" content="Research — Abdiwahab Ali">
+<meta property="og:description" content="Eight active epidemiology studies, three peer-reviewed papers, ~2,000 publication figures.">
+<meta property="og:image" content="https://bookhaali.github.io/portfolio/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0D0C'/%3E%3Ccircle cx='32' cy='36' r='13' fill='none' stroke='%238DB0E4' stroke-width='3'/%3E%3Cline x1='32' y1='23' x2='32' y2='10' stroke='%23E8743B' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='42' y1='28' x2='49' y2='19' stroke='%238DB0E4' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='22' y1='28' x2='16' y2='21' stroke='%235FC9C0' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0D0D0C; --surface:#151513; --text:#ECEBE4; --muted:#9C9B91; --faint:#6E6D64;
+    --border:#2A2924; --accent:#8DB0E4; --accent-soft:#18222E; --warm:#D98A6E;
+    --glass:rgba(15,15,13,.55); --glass-bd:rgba(236,235,228,.1);
+    --r-s:4px; --r-l:10px;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --disp:'Space Grotesk','JetBrains Mono',system-ui,sans-serif;
+    --spring:cubic-bezier(.16,1,.3,1);
+  }
+  html{background:var(--bg);scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+  ::selection{background:rgba(141,176,228,.3);color:var(--text)}
+  body{background:var(--bg);color:var(--text);font-family:var(--mono);-webkit-font-smoothing:antialiased;line-height:1.6}
+  #stars{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.6}
+  main{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:7.5rem 1.6rem 4rem}
+  a{color:var(--accent)}
+  button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--r-s)}
+
+  header.site{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+    padding:1.1rem 1.9rem;background:rgba(13,13,12,.72);backdrop-filter:blur(14px) saturate(1.2);border-bottom:1px solid var(--glass-bd)}
+  .brand{text-decoration:none;color:var(--text)}
+  .brand .name{font-size:.92rem;font-weight:700}
+  .brand .role{font-size:.66rem;color:var(--muted);margin-top:.15rem}
+  nav.top{display:flex;gap:.6rem;align-items:center}
+  nav.top a{font-size:.66rem;letter-spacing:.04em;text-decoration:none;color:var(--muted);border:1px solid transparent;border-radius:var(--r-s);padding:8px 12px;transition:color .18s,border-color .18s}
+  nav.top a:hover{color:var(--text);border-color:var(--border)}
+  nav.top a.on{color:var(--text);border-color:var(--border)}
+  nav.top a.primary{background:var(--accent);color:#0D0D0C;font-weight:700;border:1px solid var(--accent)}
+  nav.top a.primary:hover{background:#A6C4EE;border-color:#A6C4EE}
+
+  .kicker{font-size:.64rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:.9rem}
+  h1{font-family:var(--disp);font-size:clamp(1.9rem,4.6vw,3rem);font-weight:700;letter-spacing:-.02em;line-height:1.15;max-width:740px}
+  .lede{font-size:.88rem;color:var(--muted);max-width:640px;margin-top:1.1rem;line-height:1.75}
+  .lede b{color:var(--text);font-weight:500}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r-l);overflow:hidden;margin:2.6rem 0 3.6rem}
+  .stat{background:var(--surface);padding:1.2rem 1.3rem}
+  .stat b{display:block;font-family:var(--disp);font-size:1.7rem;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+  .stat span{font-size:.66rem;color:var(--muted);letter-spacing:.04em}
+
+  h2{font-family:var(--disp);font-size:1.3rem;font-weight:700;letter-spacing:-.01em;margin:3.2rem 0 .5rem}
+  .sub{font-size:.76rem;color:var(--muted);margin-bottom:1.6rem;max-width:620px}
+
+  .papers{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:.9rem}
+  .paper{display:block;text-decoration:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-l);padding:1.3rem 1.4rem;transition:border-color .2s,transform .25s var(--spring)}
+  .paper:hover{border-color:var(--faint);transform:translateY(-2px)}
+  .paper .j{font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--warm)}
+  .paper .t{font-family:var(--disp);font-size:.95rem;font-weight:600;color:var(--text);margin:.55rem 0 .6rem;line-height:1.4}
+  .paper .d{font-size:.66rem;color:var(--faint)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:.9rem}
+  .proj{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-l);padding:1.3rem 1.4rem;display:flex;flex-direction:column;gap:.85rem;transition:border-color .2s}
+  .proj:hover{border-color:var(--faint)}
+  .proj .top{display:flex;align-items:baseline;justify-content:space-between;gap:.8rem}
+  .proj .code{font-size:.62rem;letter-spacing:.18em;color:var(--faint)}
+  .badge{font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:99px;border:1px solid var(--border);color:var(--muted);white-space:nowrap}
+  .badge.sub{color:#A6C4EE;border-color:rgba(141,176,228,.4)}
+  .badge.rev{color:#E0C08A;border-color:rgba(224,162,74,.4)}
+  .badge.prep{color:var(--muted)}
+  .badge.live{color:#8FD0AE;border-color:rgba(111,200,163,.4)}
+  .proj h3{font-family:var(--disp);font-size:1.02rem;font-weight:600;letter-spacing:-.01em;line-height:1.35}
+  .proj .desc{font-size:.72rem;color:var(--muted);line-height:1.65}
+  .figs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .figs.two{grid-template-columns:repeat(2,1fr)}
+  .figs .fig{position:relative;border-radius:6px;overflow:hidden;border:1px solid var(--border);aspect-ratio:3/2;background:#111}
+  .figs img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92)}
+  .lock{display:flex;align-items:center;gap:.45rem;font-size:.6rem;color:var(--faint)}
+  .lock svg{flex:none;opacity:.7}
+  .chips{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:auto}
+  .chip{font-size:.6rem;color:var(--muted);border:1px solid var(--border);border-radius:3px;padding:3px 8px}
+  .scale{display:flex;gap:1.1rem;flex-wrap:wrap}
+  .scale div b{display:block;font-size:.92rem;color:var(--text);font-variant-numeric:tabular-nums;font-weight:700}
+  .scale div span{font-size:.58rem;color:var(--faint);letter-spacing:.04em}
+
+  .note{display:flex;gap:.7rem;align-items:flex-start;background:var(--accent-soft);border:1px solid rgba(141,176,228,.25);border-radius:var(--r-l);padding:1rem 1.2rem;margin:1.4rem 0 0;font-size:.72rem;color:var(--muted);line-height:1.7;max-width:760px}
+  .note b{color:var(--text);font-weight:500}
+
+  .cta{margin-top:4rem;text-align:center;border-top:1px solid var(--border);padding-top:3rem}
+  .cta h2{margin-top:0}
+  .cta .row{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-top:1.4rem}
+  .btn{font-family:var(--mono);font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;
+    background:var(--accent);color:#0D0D0C;border-radius:var(--r-s);padding:14px 26px;transition:background .18s}
+  .btn:hover{background:#A6C4EE}
+  .btn.ghost{background:none;color:var(--muted);border:1px solid var(--border);font-weight:400;text-transform:none}
+  .btn.ghost:hover{color:var(--text);border-color:var(--faint)}
+  footer{position:relative;z-index:1;border-top:1px solid var(--border);margin-top:4rem;padding:1.6rem;display:flex;justify-content:center;gap:1.4rem;flex-wrap:wrap}
+  footer a{font-size:.64rem;color:var(--faint);text-decoration:none}
+  footer a:hover{color:var(--text)}
+  @media(max-width:640px){
+    header.site{padding:.9rem 1rem}
+    nav.top a{padding:7px 9px;font-size:.6rem}
+    .brand .role{display:none}
+    main{padding-top:6rem}
+  }
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<header class="site">
+  <a class="brand" href="index.html"><div class="name">Abdiwahab Ali</div><div class="role">Health data analyst &middot; Doctoral researcher &mdash; Taipei</div></a>
+  <nav class="top">
+    <a href="index.html">Journey</a>
+    <a href="research.html" class="on">Research</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="notes.html">Notes</a>
+    <a href="index.html#hire" class="primary">Hire me</a>
+  </nav>
+</header>
+
+<main>
+  <div class="kicker">Research</div>
+  <h1>Most of this work is sealed until it's published. The scale of it isn't.</h1>
+  <p class="lede">Eight active studies in <b>obesity, diet, cancer and clinical epidemiology</b> — global trend analyses, systematic evidence synthesis, and hospital analytics. Titles, hypotheses and findings stay under embargo until each paper lands. What I can show: the <b>methods, the scale, and the figures</b> — pixelated just enough to keep the science sealed.</p>
+
+  <div class="stats">
+    <div class="stat"><b>8</b><span>active studies</span></div>
+    <div class="stat"><b>3</b><span>peer-reviewed papers</span></div>
+    <div class="stat"><b>~2,000</b><span>figures produced</span></div>
+    <div class="stat"><b>190+</b><span>countries covered</span></div>
+    <div class="stat"><b>35 yrs</b><span>of trend data (1990&ndash;2024)</span></div>
+    <div class="stat"><b>R&middot;Stata&middot;Py</b><span>analysis stack</span></div>
+  </div>
+
+  <h2>Published &amp; citable</h2>
+  <p class="sub">Public record — click through to the journals.</p>
+  <div class="papers">
+    <a class="paper" href="https://doi.org/10.1016/j.puhe.2026.106177" target="_blank" rel="noopener">
+      <div class="j">Public Health &middot; 2026</div>
+      <div class="t">Khat chewing and oral &amp; esophageal cancer: systematic review and meta-analysis</div>
+      <div class="d">doi:10.1016/j.puhe.2026.106177</div>
+    </a>
+    <a class="paper" href="https://doi.org/10.3332/ecancer.2025.1880" target="_blank" rel="noopener">
+      <div class="j">ecancermedicalscience &middot; 2025</div>
+      <div class="t">Khat and upper digestive tract cancers in Hargeisa: a case&ndash;control study</div>
+      <div class="d">doi:10.3332/ecancer.2025.1880</div>
+    </a>
+    <a class="paper" href="https://doi.org/10.1111/cdoe.12990" target="_blank" rel="noopener">
+      <div class="j">Community Dent Oral Epidemiol &middot; 2022</div>
+      <div class="t">Dental health of 12-year-old children in Somaliland (University of Oslo project)</div>
+      <div class="d">doi:10.1111/cdoe.12990</div>
+    </a>
+  </div>
+
+  <h2>Active studies — sealed previews</h2>
+  <p class="sub">Real figures from real manuscripts, downsampled to 36 pixels before upload — composition survives, content doesn't. Each unblurs here the day its paper is published.</p>
+
+  <div class="grid">
+    <div class="proj">
+      <div class="top"><span class="code">STUDY 01</span><span class="badge prep">manuscript in prep</span></div>
+      <h3>Pediatric &amp; adolescent obesity — global trends</h3>
+      <p class="desc">Three decades of country-level prevalence, sex-stratified, with formal trend estimation.</p>
+      <div class="figs"><div class="fig"><img src="assets/research/p1_f1.jpg" alt="redacted figure"></div><div class="fig"><img src="assets/research/p1_f2.jpg" alt="redacted figure"></div><div class="fig"><img src="assets/research/p1_f3.jpg" alt="redacted figure"></div></div>
+      <div class="lock"><svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="#6E6D64"/><path d="M3 5V3.5C3 2.4 3.9 1.5 5 1.5C6.1 1.5 7 2.4 7 3.5V5" stroke="#6E6D64"/></svg>figures pixelated pending publication</div>
+      <div class="scale"><div><b>195+</b><span>countries</span></div><div><b>1990&ndash;2024</b><span>years</span></div><div><b>10</b><span>final figures</span></div></div>
+      <div class="chips"><span class="chip">AAPC trends</span><span class="chip">sex-stratified</span><span class="chip">NCD-RisC</span><span class="chip">R</span></div>
+    </div>
+
+    <div class="proj">
+      <div class="top"><span class="code">STUDY 02</span><span class="badge sub">submission-ready</span></div>
+      <h3>Global diet quality — four indices, 13 dietary factors</h3>
+      <p class="desc">Life-course diet quality across 185 countries and 28 years, with income-level convergence analysis. The largest build here: 160 datasets, 13 analysis scripts.</p>
+      <div class="figs"><div class="fig"><img src="assets/research/p2_f1.jpg" alt="redacted figure"></div><div class="fig"><img src="assets/research/p2_f2.jpg" alt="redacted figure"></div><div class="fig"><img src="assets/research/p2_f3.jpg" alt="redacted figure"></div></div>
+      <div class="lock"><svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="#6E6D64"/><path d="M3 5V3.5C3 2.4 3.9 1.5 5 1.5C6.1 1.5 7 2.4 7 3.5V5" stroke="#6E6D64"/></svg>figures pixelated pending publication</div>
+      <div class="scale"><div><b>185</b><span>countries</span></div><div><b>1990&ndash;2018</b><span>years</span></div><div><b>24</b><span>final figures</span></div></div>
+      <div class="chips"><span class="chip">GDD</span><span class="chip">index construction</span><span class="chip">income strata</span><span class="chip">R</span></div>
+    </div>
+
+    <div class="proj">
+      <div class="top"><span class="code">STUDY 03</span><span class="badge rev">under review</span></div>
+      <h3>Obesity-related cancers — global epidemiology</h3>
+      <p class="desc">Joinpoint regression over GBD incidence and mortality, correlated against obesity trends by country and sex. The most computation-heavy study: 300+ result sets generated.</p>
+      <div class="figs"><div class="fig"><img src="assets/research/p5_f1.jpg" alt="redacted figure"></div><div class="fig"><img src="assets/research/p5_f2.jpg" alt="redacted figure"></div><div class="fig"><img src="assets/research/p5_f3.jpg" alt="redacted figure"></div></div>
+      <div class="lock"><svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="#6E6D64"/><path d="M3 5V3.5C3 2.4 3.9 1.5 5 1.5C6.1 1.5 7 2.4 7 3.5V5" stroke="#6E6D64"/></svg>figures pixelated pending publication</div>
+      <div class="scale"><div><b>1,600+</b><span>figures generated</span></div><div><b>300+</b><span>result sets</span></div><div><b>2</b><span>stacks (Stata + R)</span></div></div>
+      <div class="chips"><span class="chip">joinpoint</span><span class="chip">GBD</span><span class="chip">meta-analysis</span><span class="chip">Stata</span></div>
+    </div>
+
+    <div class="proj">
+      <div class="top"><span class="code">STUDY 04</span><span class="badge prep">manuscript in prep</span></div>
+      <h3>Obesity across Africa — 54 countries, all ages</h3>
+      <p class="desc">Life-course analysis (adolescents, adults, older adults) of the continent's fastest-moving epidemic, with sex-disparity and double-burden framing.</p>
+      <div class="figs"><div class="fig"><img src="assets/research/p6_f1.jpg" alt="redacted figure"></div><div class="fig"><img src="assets/research/p6_f2.jpg" alt="redacted figure"></div><div class="fig"><img src="assets/research/p6_f3.jpg" alt="redacted figure"></div></div>
+      <div class="lock"><svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="#6E6D64"/><path d="M3 5V3.5C3 2.4 3.9 1.5 5 1.5C6.1 1.5 7 2.4 7 3.5V5" stroke="#6E6D64"/></svg>figures pixelated pending publication</div>
+      <div class="scale"><div><b>54</b><span>countries</span></div><div><b>3</b><span>age bands</span></div><div><b>59</b><span>figures</span></div></div>
+      <div class="chips"><span class="chip">AAPC trends</span><span class="chip">choropleth maps</span><span class="chip">sex disparities</span><span class="chip">R</span></div>
+    </div>
+
+    <div class="proj">
+      <div class="top"><span class="code">STUDY 05</span><span class="badge prep">poster accepted &middot; 2026</span></div>
+      <h3>Adult obesity — long-run national trends</h3>
+      <p class="desc">Deep-dive into one national series with method-comparison and sensitivity work behind every estimate — the unglamorous rigor reviewers ask for.</p>
+      <div class="figs"><div class="fig"><img src="assets/research/p7_f1.jpg" alt="redacted figure"></div><div class="fig"><img src="assets/research/p7_f2.jpg" alt="redacted figure"></div><div class="fig"><img src="assets/research/p7_f3.jpg" alt="redacted figure"></div></div>
+      <div class="lock"><svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="#6E6D64"/><path d="M3 5V3.5C3 2.4 3.9 1.5 5 1.5C6.1 1.5 7 2.4 7 3.5V5" stroke="#6E6D64"/></svg>figures pixelated pending publication</div>
+      <div class="scale"><div><b>190+</b><span>figures</span></div><div><b>67</b><span>datasets</span></div><div><b>35</b><span>years</span></div></div>
+      <div class="chips"><span class="chip">AAPC</span><span class="chip">sensitivity analyses</span><span class="chip">R</span></div>
+    </div>
+
+    <div class="proj">
+      <div class="top"><span class="code">STUDY 06</span><span class="badge prep">analysis cycle &middot; 2026 data</span></div>
+      <h3>Adolescent obesity — quartile &amp; map cycle</h3>
+      <p class="desc">Re-run on the newest global estimates: age-band quartile mapping (10&ndash;14 vs 15&ndash;19), regional time-series, fastest/slowest movers.</p>
+      <div class="figs"><div class="fig"><img src="assets/research/p8_f1.jpg" alt="redacted figure"></div><div class="fig"><img src="assets/research/p8_f2.jpg" alt="redacted figure"></div><div class="fig"><img src="assets/research/p8_f3.jpg" alt="redacted figure"></div></div>
+      <div class="lock"><svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="#6E6D64"/><path d="M3 5V3.5C3 2.4 3.9 1.5 5 1.5C6.1 1.5 7 2.4 7 3.5V5" stroke="#6E6D64"/></svg>figures pixelated pending publication</div>
+      <div class="scale"><div><b>92</b><span>figures</span></div><div><b>2</b><span>age bands</span></div><div><b>1990&ndash;2024</b><span>years</span></div></div>
+      <div class="chips"><span class="chip">quartile maps</span><span class="chip">regional trends</span><span class="chip">R</span></div>
+    </div>
+
+    <div class="proj">
+      <div class="top"><span class="code">STUDY 07</span><span class="badge rev">under review</span></div>
+      <h3>Scoping review — NCDs in the Horn of Africa</h3>
+      <p class="desc">PRISMA-ScR evidence mapping in a setting where the literature is thin and scattered — the kind of review that has to be built, not just searched.</p>
+      <div class="figs two"><div class="fig"><img src="assets/research/p3_f1.jpg" alt="redacted figure"></div><div class="fig" style="display:flex;align-items:center;justify-content:center;font-size:.6rem;color:var(--faint);text-align:center;padding:1rem">PRISMA-ScR<br>flow + evidence map</div></div>
+      <div class="lock"><svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="#6E6D64"/><path d="M3 5V3.5C3 2.4 3.9 1.5 5 1.5C6.1 1.5 7 2.4 7 3.5V5" stroke="#6E6D64"/></svg>figures pixelated pending publication</div>
+      <div class="scale"><div><b>PRISMA-ScR</b><span>framework</span></div><div><b>15</b><span>submission documents</span></div></div>
+      <div class="chips"><span class="chip">scoping review</span><span class="chip">evidence mapping</span><span class="chip">GRADE-adjacent</span></div>
+    </div>
+
+    <div class="proj">
+      <div class="top"><span class="code">CLINICAL 08</span><span class="badge live">ongoing &middot; hospital</span></div>
+      <h3>Oncology nursing workload — measurement &amp; validation</h3>
+      <p class="desc">Clinical analytics at a Taipei cancer center: 10 months of weekly workload monitoring, instrument validation, and reporting tooling for nursing leadership.</p>
+      <div class="figs two"><div class="fig"><img src="assets/research/p4_f1.jpg" alt="redacted figure"></div><div class="fig"><img src="assets/research/p4_f2.jpg" alt="redacted figure"></div></div>
+      <div class="lock"><svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="#6E6D64"/><path d="M3 5V3.5C3 2.4 3.9 1.5 5 1.5C6.1 1.5 7 2.4 7 3.5V5" stroke="#6E6D64"/></svg>previews pixelated — clinical data</div>
+      <div class="scale"><div><b>10</b><span>months monitored</span></div><div><b>90+</b><span>data extracts</span></div><div><b>26</b><span>figures</span></div></div>
+      <div class="chips"><span class="chip">time-series</span><span class="chip">instrument validation</span><span class="chip">clinical reporting</span></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Why the blur?</b>&nbsp;Journals require that findings stay unpublished until peer review concludes. The previews above are real manuscript figures destroyed to 36 pixels of width before upload — enough to show composition and craft, impossible to read. If you need full samples, the three published papers above are open, and the <a href="dashboard.html">live dashboard</a> is built from public data.
+  </div>
+
+  <div class="cta">
+    <h2>This is the rigor your data would get.</h2>
+    <div class="row">
+      <a class="btn" href="index.html#hire">Start a project</a>
+      <a class="btn ghost" href="dashboard.html">Try the live dashboard</a>
+      <a class="btn ghost" href="assets/Abdiwahab_Ali_CV.pdf" download>Download CV (PDF)</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <a href="https://www.linkedin.com/in/bookhaali/" target="_blank" rel="noopener">LinkedIn</a>
+  <a href="https://orcid.org/0009-0007-4069-2282" target="_blank" rel="noopener">ORCID</a>
+  <a href="https://github.com/bookhaali" target="_blank" rel="noopener">GitHub</a>
+  <a href="mailto:bookhaali@gmail.com">bookhaali@gmail.com</a>
+</footer>
+
+<script>
+(function () {
+  const cv = document.getElementById('stars'), ctx = cv.getContext('2d');
+  function draw() {
+    const w = cv.width = innerWidth * devicePixelRatio, h = cv.height = innerHeight * devicePixelRatio;
+    let s = 7; const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+    ctx.clearRect(0, 0, w, h);
+    for (let i = 0; i < 240; i++) {
+      const x = rnd() * w, y = rnd() * h, r = (0.4 + rnd() * 1.1) * devicePixelRatio, a = 0.12 + rnd() * 0.5;
+      ctx.fillStyle = `rgba(${rnd() > 0.8 ? '224,162,74' : '188,212,245'},${a})`;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+    }
+  }
+  draw(); addEventListener('resize', draw);
+})();
+</script>
+<script data-goatcounter="https://bookhaali.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>

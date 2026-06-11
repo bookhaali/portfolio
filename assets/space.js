@@ -171,11 +171,18 @@ function finishEarth() {
   }
   introActive = true; introStart = performance.now(); try { scrollTo(0, 0); } catch (e) {}
 }
-new THREE.TextureLoader().load('assets/textures/earth.jpg', dayTex => {
-  dayTex.colorSpace = THREE.SRGBColorSpace; dayTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-  renderer.initTexture(dayTex);   // upload now, not on first visible frame
-  globe.add(new THREE.Mesh(new THREE.SphereGeometry(R, 96, 96), new THREE.MeshStandardMaterial({ map: dayTex, roughness: 0.86, metalness: 0 })));
+// progressive earth: a 124 KB preview unblocks the loader fast; the 2.5 MB texture swaps in silently
+new THREE.TextureLoader().load('assets/textures/earth_lo.jpg', loTex => {
+  loTex.colorSpace = THREE.SRGBColorSpace; loTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  renderer.initTexture(loTex);
+  const earthMat = new THREE.MeshStandardMaterial({ map: loTex, roughness: 0.86, metalness: 0 });
+  globe.add(new THREE.Mesh(new THREE.SphereGeometry(R, 96, 96), earthMat));
   finishEarth();
+  new THREE.TextureLoader().load('assets/textures/earth.jpg', hiTex => {
+    hiTex.colorSpace = THREE.SRGBColorSpace; hiTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    renderer.initTexture(hiTex);
+    earthMat.map = hiTex; earthMat.needsUpdate = true; loTex.dispose();
+  });
 }, ev => { if (ev.lengthComputable) { const p = Math.round(ev.loaded / ev.total * 100); const el = document.getElementById('loader-txt'); if (el) el.textContent = 'loading earth ' + p + '%'; const fill = document.getElementById('loader-fill'); if (fill) fill.style.width = p + '%'; } });
 globe.add(atmosphere(R * 1.025, 0x9EC0EE, 2.4, 0.85));   // tight rim
 globe.add(atmosphere(R * 1.16, 0x4F86C6, 3.2, 0.9));      // soft halo
@@ -477,7 +484,8 @@ const aboutNodes = [
   { t: 'WHO', tip: { name: 'WHO', sub: 'dataset', valHTML: 'indicators' } },
   { t: 'UN WPP', tip: { name: 'UN WPP', sub: 'dataset', valHTML: 'population denominators' } },
   { t: 'Public Health 2026', url: 'https://doi.org/10.1016/j.puhe.2026.106177', tip: { name: 'Public Health, 2026', sub: 'publication', valHTML: 'Khat & oral/esophageal cancer: review &amp; meta-analysis. Click to open.' } },
-  { t: 'ecancer 2026', url: 'https://doi.org/10.3332/ecancer.2026.2094', tip: { name: 'ecancermedicalscience, 2026', sub: 'publication', valHTML: 'Khat & upper-digestive cancers: case-control. Click to open.' } }
+  { t: 'ecancer 2025', url: 'https://doi.org/10.3332/ecancer.2025.1880', tip: { name: 'ecancermedicalscience, 2025', sub: 'publication', valHTML: 'Khat & upper-digestive cancers: case-control. Click to open.' } },
+  { t: 'CDOE 2022', url: 'https://doi.org/10.1111/cdoe.12990', tip: { name: 'Community Dent Oral Epidemiol, 2022', sub: 'publication', valHTML: 'Dental health of 12-year-olds, Somaliland (Oslo project). Click to open.' } }
 ];
 aboutNodes.forEach((nd, i) => {
   const a = (i / aboutNodes.length) * Math.PI * 2, r = 2.6;
@@ -817,7 +825,7 @@ const STATIONS = [
   { name: 'Multivariable model', cap: '<b>Many inputs, one outcome.</b> A live OLS fit, residuals shown.', spin: regSpin, picks: () => [], camPos: off(REGP, 0, 0.5, 10.0), camTarget: off(REGP, 0, 0.1, 0), spinIdle: 0.0016 },
   { name: 'Networks', cap: '<b>Disease rarely travels alone.</b> Edges are comorbidity ties.', spin: netSpin, picks: () => netPicks, camPos: off(NETP, 0, 0.9, 11), camTarget: off(NETP, 0, 0.8, 0), spinIdle: 0.0012 },
   { name: 'Collaborate', cap: '<b>Forest, funnel, survival, ROC — computed live.</b>', spin: collabSpin, picks: () => [], camPos: off(COLLAB, 0, 1.25, 9.2), camTarget: off(COLLAB, 0, 1.15, 0), wide: 1.5 },
-  { name: 'The analyst', cap: '<b>Five global datasets. Two peer-reviewed papers.</b>', spin: aboutSpin, picks: () => aboutPicks, camPos: off(ABP, 0, 0, 7.2), camTarget: ABP.clone(), spinIdle: 0.0015 },
+  { name: 'The analyst', cap: '<b>Five global datasets. Three peer-reviewed papers.</b>', spin: aboutSpin, picks: () => aboutPicks, camPos: off(ABP, 0, 0, 7.2), camTarget: ABP.clone(), spinIdle: 0.0015 },
   { name: 'One table, many stories', cap: '<b>One small table, ten ways to tell it.</b>', spin: storySpin, picks: () => [], camPos: off(STORYP, 0, 0.5, 7), camTarget: off(STORYP, 0, 0.5, 0) }
 ];
 const N = STATIONS.length;
@@ -960,6 +968,27 @@ function openQuote() { qov.classList.add('show'); if (!document.body.classList.c
 function closeQuote() { qov.classList.remove('show'); if (!document.body.classList.contains('story-on')) document.body.style.overflow = ''; }
 document.getElementById('open-quote').addEventListener('click', openQuote);
 document.getElementById('yd-cta').addEventListener('click', openQuote);
+// deep link: research/dashboard/notes pages send people to index.html#hire
+if (location.hash === '#hire') { history.replaceState(null, '', location.pathname); openQuote(); }
+addEventListener('hashchange', () => { if (location.hash === '#hire') { history.replaceState(null, '', location.pathname); openQuote(); } });
+// in-sheet contact form (FormSubmit AJAX) — for the majority with no desktop mail client
+const qform = document.getElementById('qform');
+if (qform) qform.addEventListener('submit', e => {
+  e.preventDefault();
+  const btn = qform.querySelector('.qf-send'), ok = qform.querySelector('.qf-ok'), fd = new FormData(qform);
+  const scope = ['need', 'data', 'time'].map(k => { const el = document.querySelector(`[data-q=${k}] .opt.on`); return el ? el.textContent : ''; }).join(' / ');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  fetch('https://formsubmit.co/ajax/bookhaali@gmail.com', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({ name: fd.get('name') || '(no name)', email: fd.get('email'), message: fd.get('message'), _subject: 'Portfolio inquiry — ' + scope, scope, price_shown: document.getElementById('q-num').textContent })
+  }).then(r => r.ok ? r.json() : Promise.reject()).then(() => {
+    qform.querySelectorAll('input,textarea,.qf-send').forEach(el => el.style.display = 'none');
+    ok.hidden = false;
+  }).catch(() => {
+    btn.disabled = false; btn.textContent = 'Send';
+    ok.hidden = false; ok.style.color = '#D98A6E'; ok.textContent = 'Could not send — please use the email button above.';
+  });
+});
 addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   if (qov.classList.contains('show')) { closeQuote(); return; }
