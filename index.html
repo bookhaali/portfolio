@@ -60,7 +60,7 @@
   .station .idx{font-size:.64rem;color:var(--faint);letter-spacing:.18em}
   .station .nm{font-size:.72rem;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-top:.25rem}
   .station .cap{display:none}
-  .stlist{position:fixed;top:5.6rem;left:50%;transform:translateX(-50%) translateY(-6px);z-index:30;display:flex;flex-direction:column;gap:2px;
+  .stlist{position:fixed;top:5.6rem;--stl:1;left:50%;transform:translateX(-50%) translateY(-6px);z-index:30;display:flex;flex-direction:column;gap:2px;
     background:var(--glass);backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--glass-bd);border-radius:var(--r-s);padding:.4rem;
     opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s var(--spring);max-height:62vh;overflow:auto}
   .stlist.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
@@ -157,7 +157,8 @@
   .qf-ok{font-size:.72rem;color:#8FD0AE}
   /* wide hire sheet */
   .sheet-wide{width:min(900px,95vw)}
-  .sheet-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:1.9rem}
+  .sheet-grid{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:1.9rem}
+  .sheet-grid>*{min-width:0}
   .pitch{border-right:1px solid var(--border);padding-right:1.7rem}
   .pitch-k{font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:.85rem}
   .pitch h2{font-family:var(--disp);font-size:1.34rem;line-height:1.25;font-weight:700;letter-spacing:-.01em;margin-bottom:.9rem}
@@ -170,7 +171,7 @@
   .cta-row{display:flex;gap:.7rem;align-items:center;margin-top:1.25rem;flex-wrap:wrap}
   .cta-ghost{font-family:var(--mono);font-size:.74rem;color:var(--muted);background:none;border:1px solid var(--border);border-radius:var(--r-s);padding:12px 16px;cursor:pointer;min-width:118px;transition:color .15s,border-color .15s}
   .cta-ghost:hover{color:var(--text);border-color:var(--faint)}
-  @media(max-width:720px){.sheet-grid{grid-template-columns:1fr;gap:1.1rem}.pitch{border-right:none;border-bottom:1px solid var(--border);padding-right:0;padding-bottom:1.1rem}.pitch h2{font-size:1.05rem;margin-bottom:.7rem}.pitch-list{gap:.45rem}.sheet-wide{padding:1.5rem 1.4rem}
+  @media(max-width:720px){.sheet-grid{grid-template-columns:minmax(0,1fr);gap:1.1rem}.pitch{border-right:none;border-bottom:1px solid var(--border);padding-right:0;padding-bottom:1.1rem}.pitch h2{font-size:1.05rem;margin-bottom:.7rem}.pitch-list{gap:.45rem}.sheet-wide{padding:1.5rem 1.4rem}
     /* slim sticky price bar: the live number + CTA stay visible while options are picked */
     .estimate{position:sticky;bottom:-1.6rem;background:var(--surface);padding-bottom:1rem;margin-bottom:-.4rem}
     .estimate .inc,.estimate .note{display:none}
@@ -289,7 +290,8 @@
     .brand{display:none}
     .top-right{top:.9rem;right:1rem;gap:.5rem}
     .top-right a,.top-right button{font-size:.62rem;padding:9px 13px}
-    .station{top:2.7rem;pointer-events:auto;cursor:pointer}
+    .station{top:3.9rem;pointer-events:auto;cursor:pointer}
+    .stlist{top:7rem}
     .station .idx{font-size:.56rem}
     .station .nm{font-size:.62rem}
     .station .cap{display:none}
@@ -459,6 +461,9 @@
         <a href="research.html">Research &rarr;</a>
         <a href="dashboard.html">Live dashboard &rarr;</a>
         <a href="assets/Abdiwahab_Ali_CV.pdf" download>CV (PDF) &rarr;</a>
+        <a href="https://www.linkedin.com/in/bookhaali/" target="_blank" rel="noopener">LinkedIn &rarr;</a>
+        <a href="https://orcid.org/0009-0007-4069-2282" target="_blank" rel="noopener">ORCID &rarr;</a>
+        <a href="https://github.com/bookhaali" target="_blank" rel="noopener">GitHub &rarr;</a>
       </div>
     </aside>
     <div class="builder">
