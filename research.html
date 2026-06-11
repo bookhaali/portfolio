@@ -260,22 +260,7 @@
   <a href="mailto:bookhaali@gmail.com">bookhaali@gmail.com</a>
 </footer>
 
-<script>
-(function () {
-  const cv = document.getElementById('stars'), ctx = cv.getContext('2d');
-  function draw() {
-    const w = cv.width = innerWidth * devicePixelRatio, h = cv.height = innerHeight * devicePixelRatio;
-    let s = 7; const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
-    ctx.clearRect(0, 0, w, h);
-    for (let i = 0; i < 240; i++) {
-      const x = rnd() * w, y = rnd() * h, r = (0.4 + rnd() * 1.1) * devicePixelRatio, a = 0.12 + rnd() * 0.5;
-      ctx.fillStyle = `rgba(${rnd() > 0.8 ? '224,162,74' : '188,212,245'},${a})`;
-      ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
-    }
-  }
-  draw(); addEventListener('resize', draw);
-})();
-</script>
+<script src="assets/stars.js"></script>
 <script data-goatcounter="https://bookhaali.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
