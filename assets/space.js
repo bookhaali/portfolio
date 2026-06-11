@@ -145,8 +145,9 @@ function showInfo(o) {
 // ---- shared state ----
 let tNorm = 1, pop = 'adol', csex = 'both', lag = 0;
 let introActive = false, introStart = 0; const introFrom = new THREE.Vector3(0.6, 3.0, 12);
-let arriveActive = (location.search.indexOf('warp=back') >= 0), arriveT0 = 0; const ARRIVE_START = new THREE.Vector3(0, 10, -560);
+const warpBack = location.search.indexOf('warp=back') >= 0; let arriveActive = true, arriveT0 = 0; const ARRIVE_START = new THREE.Vector3(0, 10, -560);
 if (arriveActive) { document.body.classList.add('story-on'); document.body.style.overflow = 'hidden'; const _i0 = document.getElementById('intro'); if (_i0) _i0.classList.add('gone'); }
+function showArrivalCue() { const el = document.getElementById('intro'); if (!el) return; el.classList.remove('gone'); const hide = () => { el.classList.add('gone'); removeEventListener('wheel', hide); removeEventListener('pointerdown', hide); removeEventListener('scroll', hide); }; addEventListener('wheel', hide, { passive: true }); addEventListener('pointerdown', hide); addEventListener('scroll', hide, { passive: true }); }
 const obIdx = () => Math.round(tNorm * (OB.layers[pop].years.length - 1));
 const dietIdx = () => Math.round(tNorm * (DIET.yearsF.length - 1));
 const canIdx = () => Math.round(tNorm * (CAN.years.length - 1));
@@ -174,7 +175,7 @@ function finishEarth() {
     try { scrollTo(0, 0); } catch (e) {} return;
   }
   if (arriveActive && REDUCE) { arriveActive = false; const _w = document.getElementById('warp-fade'); if (_w) _w.style.opacity = '0'; document.body.classList.remove('story-on'); document.body.style.overflow = ''; }
-  if (arriveActive) { arriveT0 = performance.now(); try { scrollTo(0, 0); } catch (e) {} return; }
+  if (arriveActive) { if (warpFade) warpFade.style.opacity = '1'; arriveT0 = performance.now(); try { scrollTo(0, 0); } catch (e) {} return; }
   introActive = true; introStart = performance.now(); try { scrollTo(0, 0); } catch (e) {}
 }
 // progressive earth: a 124 KB preview unblocks the loader fast; the 2.5 MB texture swaps in silently
@@ -1320,7 +1321,7 @@ function animate() {
     globePivot.scale.setScalar(Math.max(0.001, smooth(clamp((raw - 0.2) / 0.8, 0, 1))));
     corridor.material.opacity = Math.max(0, Math.sin(clamp(raw / 0.62, 0, 1) * Math.PI)) * 1.05;
     if (warpFade) warpFade.style.opacity = Math.max(0, 1 - raw / 0.38);
-    if (raw >= 1) { arriveActive = false; globePivot.scale.setScalar(1); curStation = 0; onStation(0); curTarget.copy(STATIONS[0].camTarget); document.body.classList.remove('story-on'); document.body.style.overflow = ''; corridor.visible = false; if (warpFade) warpFade.style.opacity = '0'; startEarthIntro(); try { scrollTo(0, 0); } catch (e) {} }
+    if (raw >= 1) { arriveActive = false; globePivot.scale.setScalar(1); curStation = 0; onStation(0); curTarget.copy(STATIONS[0].camTarget); document.body.classList.remove('story-on'); document.body.style.overflow = ''; corridor.visible = false; if (warpFade) warpFade.style.opacity = '0'; if (!warpBack) showArrivalCue(); startEarthIntro(); try { scrollTo(0, 0); } catch (e) {} }
     render(); return;
   }
   let focus, zoom = 1;
