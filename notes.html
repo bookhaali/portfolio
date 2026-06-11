@@ -26,7 +26,9 @@
   }
   html{background:var(--bg);scrollbar-width:thin;scrollbar-color:var(--border) transparent}
   ::selection{background:rgba(141,176,228,.3);color:var(--text)}
-  body{background:var(--bg);color:var(--text);font-family:var(--mono);-webkit-font-smoothing:antialiased;line-height:1.75}
+  body{background:var(--bg);color:var(--text);font-family:var(--mono);-webkit-font-smoothing:antialiased;line-height:1.75;animation:pgfade .75s ease both}
+  @keyframes pgfade{from{opacity:0}to{opacity:1}}
+  @media (prefers-reduced-motion: reduce){body{animation:none}}
   a{color:var(--accent)}
   header.site{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
     padding:1.1rem 1.9rem;background:rgba(13,13,12,.82);backdrop-filter:blur(14px) saturate(1.2);border-bottom:1px solid var(--glass-bd)}
