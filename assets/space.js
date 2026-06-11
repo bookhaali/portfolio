@@ -630,14 +630,19 @@ const SD_ENDS = [[30, 33], [6, 17], [12, 15], [22, 14], [18, 12], [12, 9]];
 const SD = SD_ENDS.map(([a, b], c) => SD_YEARS.map((y, j) => { const t = j / (SD_YEARS.length - 1); return Math.max(1, +(a + (b - a) * t + Math.sin(t * 5 + c * 1.7) * 0.8).toFixed(1)); }));
 const storyTablePlane = planeMesh(3.3, 1.7); storyTablePlane.mesh.position.set(0, 0.5, 0); storySpin.add(storyTablePlane.mesh);
 function drawStoryTable() {
-  const { ctx } = storyTablePlane, W = storyTablePlane.lw, H = storyTablePlane.lh, LY = SD_YEARS.length - 1; ctx.setTransform(storyTablePlane.dpr, 0, 0, storyTablePlane.dpr, 0, 0); panelBg(ctx, W, H);
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 27px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('Calories from each food (%)', 38, 50);
-  ctx.fillStyle = '#6E6D64'; ctx.font = '400 20px JetBrains Mono'; ctx.fillText('food group', 38, 108); ctx.textAlign = 'right'; ctx.fillText('1990', W * 0.72, 108); ctx.fillText('2024', W - 38, 108); ctx.textAlign = 'left';
-  ctx.strokeStyle = '#2A2924'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(38, 122); ctx.lineTo(W - 38, 122); ctx.stroke();
-  SD_CATS.forEach((nm, i) => { const y = 168 + i * 50; ctx.fillStyle = SD_COL[i]; ctx.beginPath(); ctx.arc(50, y - 7, 7, 0, 7); ctx.fill(); ctx.fillStyle = '#ECEBE4'; ctx.font = '500 22px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText(nm, 70, y); ctx.font = '400 23px JetBrains Mono'; ctx.fillStyle = '#9C9B91'; ctx.textAlign = 'right'; ctx.fillText(SD[i][0].toFixed(0), W * 0.72, y); ctx.fillStyle = '#8DB0E4'; ctx.fillText(SD[i][LY].toFixed(0), W - 38, y); ctx.textAlign = 'left'; });
+  const { ctx } = storyTablePlane, W = storyTablePlane.lw, H = storyTablePlane.lh; ctx.setTransform(storyTablePlane.dpr, 0, 0, storyTablePlane.dpr, 0, 0); panelBg(ctx, W, H);
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#8DB0E4'; ctx.font = '700 19px JetBrains Mono'; ctx.fillText('THE RESEARCH LIBRARY', 40, 62);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 38px JetBrains Mono'; ctx.fillText('Step inside.', 40, 122);
+  ctx.fillStyle = '#9C9B91'; ctx.font = '400 22px JetBrains Mono';
+  ctx.fillText('Six active studies. Two published papers.', 40, 178);
+  ctx.fillText('Every figure rebuilt to explore.', 40, 212);
+  const cols = ['#E0A24A', '#E0728F', '#D98A6E', '#6FC8A3', '#6FB1E0', '#9B8DE4'];
+  cols.forEach((c, i) => { ctx.fillStyle = c; ctx.fillRect(40 + i * 30, H - 64, 18, 38); });
   storyTablePlane.tex.needsUpdate = true;
 }
-const storyHint = makeLabel('tell its story', { size: 0.34, color: '#8DB0E4' }); storyHint.position.set(0, -0.78, 0); storySpin.add(storyHint);
+
+const storyHint = makeLabel('step inside', { size: 0.34, color: '#8DB0E4' }); storyHint.position.set(0, -0.78, 0); storySpin.add(storyHint);
 
 // ====================================================================
 // 8d. CAUSAL DAG (how I think: confounding, mediation)
@@ -826,7 +831,7 @@ const STATIONS = [
   { name: 'Networks', cap: '<b>Disease rarely travels alone.</b> Edges are comorbidity ties.', spin: netSpin, picks: () => netPicks, camPos: off(NETP, 0, 0.9, 11), camTarget: off(NETP, 0, 0.8, 0), spinIdle: 0.0012 },
   { name: 'Collaborate', cap: '<b>Forest, funnel, survival, ROC. Computed live.</b>', spin: collabSpin, picks: () => [], camPos: off(COLLAB, 0, 1.25, 9.2), camTarget: off(COLLAB, 0, 1.15, 0), wide: 1.5 },
   { name: 'The analyst', cap: '<b>Five global datasets. Two peer-reviewed papers.</b>', spin: aboutSpin, picks: () => aboutPicks, camPos: off(ABP, 0, 0, 7.2), camTarget: ABP.clone(), spinIdle: 0.0015 },
-  { name: 'One table, many stories', cap: '<b>One small table, ten ways to tell it.</b>', spin: storySpin, picks: () => [], camPos: off(STORYP, 0, 0.5, 7), camTarget: off(STORYP, 0, 0.5, 0) }
+  { name: 'The research library', cap: '<b>Step inside the research library.</b>', spin: storySpin, picks: () => [], camPos: off(STORYP, 0, 0.5, 7), camTarget: off(STORYP, 0, 0.5, 0) }
 ];
 const N = STATIONS.length;
 const WORLD_GROUPS = [globePivot, scatterGroup, rankGroup, dietGroup, cancerGroup, lagPlane.group, fcPlane.group, dagGroup, regGroup, netGroup, collabGroup, aboutGroup, storyGroup];
@@ -908,7 +913,7 @@ function onStation(i) {
   if (s.aux) { elAux.style.display = ''; const sl = document.getElementById('aux-slider'); sl.min = s.aux.min; sl.max = s.aux.max; if (s.aux.val == null) s.aux.val = s.aux.def != null ? s.aux.def : s.aux.min; sl.value = s.aux.val; document.getElementById('aux-label').textContent = s.aux.label; s.aux.on(s.aux.val); }
   else elAux.style.display = 'none';
   document.getElementById('methods').classList.toggle('show', s.name === 'Collaborate');
-  document.getElementById('story-trigger').classList.toggle('show', s.name === 'One table, many stories');
+  document.getElementById('story-trigger').classList.toggle('show', s.name === 'The research library');
   const isEarth = s.name === 'Earth'; document.getElementById('datahint').classList.toggle('show', isEarth); if (isEarth) updateDataHint();
   panel.classList.remove('show');
 }
@@ -1199,15 +1204,18 @@ let storyParts = null;
 const GALVIEW = GALP.clone().add(new THREE.Vector3(0, 0, 17));
 const RETURN_DUR = 4600, RET_CP = new THREE.Vector3(50, 18, -80), STORY_ZERO = new THREE.Vector3(0, 0, 0);
 let storyMode = null, storyT0 = 0, storyReveal = 0; const STORY_DUR = 5200, flightStart = new THREE.Vector3(), flightStartTgt = new THREE.Vector3();
+const WARP_DUR = 3200, WARP_END = GALP.clone().add(new THREE.Vector3(0, 0, 17));
+let warpDone = false; const warpFade = document.getElementById('warp-fade');
 function enterStory() {
   if (storyMode) return;
-  if (demoActive) stopTour(true);   // a manual story entry must cleanly terminate the tour, or it relaunches on return
+  if (demoActive) stopTour(true);
   flightStart.copy(camera.position); flightStartTgt.copy(curTarget);
-  storyMode = 'in'; storyT0 = performance.now(); galGroup.visible = true; galGroup.scale.setScalar(0.001); corridor.visible = true; corridor.material.opacity = 0; galGroup.rotation.set(0, 0, 0); storyScroll = 0; storyScrollV = 0; document.body.style.overflow = 'hidden';
-  storyReveal = 0;
-  storyCards.forEach(c => { c.focus = 0; c.cs = 0.0001; c.flip.scale.setScalar(0.0001); c.fm.material.opacity = 0; c.bm.material.opacity = 0; });   // hidden until we fly in
-  document.body.classList.add('story-on'); document.getElementById('story-hud').classList.add('show');
+  storyMode = 'in'; storyT0 = performance.now(); warpDone = false;
+  corridor.visible = true; corridor.material.opacity = 0;
+  if (warpFade) warpFade.style.opacity = 0;
+  document.body.style.overflow = 'hidden'; document.body.classList.add('story-on');
 }
+
 function returnFromStory() {
   if (storyMode !== 'idle') return;
   flightStart.copy(camera.position); flightStartTgt.copy(curTarget);
@@ -1278,17 +1286,17 @@ function animate() {
   if (!REDUCE) updateOrbiters(dt * 60);
   if (storyMode) {
     for (const g of WORLD_GROUPS) g.visible = false;
-    galGroup.visible = true; corridor.visible = true;
-    const now = performance.now(), tms = now * 0.001, aspect = innerWidth / innerHeight, TAN = 0.3839, ARRIVE = SMRING ? 23 : 17, focusZ = ARRIVE - Math.max(2.925 / (0.9 * TAN * aspect), 1.755 / (0.9 * TAN)), galView = GALVIEW.clone(); galView.z = GALP.z + ARRIVE;
-    if (storyMode === 'in') { const e = smooth(clamp((now - storyT0) / STORY_DUR, 0, 1)), it = 1 - e, cx = (flightStart.x + galView.x) / 2 - 16, cy = (flightStart.y + galView.y) / 2 + 11, cz = (flightStart.z + galView.z) / 2; camera.position.set(it * it * flightStart.x + 2 * it * e * cx + e * e * galView.x, it * it * flightStart.y + 2 * it * e * cy + e * e * galView.y, it * it * flightStart.z + 2 * it * e * cz + e * e * galView.z); curTarget.lerpVectors(flightStartTgt, GALP, e); corridor.material.opacity = Math.sin(e * Math.PI) * 1.05; galGroup.visible = e > 0.4; galGroup.scale.setScalar(Math.max(0.001, smooth(clamp((e - 0.4) / 0.6, 0, 1)))); storyReveal = smooth(clamp((e - 0.66) / 0.34, 0, 1)); if (e >= 1) storyMode = 'idle'; }
-    else if (storyMode === 'idle') { galGroup.scale.setScalar(1); camera.position.lerp(galView, K(0.05)); curTarget.lerp(GALP, K(0.05)); corridor.material.opacity *= Math.pow(0.9, dt * 60); storyReveal += (1 - storyReveal) * K(0.08); }
-    else { const raw = clamp((now - storyT0) / RETURN_DUR, 0, 1), t = smooth(raw), it = 1 - t, ep = STATIONS[0].camPos.clone().multiplyScalar(fit); globePivot.visible = true; globePivot.scale.setScalar(Math.max(0.001, 1 - storyReveal)); galGroup.scale.setScalar(Math.max(0.001, storyReveal)); camera.position.set(it * it * flightStart.x + 2 * it * t * RET_CP.x + t * t * ep.x, it * it * flightStart.y + 2 * it * t * RET_CP.y + t * t * ep.y, it * it * flightStart.z + 2 * it * t * RET_CP.z + t * t * ep.z); curTarget.lerpVectors(flightStartTgt, STORY_ZERO, smooth(clamp(raw / 0.62, 0, 1))); corridor.material.opacity = Math.max(0, Math.sin(clamp(raw / 0.6, 0, 1) * Math.PI)) * 0.9; storyReveal = 1 - smooth(clamp(raw / 0.45, 0, 1)); if (raw >= 1) { storyMode = null; galGroup.visible = false; corridor.visible = false; curStation = 0; onStation(0); document.body.classList.remove('story-on'); document.body.style.overflow = ''; try { scrollTo(0, 0); } catch (er) {} } }
-    camera.lookAt(curTarget);
-    const anyFocus = storyCards.some(c => c.focus > 0);
-    for (const c of storyCards) { const f = c.focus; const colY = COL_TOP - c.idx * CARD_GAP + storyScroll; const tx = f ? 0 : COL_X, ty = f ? 0 : colY, tz = f ? focusZ : 0; c.flip.position.lerp(_v3s.set(tx, ty, tz), K(f ? 0.12 : 0.3)); const ts = (f ? 1.95 : (SMRING ? 0.66 : 1)) * storyReveal; c.cs += (ts - c.cs) * K(0.18); c.flip.scale.setScalar(Math.max(0.0001, c.cs)); if (SMRING && anyFocus && !f) { c.fm.material.opacity += (0 - c.fm.material.opacity) * K(0.25); } else { c.fm.material.opacity = storyReveal; } c.bm.material.opacity = c.fm.material.opacity; const tr = f === 2 ? Math.PI : 0; c.flip.rotation.y += (tr - c.flip.rotation.y) * K(0.14); }
-    if (!down) storyScroll += storyScrollV * dt * 60; storyScrollV *= Math.pow(0.9, dt * 60); if (storyScroll < 0) { storyScroll += -storyScroll * K(0.2); if (!down) storyScrollV = 0; } else if (storyScroll > STORY_MAXSCROLL) { storyScroll += (STORY_MAXSCROLL - storyScroll) * K(0.2); if (!down) storyScrollV = 0; }
-    if (anyFocus) { galGroup.rotation.y += -galGroup.rotation.y * K(0.1); galGroup.rotation.x += -galGroup.rotation.x * K(0.1); }
-    if (galGroup.userData.hero && !REDUCE) galGroup.userData.hero.rotation.y += 0.0009 * dt * 60;
+    galGroup.visible = false; corridor.visible = true;
+    const now = performance.now(), e = smooth(clamp((now - storyT0) / WARP_DUR, 0, 1)), it = 1 - e;
+    const cx = (flightStart.x + WARP_END.x) / 2 - 16, cy = (flightStart.y + WARP_END.y) / 2 + 11, cz = (flightStart.z + WARP_END.z) / 2;
+    camera.position.set(
+      it * it * flightStart.x + 2 * it * e * cx + e * e * WARP_END.x,
+      it * it * flightStart.y + 2 * it * e * cy + e * e * WARP_END.y,
+      it * it * flightStart.z + 2 * it * e * cz + e * e * WARP_END.z);
+    curTarget.lerpVectors(flightStartTgt, GALP, e); camera.lookAt(curTarget);
+    corridor.material.opacity = Math.sin(e * Math.PI) * 1.15;
+    if (warpFade) warpFade.style.opacity = clamp((e - 0.62) / 0.32, 0, 1);
+    if (e >= 1 && !warpDone) { warpDone = true; location.assign('research.html'); }
     render(); return;
   }
   let focus, zoom = 1;
@@ -1297,7 +1305,7 @@ function animate() {
     const beat = DWELL + TRAVEL, el = performance.now() - demoStart, idx = Math.floor(el / beat);
     if (idx >= N - 1) {
       const dw = el - (N - 1) * beat; focus = N - 1; orbitDwell(STATIONS[N - 1], clamp(dw / DWELL, 0, 1), fit);
-      if (dw > DWELL + 500 && !demoEnding) { demoEnding = true; stopTour(true); enterStory(); }   // grand finale: swoop into the galaxy
+      if (dw > DWELL + 500 && !demoEnding) { demoEnding = true; stopTour(true); }   // tour ends at the research-library gateway
     } else {
       const ph = el - idx * beat;
       if (ph < DWELL) { focus = idx; orbitDwell(STATIONS[idx], ph / DWELL, fit); }

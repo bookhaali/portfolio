@@ -27,7 +27,9 @@
   }
   html{background:var(--bg);scrollbar-width:thin;scrollbar-color:var(--border) transparent}
   ::selection{background:rgba(141,176,228,.3);color:var(--text)}
-  body{background:var(--bg);color:var(--text);font-family:var(--mono);-webkit-font-smoothing:antialiased;line-height:1.6}
+  body{background:var(--bg);color:var(--text);font-family:var(--mono);-webkit-font-smoothing:antialiased;line-height:1.6;animation:pgfade .75s ease both}
+  @keyframes pgfade{from{opacity:0}to{opacity:1}}
+  @media (prefers-reduced-motion: reduce){body{animation:none}}
   #stars{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.6}
   main{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:7.5rem 1.6rem 4rem}
   a{color:var(--accent)}
@@ -234,7 +236,7 @@
   </div>
 
   <h2>Methods &amp; tools</h2>
-  <p class="sub">The analytical stack behind the studies above and the dashboards I build. Pipelines and reproducible code on <a href="https://github.com/bookhaali" target="_blank" rel="noopener">GitHub</a>.</p>
+  <p class="sub">The analytical stack behind the studies above and the dashboards I build.</p>
   <div class="skills">
     <div class="skillcol"><span class="sk-h">Languages</span><div class="sk-row"><span class="chip">R</span><span class="chip">Python</span><span class="chip">Stata</span><span class="chip">SQL</span></div></div>
     <div class="skillcol"><span class="sk-h">Methods</span><div class="sk-row"><span class="chip">Joinpoint regression</span><span class="chip">AAPC trend analysis</span><span class="chip">Meta-analysis</span><span class="chip">Systematic &amp; scoping review</span><span class="chip">Survival analysis</span><span class="chip">Sensitivity analysis</span><span class="chip">Biostatistics</span></div></div>
@@ -255,7 +257,6 @@
 <footer>
   <a href="https://www.linkedin.com/in/bookhaali/" target="_blank" rel="noopener">LinkedIn</a>
   <a href="https://orcid.org/0009-0007-4069-2282" target="_blank" rel="noopener">ORCID</a>
-  <a href="https://github.com/bookhaali" target="_blank" rel="noopener">GitHub</a>
   <a href="mailto:bookhaali@gmail.com">bookhaali@gmail.com</a>
 </footer>
 
