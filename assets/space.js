@@ -14,8 +14,9 @@ const remap = (v, r, a, b) => a + (v - r.min) / ((r.max - r.min) || 1) * (b - a)
 // ---- renderer / scene / camera ----
 const canvas = document.getElementById('space');
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1));
+const MOBILE = matchMedia('(pointer: coarse)').matches || innerWidth < 760;
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !MOBILE, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(MOBILE ? 1.5 : 2, devicePixelRatio || 1));
 renderer.setSize(innerWidth, innerHeight); renderer.setClearColor(0x0D0D0C, 1);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.12;
@@ -36,7 +37,7 @@ const render = () => renderer.render(scene, camera);
 const dotTex = (() => { const S = 64, cv = document.createElement('canvas'); cv.width = cv.height = S; const c = cv.getContext('2d'); const g = c.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.5, 'rgba(255,255,255,.85)'); g.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = g; c.fillRect(0, 0, S, S); return new THREE.CanvasTexture(cv); })();
 
 (function stars() {
-  const n = 5000, pos = new Float32Array(n * 3); let s = 7; const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+  const n = MOBILE ? 2600 : 5000, pos = new Float32Array(n * 3); let s = 7; const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
   for (let i = 0; i < n; i++) { const u = rnd() * 2 - 1, t = rnd() * 6.2832, q = Math.sqrt(1 - u * u), r = 30 + rnd() * 200; pos[i * 3] = r * q * Math.cos(t); pos[i * 3 + 1] = r * u; pos[i * 3 + 2] = r * q * Math.sin(t); }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0xffffff, size: 0.16, sizeAttenuation: true, transparent: true, opacity: 0.85, fog: false, map: dotTex, depthWrite: false })));
@@ -361,10 +362,10 @@ function buildCancer() {
     cancerSpin.add(new THREE.Mesh(ribbonGeo(s, z), new THREE.MeshBasicMaterial({ color: colHex, transparent: true, opacity: 0.2, side: THREE.DoubleSide, depthWrite: false })));
     const pts = s.map((v, j) => new THREE.Vector3(cX(j), cY(v), z));
     const mat = new THREE.MeshBasicMaterial({ color: colHex });
-    const m = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, 0.03, 6, false), mat);
+    const m = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 48, MOBILE ? 0.05 : 0.03, 6, false), mat);
     m.userData = { c, mat0: mat, tip: () => ({ name: c.cause, sub: 'incidence /100k, ' + csex, valHTML: c[csex][canIdx()].toFixed(1) + '<small> &nbsp;' + CAN.years[canIdx()] + '</small>', series: c[csex], hiIdx: canIdx(), color: rising ? '#D98A6E' : '#6FB1E0' }) };
     cancerSpin.add(m); cancerLines.push(m);
-    const lab = makeLabel(CSHORT[c.cause] || c.cause.replace(/ cancer| due.*/i, ''), { size: 0.17, color: rising ? '#D98A6E' : '#6FB1E0' });
+    const lab = makeLabel(CSHORT[c.cause] || c.cause.replace(/ cancer| due.*/i, ''), { size: MOBILE ? 0.28 : 0.17, color: rising ? '#D98A6E' : '#6FB1E0' });
     lab.position.set(cX(cyN - 1) + 0.55, cY(s[cyN - 1]) + 0.12, z); cancerSpin.add(lab);
   });
   cancerCursor = new THREE.Mesh(new THREE.BoxGeometry(0.03, CH * 0.55, (zf - zb)), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.16, depthWrite: false }));
@@ -810,12 +811,12 @@ const STATIONS = [
   { name: 'Early-onset shift', cap: '<b>Cancer is striking earlier.</b> The young ridge grows year by year.', spin: rankSpin, picks: () => [], camPos: off(RANK, 0, 3.6, 9.5), camTarget: off(RANK, 0, 0.9, 0) },
   { name: 'Diet', cap: '<b>Protective foods shrink, risk foods grow.</b>', spin: dietSpin, picks: () => dietFoods, camPos: off(DIETP, 0, 0.35, 10.6), camTarget: off(DIETP, 0, 0.3, 0), time: 1 },
   { name: 'Cancer', cap: '<b>13 obesity-linked cancers.</b> Warm ridges are rising.', spin: cancerSpin, picks: () => cancerLines, camPos: off(CANP, -1.4, 4.2, 16.5), camTarget: off(CANP, 0, -0.2, -0.6), time: 1, csex: 1 },
-  { name: 'Obesity drives cancer', cap: '<b>Obesity today, cancer tomorrow.</b> Slide the lag, watch r climb.', spin: lagPlane.group, picks: () => [], camPos: off(LAGP, 0, 0, 6.4), camTarget: LAGP.clone(), pop: 1, aux: { label: 'lag', min: 0, max: 15, on: v => { lag = v; drawLag(); document.getElementById('aux-val').textContent = v + ' yr'; } } },
-  { name: 'Forecast', cap: '<b>On course for ~22% of youth by 2050.</b>', spin: fcPlane.group, picks: () => [], camPos: off(FCP, 0, 0, 6.4), camTarget: FCP.clone(), pop: 1 },
+  { name: 'Obesity drives cancer', cap: '<b>Obesity today, cancer tomorrow.</b> Slide the lag, watch r climb.', spin: lagPlane.group, picks: () => [], camPos: off(LAGP, 0, 0, 6.4), camTarget: LAGP.clone(), pop: 1, wide: 1.75, aux: { label: 'lag', min: 0, max: 15, on: v => { lag = v; drawLag(); document.getElementById('aux-val').textContent = v + ' yr'; } } },
+  { name: 'Forecast', cap: '<b>On course for ~22% of youth by 2050.</b>', spin: fcPlane.group, picks: () => [], camPos: off(FCP, 0, 0, 6.4), camTarget: FCP.clone(), pop: 1, wide: 1.75 },
   { name: 'Causal thinking', cap: '<b>Backdoor paths, closed before estimating.</b>', spin: dagSpin, picks: () => dagPicks, camPos: off(DAGP, 0, 0.4, 9.6), camTarget: off(DAGP, 0, 0.2, 0) },
   { name: 'Multivariable model', cap: '<b>Many inputs, one outcome.</b> A live OLS fit, residuals shown.', spin: regSpin, picks: () => [], camPos: off(REGP, 0, 0.5, 10.0), camTarget: off(REGP, 0, 0.1, 0), spinIdle: 0.0016 },
   { name: 'Networks', cap: '<b>Disease rarely travels alone.</b> Edges are comorbidity ties.', spin: netSpin, picks: () => netPicks, camPos: off(NETP, 0, 0.9, 11), camTarget: off(NETP, 0, 0.8, 0), spinIdle: 0.0012 },
-  { name: 'Collaborate', cap: '<b>Forest, funnel, survival, ROC — computed live.</b>', spin: collabSpin, picks: () => [], camPos: off(COLLAB, 0, 1.25, 9.2), camTarget: off(COLLAB, 0, 1.15, 0) },
+  { name: 'Collaborate', cap: '<b>Forest, funnel, survival, ROC — computed live.</b>', spin: collabSpin, picks: () => [], camPos: off(COLLAB, 0, 1.25, 9.2), camTarget: off(COLLAB, 0, 1.15, 0), wide: 1.5 },
   { name: 'The analyst', cap: '<b>Five global datasets. Two peer-reviewed papers.</b>', spin: aboutSpin, picks: () => aboutPicks, camPos: off(ABP, 0, 0, 7.2), camTarget: ABP.clone(), spinIdle: 0.0015 },
   { name: 'One table, many stories', cap: '<b>One small table, ten ways to tell it.</b>', spin: storySpin, picks: () => [], camPos: off(STORYP, 0, 0.5, 7), camTarget: off(STORYP, 0, 0.5, 0) }
 ];
@@ -1113,7 +1114,7 @@ const solarPlanets = []; let heroPlanet = null;
   const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: nebulaTexture(0x3E5C8E), transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })); halo.scale.set(74, 54, 1); halo.position.set(LAND ? 18 : -14, LAND ? 12 : 17, -64); galGroup.add(halo);
   [{ x: 21, y: -13, z: -50, r: 1.4, c: 0x9B8DE4 }, { x: 25, y: 15, z: -58, r: 1.1, c: 0x6FC8A3 }].forEach(d => { const g = makePlanet(galGroup, { x: d.x, y: d.y, z: d.z, r: d.r, color: d.c, glow: d.c, glowI: 0.6 }); g.traverse(o => { if (o.material) { o.material.fog = false; o.material.needsUpdate = true; } }); });
   // the hero: a big closeup planet beside the cards (right on wide screens, top on tall ones)
-  const hp = LAND ? new THREE.Vector3(13.5, -0.3, -3) : new THREE.Vector3(0.5, 11.5, -3), hr = LAND ? 6.8 : 5.2;
+  const hp = LAND ? new THREE.Vector3(13.5, -0.3, -3) : new THREE.Vector3(0.5, 11.8, -3), hr = LAND ? 6.8 : 4.8;
   heroPlanet = makePlanet(galGroup, { x: hp.x, y: hp.y, z: hp.z, r: hr, color: 0x35617e, glow: 0x6FB1E0, glowI: 1.0, ring: 0x9ec0ee, moons: 0 });
   heroPlanet.traverse(o => { if (o.material) { o.material.fog = false; o.material.needsUpdate = true; } });
   galGroup.userData.hero = heroPlanet.userData.spin;
@@ -1147,7 +1148,7 @@ function setCardHi(card, on) {
     card.fm.material.needsUpdate = true; card.bm.material.needsUpdate = true;
   }
 }
-const COL_X = SMRING ? 0 : -6.6, COL_TOP = SMRING ? 2.0 : 3.8, CARD_GAP = 2.75;
+const COL_X = SMRING ? 0 : -6.6, COL_TOP = SMRING ? 4.4 : 3.8, CARD_GAP = SMRING ? 2.05 : 2.75;
 let storyScroll = 0, storyScrollV = 0;
 const FIGS = [
   [drawBarS, 'Today, plainly.', 'Just today’s plate as bars. Refined grains lead and sugary drinks have caught right up. The plainest read is often the clearest.'],
@@ -1235,7 +1236,7 @@ function updateDataHint() {
   const num = document.getElementById('dh-num'); if (!num) return;
   const g = OB.layers[pop].global, i = obIdx(), yrs = OB.layers[pop].years;
   num.textContent = g[i].toFixed(1) + '%';
-  document.getElementById('dh-lab').textContent = "of the world's " + (pop === 'adol' ? 'youth' : 'adults') + ' live with obesity';
+  document.getElementById('dh-lab').textContent = (innerWidth <= 640 ? '' : "of the world's ") + (pop === 'adol' ? 'youth' : 'adults') + ' live with obesity';
   document.getElementById('dh-sub').textContent = yrs[0] + '  ' + g[0].toFixed(1) + '%   →   ' + yrs[i] + '  ' + g[i].toFixed(1) + '%';
 }
 function animate() {
@@ -1254,8 +1255,8 @@ function animate() {
     else if (storyMode === 'idle') { camera.position.lerp(galView, K(0.05)); curTarget.lerp(GALP, K(0.05)); corridor.material.opacity *= Math.pow(0.9, dt * 60); storyReveal += (1 - storyReveal) * K(0.08); }
     else { const raw = clamp((now - storyT0) / RETURN_DUR, 0, 1), t = smooth(raw), it = 1 - t, ep = STATIONS[0].camPos.clone().multiplyScalar(fit); globePivot.visible = true; globePivot.scale.setScalar(Math.max(0.001, 1 - storyReveal)); camera.position.set(it * it * flightStart.x + 2 * it * t * RET_CP.x + t * t * ep.x, it * it * flightStart.y + 2 * it * t * RET_CP.y + t * t * ep.y, it * it * flightStart.z + 2 * it * t * RET_CP.z + t * t * ep.z); curTarget.lerpVectors(flightStartTgt, STORY_ZERO, smooth(clamp(raw / 0.62, 0, 1))); corridor.material.opacity = Math.max(0, Math.sin(clamp(raw / 0.6, 0, 1) * Math.PI)) * 0.9; storyReveal = 1 - smooth(clamp(raw / 0.45, 0, 1)); if (raw >= 1) { storyMode = null; galGroup.visible = false; corridor.visible = false; curStation = 0; onStation(0); document.body.classList.remove('story-on'); document.body.style.overflow = ''; try { scrollTo(0, 0); } catch (er) {} } }
     camera.lookAt(curTarget);
-    let anyFocus = false;
-    for (const c of storyCards) { const f = c.focus; if (f) anyFocus = true; const colY = COL_TOP - c.idx * CARD_GAP + storyScroll; const tx = f ? 0 : COL_X, ty = f ? 0 : colY, tz = f ? focusZ : 0; c.flip.position.lerp(_v3s.set(tx, ty, tz), K(f ? 0.12 : 0.3)); const ts = (f ? 1.95 : 1) * storyReveal; c.cs += (ts - c.cs) * K(0.18); c.flip.scale.setScalar(Math.max(0.0001, c.cs)); c.fm.material.opacity = storyReveal; c.bm.material.opacity = storyReveal; const tr = f === 2 ? Math.PI : 0; c.flip.rotation.y += (tr - c.flip.rotation.y) * K(0.14); }
+    const anyFocus = storyCards.some(c => c.focus > 0);
+    for (const c of storyCards) { const f = c.focus; const colY = COL_TOP - c.idx * CARD_GAP + storyScroll; const tx = f ? 0 : COL_X, ty = f ? 0 : colY, tz = f ? focusZ : 0; c.flip.position.lerp(_v3s.set(tx, ty, tz), K(f ? 0.12 : 0.3)); const ts = (f ? 1.95 : (SMRING ? 0.66 : 1)) * storyReveal; c.cs += (ts - c.cs) * K(0.18); c.flip.scale.setScalar(Math.max(0.0001, c.cs)); if (SMRING && anyFocus && !f) { c.fm.material.opacity += (0 - c.fm.material.opacity) * K(0.25); } else { c.fm.material.opacity = storyReveal; } c.bm.material.opacity = c.fm.material.opacity; const tr = f === 2 ? Math.PI : 0; c.flip.rotation.y += (tr - c.flip.rotation.y) * K(0.14); }
     if (!down) storyScroll += storyScrollV * dt * 60; storyScrollV *= Math.pow(0.9, dt * 60); if (storyScroll < 0) { storyScroll += -storyScroll * K(0.2); if (!down) storyScrollV = 0; } else if (storyScroll > STORY_MAXSCROLL) { storyScroll += (STORY_MAXSCROLL - storyScroll) * K(0.2); if (!down) storyScrollV = 0; }
     if (anyFocus) { galGroup.rotation.y += -galGroup.rotation.y * K(0.1); galGroup.rotation.x += -galGroup.rotation.x * K(0.1); }
     if (galGroup.userData.hero && !REDUCE) galGroup.userData.hero.rotation.y += 0.0009 * dt * 60;
@@ -1306,7 +1307,8 @@ function animate() {
     const i = Math.min(N - 2, Math.max(0, Math.floor(focus))), e = smooth(focus - i);
     desiredTarget.lerpVectors(STATIONS[i].camTarget, STATIONS[i + 1].camTarget, e);
     desiredPos.lerpVectors(STATIONS[i].camPos, STATIONS[i + 1].camPos, e);
-    const ff = fit * zoom; if (Math.abs(ff - 1) > 0.001) desiredPos.sub(desiredTarget).multiplyScalar(ff).add(desiredTarget);
+    const wb = PORT ? ((STATIONS[i].wide || 1) + ((STATIONS[i + 1].wide || 1) - (STATIONS[i].wide || 1)) * e) : 1;
+    const ff = fit * zoom * wb; if (Math.abs(ff - 1) > 0.001) desiredPos.sub(desiredTarget).multiplyScalar(ff).add(desiredTarget);
     if (PORT) desiredTarget.y -= 0.55;   // sit the world above the bottom controls on phones
     camera.position.lerp(desiredPos, K(REDUCE ? 0.3 : 0.1)); curTarget.lerp(desiredTarget, K(REDUCE ? 0.3 : 0.1)); camera.lookAt(curTarget);
     const cs = Math.round(focus); if (cs !== curStation) { curStation = cs; onStation(cs); yearEl.textContent = yearLabel(); }

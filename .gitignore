@@ -7,3 +7,4 @@ data/atlas.json
 data/world.js
 data/build_atlas.py
 data/build_extra.py
+.claude/
