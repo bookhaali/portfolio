@@ -72,10 +72,13 @@
   #tip{position:fixed;z-index:99;pointer-events:none;background:var(--glass);backdrop-filter:blur(10px);border:1px solid var(--glass-bd);border-radius:4px;padding:5px 9px;font-size:.6rem;color:var(--text);display:none;white-space:nowrap}
 
   @media(max-width:840px){ .grid{grid-template-columns:1fr} }
-  @media(max-width:560px){
-    header.site{padding:.8rem 1rem}
+  @media(max-width:640px){
+    header.site{padding:.75rem .9rem}
     .brand .role{display:none}
-    nav.top a{padding:6px 8px;font-size:.6rem}
+    .brand .name{font-size:.8rem;white-space:nowrap}
+    nav.top{gap:.2rem}
+    nav.top a{padding:7px 8px;font-size:.58rem;letter-spacing:.02em}
+    nav.top a.home{display:none}   /* brand already links home */
     main{padding:1.4rem 1rem 3rem}
     select{max-width:78vw}
   }
@@ -85,7 +88,7 @@
 <header class="site">
   <a class="brand" href="index.html"><div class="name">Abdiwahab Ali</div><div class="role">Health data analyst · Taipei</div></a>
   <nav class="top">
-    <a href="index.html">Journey</a>
+    <a href="index.html" class="home">Journey</a>
     <a href="research.html">Research</a>
     <a href="dashboard.html">Dashboard</a>
     <a href="studio.html" class="on">Studio</a>
