@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Obesity Atlas — live dashboard demo · Abdiwahab Ali</title>
+<title>Obesity Atlas · live dashboard demo · Abdiwahab Ali</title>
 <meta name="description" content="Interactive obesity dashboard: 200 countries, 35 years, NCD-RisC estimates. A live demo of the dashboards I build for clients.">
 <meta name="theme-color" content="#0D0D0C">
 <meta name="color-scheme" content="dark">
-<meta property="og:title" content="Obesity Atlas — live dashboard demo">
+<meta property="og:title" content="Obesity Atlas: live dashboard demo">
 <meta property="og:description" content="200 countries, 35 years, fully interactive. A live demo of the dashboards I build.">
 <meta property="og:image" content="https://bookhaali.github.io/portfolio/assets/og.jpg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0D0C'/%3E%3Ccircle cx='32' cy='36' r='13' fill='none' stroke='%238DB0E4' stroke-width='3'/%3E%3Cline x1='32' y1='23' x2='32' y2='10' stroke='%23E8743B' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='42' y1='28' x2='49' y2='19' stroke='%238DB0E4' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='22' y1='28' x2='16' y2='21' stroke='%235FC9C0' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
@@ -123,7 +123,7 @@
 </head>
 <body>
 <header class="site">
-  <a class="brand" href="index.html"><div class="name">Abdiwahab Ali</div><div class="role">Health data analyst &middot; Doctoral researcher &mdash; Taipei</div></a>
+  <a class="brand" href="index.html"><div class="name">Abdiwahab Ali</div><div class="role">Health data analyst &middot; Doctoral researcher &middot; Taipei</div></a>
   <nav class="top">
     <a href="index.html" class="home">Journey</a>
     <a href="research.html">Research</a>
@@ -135,8 +135,8 @@
 
 <main>
   <div class="kicker">Live demo</div>
-  <h1>Obesity Atlas — 200 countries, 35 years, fully interactive</h1>
-  <p class="lede">This is a working sample of the "interactive dashboard" deliverable: real NCD-RisC estimates, filterable, animatable, exportable. Everything runs in your browser — no server, your clicks stay yours. Pin countries from any chart or the table to compare them.</p>
+  <h1>Obesity Atlas: 200 countries, 35 years, fully interactive</h1>
+  <p class="lede">This is a working sample of the "interactive dashboard" deliverable: real NCD-RisC estimates, filterable, animatable, exportable. Everything runs in your browser, no server; your clicks stay yours. Pin countries from any chart or the table to compare them.</p>
 
   <div class="bar">
     <div class="seg" id="popseg">
@@ -152,17 +152,17 @@
   </div>
 
   <div class="kpis">
-    <div class="kpi"><b id="k1">—</b><span>global prevalence</span><small id="k1s"></small></div>
-    <div class="kpi"><b id="k2">—</b><span>highest country</span><small id="k2s"></small></div>
-    <div class="kpi"><b id="k3">—</b><span>fastest annual rise</span><small id="k3s"></small></div>
-    <div class="kpi"><b id="k4">—</b><span>countries above 10%</span><small id="k4s"></small></div>
+    <div class="kpi"><b id="k1">·</b><span>global prevalence</span><small id="k1s"></small></div>
+    <div class="kpi"><b id="k2">·</b><span>highest country</span><small id="k2s"></small></div>
+    <div class="kpi"><b id="k3">·</b><span>fastest annual rise</span><small id="k3s"></small></div>
+    <div class="kpi"><b id="k4">·</b><span>countries above 10%</span><small id="k4s"></small></div>
   </div>
 
   <div class="pins" id="pins"></div>
 
   <div class="grid2">
     <div class="card">
-      <h2>Top 20 — <span id="rktitle">2024</span></h2>
+      <h2>Top 20 · <span id="rktitle">2024</span></h2>
       <div class="hint">click a bar to pin it to the trend chart</div>
       <canvas class="chart" id="rank" height="430"></canvas>
     </div>
@@ -197,7 +197,7 @@
   </div>
 
   <p class="foot">
-    Source: NCD Risk Factor Collaboration (NCD-RisC) age-standardised obesity prevalence estimates, 1990&ndash;2024. Built by hand — no chart libraries — in the same pipeline style I use for client work: reproducible inputs, honest axes, exportable views.
+    Source: NCD Risk Factor Collaboration (NCD-RisC) age-standardised obesity prevalence estimates, 1990&ndash;2024. Built by hand, no chart libraries, in the same pipeline style I use for client work: reproducible inputs, honest axes, exportable views.
     <span class="cta-line"><a class="btn" href="index.html#hire">Build one for your data</a></span>
   </p>
 </main>
@@ -211,7 +211,7 @@ const PINC = ['#8DB0E4','#E0A24A','#7BBFA0','#D08294','#9C92D6'];
 const S = { pop:'adol', region:null, yi:OB.layers.adol.years.length-1, pins:[], q:'', sort:{k:'y1',dir:-1}, showAll:false };
 const $ = id => document.getElementById(id);
 const years = () => OB.layers[S.pop].years;
-const fmt1 = v => v==null?'—':v.toFixed(1)+'%';
+const fmt1 = v => v==null?'·':v.toFixed(1)+'%';
 
 function rows() {
   const out = [];
@@ -318,9 +318,9 @@ function drawTable() {
 function drawKpis() {
   const ys = years(), g = OB.layers[S.pop].global, data = rows();
   $('k1').textContent = fmt1(g[S.yi]); $('k1s').textContent = `${ys[0]}: ${fmt1(g[0])} → ${ys[S.yi]}`;
-  const hi = data.reduce((a,b)=>(b.y1??-1)>(a.y1??-1)?b:a, {y1:-1,name:'—'});
+  const hi = data.reduce((a,b)=>(b.y1??-1)>(a.y1??-1)?b:a, {y1:-1,name:'·'});
   $('k2').textContent = fmt1(hi.y1); $('k2s').textContent = hi.name;
-  const fr = data.reduce((a,b)=>b.aapc>a.aapc?b:a, {aapc:-1e9,name:'—'});
+  const fr = data.reduce((a,b)=>b.aapc>a.aapc?b:a, {aapc:-1e9,name:'·'});
   $('k3').textContent = '+'+fr.aapc.toFixed(2)+'%'; $('k3s').textContent = fr.name + ' · AAPC';
   const n10 = data.filter(d=>d.y1>=10).length;
   $('k4').textContent = n10; $('k4s').textContent = `of ${data.length} ${S.region?'in '+S.region:'worldwide'}`;

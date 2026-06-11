@@ -28,7 +28,7 @@ const BF = () => innerWidth / innerHeight < 0.8 ? 47 : 42;   // base FOV: wider 
 scene.add(new THREE.AmbientLight(0xffffff, 0.34));
 const sun = new THREE.DirectionalLight(0xffffff, 1.45); sun.position.set(5, 2.5, 4); scene.add(sun);
 
-// note: post-processing bloom was tried and rejected — the composer's linear-space blending
+// note: post-processing bloom was tried and rejected: the composer's linear-space blending
 // lifts every faint additive sprite (nebulae, glows) and washes the corridor grey.
 // Direct ACES tone mapping keeps the deep black frame and still rolls highlights off softly.
 const render = () => renderer.render(scene, camera);
@@ -485,7 +485,7 @@ const aboutNodes = [
   { t: 'UN WPP', tip: { name: 'UN WPP', sub: 'dataset', valHTML: 'population denominators' } },
   { t: 'Public Health 2026', url: 'https://doi.org/10.1016/j.puhe.2026.106177', tip: { name: 'Public Health, 2026', sub: 'publication', valHTML: 'Khat & oral/esophageal cancer: review &amp; meta-analysis. Click to open.' } },
   { t: 'ecancer 2025', url: 'https://doi.org/10.3332/ecancer.2025.1880', tip: { name: 'ecancermedicalscience, 2025', sub: 'publication', valHTML: 'Khat & upper-digestive cancers: case-control. Click to open.' } },
-  { t: 'CDOE 2022', url: 'https://doi.org/10.1111/cdoe.12990', tip: { name: 'Community Dent Oral Epidemiol, 2022', sub: 'publication', valHTML: 'Dental health of 12-year-olds, Somaliland (Oslo project). Click to open.' } }
+  { t: 'Oslo 2022', url: 'https://doi.org/10.1111/cdoe.12990', tip: { name: 'University of Oslo, 2022', sub: 'field research', valHTML: 'Paid field researcher: child dental-health study, Somaliland (CDOE 2022). Click to open.' } }
 ];
 aboutNodes.forEach((nd, i) => {
   const a = (i / aboutNodes.length) * Math.PI * 2, r = 2.6;
@@ -824,8 +824,8 @@ const STATIONS = [
   { name: 'Causal thinking', cap: '<b>Backdoor paths, closed before estimating.</b>', spin: dagSpin, picks: () => dagPicks, camPos: off(DAGP, 0, 0.4, 9.6), camTarget: off(DAGP, 0, 0.2, 0) },
   { name: 'Multivariable model', cap: '<b>Many inputs, one outcome.</b> A live OLS fit, residuals shown.', spin: regSpin, picks: () => [], camPos: off(REGP, 0, 0.5, 10.0), camTarget: off(REGP, 0, 0.1, 0), spinIdle: 0.0016 },
   { name: 'Networks', cap: '<b>Disease rarely travels alone.</b> Edges are comorbidity ties.', spin: netSpin, picks: () => netPicks, camPos: off(NETP, 0, 0.9, 11), camTarget: off(NETP, 0, 0.8, 0), spinIdle: 0.0012 },
-  { name: 'Collaborate', cap: '<b>Forest, funnel, survival, ROC — computed live.</b>', spin: collabSpin, picks: () => [], camPos: off(COLLAB, 0, 1.25, 9.2), camTarget: off(COLLAB, 0, 1.15, 0), wide: 1.5 },
-  { name: 'The analyst', cap: '<b>Five global datasets. Three peer-reviewed papers.</b>', spin: aboutSpin, picks: () => aboutPicks, camPos: off(ABP, 0, 0, 7.2), camTarget: ABP.clone(), spinIdle: 0.0015 },
+  { name: 'Collaborate', cap: '<b>Forest, funnel, survival, ROC. Computed live.</b>', spin: collabSpin, picks: () => [], camPos: off(COLLAB, 0, 1.25, 9.2), camTarget: off(COLLAB, 0, 1.15, 0), wide: 1.5 },
+  { name: 'The analyst', cap: '<b>Five global datasets. Two peer-reviewed papers.</b>', spin: aboutSpin, picks: () => aboutPicks, camPos: off(ABP, 0, 0, 7.2), camTarget: ABP.clone(), spinIdle: 0.0015 },
   { name: 'One table, many stories', cap: '<b>One small table, ten ways to tell it.</b>', spin: storySpin, picks: () => [], camPos: off(STORYP, 0, 0.5, 7), camTarget: off(STORYP, 0, 0.5, 0) }
 ];
 const N = STATIONS.length;
@@ -920,7 +920,7 @@ function setNdc(e) { const r = canvas.getBoundingClientRect(); ndc.set(((e.clien
 function pick(e) { setNdc(e); ray.setFromCamera(ndc, camera); const h = ray.intersectObjects(STATIONS[Math.max(0, curStation)].picks(), false); return h.length ? h[0].object : null; }
 function setHover(m) { if (hovered && hovered !== m && hovered !== (selected && selected.mesh)) hovered.material = hovered.userData.mat0; if (m && m !== (selected && selected.mesh)) m.material = hiMat; hovered = m; }
 canvas.addEventListener('pointerdown', e => { earthIntro = false; scrollAnimId++; if (demoActive) stopTour(); if (storyMode) storyScrollV = 0; down = { x: e.clientX, y: e.clientY, touch: e.pointerType === 'touch', axis: null }; last = { x: e.clientX, y: e.clientY }; dragging = false; });
-addEventListener('pointercancel', () => { down = null; dragging = false; });   // browser claimed the gesture (iOS scroll) — keep state clean
+addEventListener('pointercancel', () => { down = null; dragging = false; });   // browser claimed the gesture (iOS scroll): keep state clean
 canvas.addEventListener('pointermove', e => {
   if (down) {
     if (Math.abs(e.clientX - down.x) > 4 || Math.abs(e.clientY - down.y) > 4) dragging = true;
@@ -962,7 +962,7 @@ function stop() { if (timer) { clearInterval(timer); timer = null; } playBtn.inn
 function play() { earthIntro = false; if (timer) return stop(); playBtn.innerHTML = '&#10073;&#10073;'; timer = setInterval(() => { const s = STATIONS[Math.max(0, curStation)]; const K = s.spin === dietSpin ? DIET.yearsF.length : s.spin === cancerSpin ? CAN.years.length : OB.layers[pop].years.length; setTime(tNorm >= 0.999 ? 0 : Math.min(1, tNorm + 1 / (K - 1))); }, 520); }
 playBtn.addEventListener('click', play);
 
-// quote overlay — animated open/close, scroll lock, Escape
+// quote overlay: animated open/close, scroll lock, Escape
 const qov = document.getElementById('quote-overlay');
 function openQuote() { qov.classList.add('show'); if (!document.body.classList.contains('story-on')) document.body.style.overflow = 'hidden'; }
 function closeQuote() { qov.classList.remove('show'); if (!document.body.classList.contains('story-on')) document.body.style.overflow = ''; }
@@ -971,7 +971,7 @@ document.getElementById('yd-cta').addEventListener('click', openQuote);
 // deep link: research/dashboard/notes pages send people to index.html#hire
 if (location.hash === '#hire') { history.replaceState(null, '', location.pathname); openQuote(); }
 addEventListener('hashchange', () => { if (location.hash === '#hire') { history.replaceState(null, '', location.pathname); openQuote(); } });
-// in-sheet contact form (FormSubmit AJAX) — for the majority with no desktop mail client
+// in-sheet contact form (FormSubmit AJAX): for the majority with no desktop mail client
 const qform = document.getElementById('qform');
 if (qform) qform.addEventListener('submit', e => {
   e.preventDefault();
@@ -980,13 +980,13 @@ if (qform) qform.addEventListener('submit', e => {
   btn.disabled = true; btn.textContent = 'Sending…';
   fetch('https://formsubmit.co/ajax/bookhaali@gmail.com', {
     method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    body: JSON.stringify({ name: fd.get('name') || '(no name)', email: fd.get('email'), message: fd.get('message'), _subject: 'Portfolio inquiry — ' + scope, scope, price_shown: document.getElementById('q-num').textContent })
+    body: JSON.stringify({ name: fd.get('name') || '(no name)', email: fd.get('email'), message: fd.get('message'), _subject: 'Portfolio inquiry: ' + scope, scope, price_shown: document.getElementById('q-num').textContent })
   }).then(r => r.ok ? r.json() : Promise.reject()).then(() => {
     qform.querySelectorAll('input,textarea,.qf-send').forEach(el => el.style.display = 'none');
     ok.hidden = false;
   }).catch(() => {
     btn.disabled = false; btn.textContent = 'Send';
-    ok.hidden = false; ok.style.color = '#D98A6E'; ok.textContent = 'Could not send — please use the email button above.';
+    ok.hidden = false; ok.style.color = '#D98A6E'; ok.textContent = 'Could not send. Please use the email button above.';
   });
 });
 addEventListener('keydown', e => {
@@ -1305,7 +1305,7 @@ function animate() {
     }
   }
   else focus = scrollFrac() * (N - 1);
-  for (let k = 0; k < WORLD_GROUPS.length; k++) {   // one world per beat — grown in/out smoothly instead of popping at the boundary
+  for (let k = 0; k < WORLD_GROUPS.length; k++) {   // one world per beat, grown in/out smoothly instead of popping at the boundary
     const g = WORLD_GROUPS[k], d = Math.abs(focus - k); g.visible = d < 0.95;
     if (g.visible) { const w = 1 - smooth(clamp((d - 0.6) / 0.35, 0, 1)); g.scale.setScalar(Math.max(0.001, w)); }
   }
