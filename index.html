@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0D0D0C">
 <meta name="color-scheme" content="dark">
 <meta property="og:title" content="Abdiwahab Ali · Health Data Analyst & Epidemiology Researcher">
-<meta property="og:description" content="An interactive journey through 13 worlds of public-health data. Epidemiology, meta-analysis, and figures people remember.">
+<meta property="og:description" content="An interactive journey through 14 worlds of public-health data. Epidemiology, meta-analysis, and figures people remember.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bookhaali.github.io/portfolio/">
 <meta property="og:image" content="https://bookhaali.github.io/portfolio/assets/og.jpg">
@@ -20,7 +20,7 @@
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{
@@ -28,8 +28,8 @@
     --border:#2A2924; --accent:#8DB0E4; --accent-soft:#18222E;
     --glass:rgba(15,15,13,.55); --glass-bd:rgba(236,235,228,.1);
     --r-s:4px; --r-l:10px;
-    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
-    --disp:'Space Grotesk','JetBrains Mono',system-ui,sans-serif;
+    --mono:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --disp:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
     --spring:cubic-bezier(.16,1,.3,1);
   }
   html{background:var(--bg);scroll-snap-type:y proximity;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
@@ -340,11 +340,11 @@
 <script>(function(){try{var c=document.createElement('canvas');if(c.getContext('webgl')||c.getContext('experimental-webgl'))document.documentElement.classList.add('webgl-ok');}catch(e){}})();</script>
 </head>
 <body>
-<section id="fallback" aria-label="Abdiwahab Ali — overview">
+<section id="fallback" aria-label="Abdiwahab Ali, overview">
   <div class="fb-inner">
     <h1>Abdiwahab Ali</h1>
     <p class="fb-role">Health Data Analyst &amp; Epidemiology Researcher &middot; Taipei</p>
-    <p class="fb-lede">I turn public-health data into interactive, publication-ready analysis &mdash; obesity, diet and cancer epidemiology across 190+ countries and 35 years of trends. R &middot; Python &middot; Stata &middot; joinpoint regression &middot; meta-analysis &middot; interactive dashboards.</p>
+    <p class="fb-lede">I turn public-health data into interactive, publication-ready analysis: obesity, diet and cancer epidemiology across 190+ countries and 35 years of trends. R &middot; Python &middot; Stata &middot; joinpoint regression &middot; meta-analysis &middot; interactive dashboards. I also built Covexe, a browser platform for systematic reviews, meta-analysis and evidence synthesis.</p>
     <nav class="fb-links">
       <a href="research.html">Research</a>
       <a href="dashboard.html">Live dashboard</a>
@@ -353,12 +353,12 @@
       <a href="https://www.linkedin.com/in/bookhaali/" rel="noopener">LinkedIn</a>
       <a href="https://orcid.org/0009-0007-4069-2282" rel="noopener">ORCID</a>
     </nav>
-    <p class="fb-note">This page opens with an interactive 3D data journey. If it hasn&rsquo;t appeared, your browser or device may not support WebGL &mdash; every section is reachable from the links above.</p>
+    <p class="fb-note">This page opens with an interactive 3D data journey. If it hasn&rsquo;t appeared, your browser or device may not support WebGL. Every section is reachable from the links above.</p>
   </div>
 </section>
 <h1 class="sr-only">Abdiwahab Ali, health data analyst and epidemiology doctoral researcher in Taipei</h1>
-<p class="sr-only">An interactive 3D journey through thirteen data worlds: global obesity, burden and velocity, the early-onset shift, diet, obesity-related cancers, lag correlation, forecasts to 2050, causal diagrams, multivariable models, comorbidity networks, meta-analysis methods, publications, and data storytelling. Scroll to travel between worlds. Contact: bookhaali@gmail.com</p>
-<canvas id="space" role="img" aria-label="Interactive 3D data journey: thirteen worlds of public-health analysis. Scroll to travel."></canvas>
+<p class="sr-only">An interactive 3D journey through fourteen data worlds: global obesity, burden and velocity, the early-onset shift, diet, obesity-related cancers, lag correlation, forecasts to 2050, causal diagrams, multivariable models, comorbidity networks, meta-analysis methods, Covexe (the systematic-review platform I built), publications, and data storytelling. Scroll to travel between worlds. Contact: bookhaali@gmail.com</p>
+<canvas id="space" role="img" aria-label="Interactive 3D data journey: fourteen worlds of public-health analysis. Scroll to travel."></canvas>
 <div id="scroll-space"></div>
 
 <div class="loader" id="loader"><span id="loader-txt"></span><div class="loader-bar"><i id="loader-fill"></i></div></div>
@@ -402,6 +402,7 @@
   <div class="yd-big accent">Imagine yours.</div>
   <div class="yd-sub">Send me a spreadsheet. You&rsquo;ll get back something like this.</div>
   <div class="yd-proof">Peer-reviewed in <i>Public Health</i> (2026) and <i>ecancermedicalscience</i> (2025).</div>
+  <div class="yd-proof">Also built <i>Covexe</i>, a platform for systematic reviews and evidence synthesis.</div>
   <button class="yd-cta" id="yd-cta">Start a project</button>
   <div class="yd-links">
     <a href="research.html">Research</a>
@@ -484,7 +485,8 @@
       <div class="pitch-k">Work with me</div>
       <h2>Turn your data into something people remember.</h2>
       <ul class="pitch-list">
-        <li>Published in <i>Public Health</i> &amp; <i>ecancermedicalscience</i> (2025&ndash;26)</li>
+        <li>Published in <i>Public Health</i> &amp; <i>ecancermedicalscience</i> (2025-26)</li>
+        <li>Built <i>Covexe</i>, a systematic-review and evidence-synthesis platform</li>
         <li>Fluent in GBD, GLOBOCAN, NCD-RisC and WHO data</li>
         <li>R, Python, Stata, SPSS, Joinpoint</li>
         <li>Reproducible code, clear writing, fast replies</li>

@@ -13,7 +13,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0D0C'/%3E%3Ccircle cx='32' cy='36' r='13' fill='none' stroke='%238DB0E4' stroke-width='3'/%3E%3Cline x1='32' y1='23' x2='32' y2='10' stroke='%23E8743B' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='42' y1='28' x2='49' y2='19' stroke='%238DB0E4' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='22' y1='28' x2='16' y2='21' stroke='%235FC9C0' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{
@@ -21,8 +21,8 @@
     --border:#2A2924; --accent:#8DB0E4; --accent-soft:#18222E; --warm:#D98A6E;
     --glass:rgba(15,15,13,.55); --glass-bd:rgba(236,235,228,.1);
     --r-s:4px; --r-l:10px;
-    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
-    --disp:'Space Grotesk','JetBrains Mono',system-ui,sans-serif;
+    --mono:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --disp:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
   }
   html{background:var(--bg);scrollbar-width:thin;scrollbar-color:var(--border) transparent}
   ::selection{background:rgba(141,176,228,.3);color:var(--text)}
@@ -90,17 +90,17 @@
   <p class="lede">A short data story each month, built from public datasets. Every number on this page is computed live in your browser from the source data, so the charts can never drift from the words around them.</p>
 
   <article>
-    <div class="meta">Nº 01 · June 2026 · NCD-RisC, 1990–2024</div>
+    <div class="meta">Nº 01 · June 2026 · NCD-RisC, 1990-2024</div>
     <h2>Youth obesity is rising fastest where prevalence is still low.</h2>
     <p><b id="t-global">…</b> of the world's school-age children and adolescents live with obesity, up from <b id="t-global0">…</b> in 1990. The global average hides where the rise is happening.</p>
     <p>Ranked by annual percent change instead of level, the fastest-rising countries are <b id="t-fastlist">…</b>: countries that started near zero in 1990.</p>
     <figure>
       <canvas id="chart" height="260"></canvas>
-      <figcaption id="figcap">The five fastest-rising countries (AAPC, 1990–2024) and the global mean (dashed). Computed from NCD-RisC estimates when the page loads.</figcaption>
+      <figcaption id="figcap">The five fastest-rising countries (AAPC, 1990-2024) and the global mean (dashed). Computed from NCD-RisC estimates when the page loads.</figcaption>
     </figure>
     <p>Most of the 20 fastest-rising countries are in <b id="t-regions">…</b>. High-income countries have the highest levels; the fastest growth is elsewhere.</p>
     <p>This is why I chart the trend next to the level. Levels show where the problem is. Trends show where it will be.</p>
-    <div class="method"><b>Method note.</b> Data: NCD Risk Factor Collaboration age-standardised obesity prevalence, ages 5–19, 200 countries, 1990–2024. Velocity = average annual percent change (AAPC) over the full window. No smoothing, no exclusions; the five series above are plotted exactly as published. Explore the full dataset in the <a href="dashboard.html">interactive dashboard</a>.</div>
+    <div class="method"><b>Method note.</b> Data: NCD Risk Factor Collaboration age-standardised obesity prevalence, ages 5-19, 200 countries, 1990-2024. Velocity = average annual percent change (AAPC) over the full window. No smoothing, no exclusions; the five series above are plotted exactly as published. Explore the full dataset in the <a href="dashboard.html">interactive dashboard</a>.</div>
   </article>
 
   <p class="soon">Nº 02 lands next month. Want it in your inbox instead? <a href="mailto:bookhaali@gmail.com?subject=Field%20notes">Email me</a> and I'll send it directly.</p>
@@ -128,7 +128,7 @@ document.getElementById('t-regions').textContent = topRegs.join(' and ');
 
 (function draw() {
   const cv = document.getElementById('chart'), dpr = Math.min(2, devicePixelRatio || 1);
-  if (!cv.dataset.dh) cv.dataset.dh = cv.getAttribute('height');   // fixed design height — cv.height writes would otherwise compound on each resize redraw
+  if (!cv.dataset.dh) cv.dataset.dh = cv.getAttribute('height');   // fixed design height, cv.height writes would otherwise compound on each resize redraw
   const w = cv.clientWidth, h = +cv.dataset.dh;
   cv.width = w * dpr; cv.height = h * dpr; cv.style.height = h + 'px';
   const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);

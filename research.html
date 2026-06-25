@@ -13,7 +13,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0D0C'/%3E%3Ccircle cx='32' cy='36' r='13' fill='none' stroke='%238DB0E4' stroke-width='3'/%3E%3Cline x1='32' y1='23' x2='32' y2='10' stroke='%23E8743B' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='42' y1='28' x2='49' y2='19' stroke='%238DB0E4' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='22' y1='28' x2='16' y2='21' stroke='%235FC9C0' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{
@@ -21,8 +21,8 @@
     --border:#2A2924; --accent:#8DB0E4; --accent-soft:#18222E; --warm:#D98A6E;
     --glass:rgba(15,15,13,.55); --glass-bd:rgba(236,235,228,.1);
     --r-s:4px; --r-l:10px;
-    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
-    --disp:'Space Grotesk','JetBrains Mono',system-ui,sans-serif;
+    --mono:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --disp:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
     --spring:cubic-bezier(.16,1,.3,1);
   }
   html{background:var(--bg);scrollbar-width:thin;scrollbar-color:var(--border) transparent}
@@ -106,6 +106,19 @@
   .note{display:flex;gap:.7rem;align-items:flex-start;background:var(--accent-soft);border:1px solid rgba(141,176,228,.25);border-radius:var(--r-l);padding:1rem 1.2rem;margin:1.4rem 0 0;font-size:.72rem;color:var(--muted);line-height:1.7;max-width:760px}
   .note b{color:var(--text);font-weight:500}
 
+  /* what I've built: featured product */
+  .build{background:linear-gradient(180deg,var(--accent-soft),var(--surface));border:1px solid rgba(141,176,228,.32);border-radius:var(--r-l);padding:1.7rem 1.8rem}
+  .build-eyebrow{display:block;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
+  .build-head{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+  .build-name{font-family:var(--disp);font-size:1.55rem;font-weight:700;letter-spacing:-.01em;color:var(--text)}
+  .build-url{font-size:.64rem;color:var(--faint);letter-spacing:.06em}
+  .build-lede{font-size:.8rem;color:var(--muted);line-height:1.8;margin:1rem 0 1.3rem;max-width:700px}
+  .build-lede b{color:var(--text);font-weight:500}
+  .build-stats{display:flex;gap:1.9rem;flex-wrap:wrap;margin-bottom:1.3rem}
+  .build-stats div b{display:block;font-family:var(--disp);font-size:1.35rem;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+  .build-stats div span{font-size:.6rem;color:var(--faint);letter-spacing:.03em}
+  .build .chips .chip{color:var(--text)}
+
   .cta{margin-top:4rem;text-align:center;border-top:1px solid var(--border);padding-top:3rem}
   .cta h2{margin-top:0}
   .cta .row{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-top:1.4rem}
@@ -122,6 +135,14 @@
     nav.top a{padding:7px 9px;font-size:.6rem}
     .brand .role{display:none}
     main{padding-top:6rem}
+    .build{padding:1.4rem 1.3rem}
+    .build-name{font-size:1.35rem}
+    .build-lede{font-size:.82rem}
+    .build-stats{flex-direction:column;gap:.8rem;margin-bottom:1.1rem}
+    .build-stats div{display:flex;align-items:baseline;gap:.6rem}
+    .build-stats div b{font-size:1.15rem}
+    .build-stats div span{font-size:.66rem}
+    .build .note{flex-direction:column;gap:.35rem}
   }
 
   @media(max-width:680px){
@@ -156,7 +177,7 @@
     <div class="stat"><b>6</b><span>active studies</span></div>
     <div class="stat"><b>2</b><span>peer-reviewed papers</span></div>
     <div class="stat"><b>190+</b><span>countries covered</span></div>
-    <div class="stat"><b>35 yrs</b><span>of trend data (1990&ndash;2024)</span></div>
+    <div class="stat"><b>35 yrs</b><span>of trend data (1990-2024)</span></div>
     <div class="stat"><b>R&middot;Stata&middot;Py</b><span>analysis stack</span></div>
   </div>
 
@@ -170,7 +191,7 @@
     </a>
     <a class="paper" href="https://doi.org/10.3332/ecancer.2025.1880" target="_blank" rel="noopener">
       <div class="j">ecancermedicalscience &middot; 2025</div>
-      <div class="t">Khat and upper digestive tract cancers in Hargeisa: a case&ndash;control study</div>
+      <div class="t">Khat and upper digestive tract cancers in Hargeisa: a case-control study</div>
       <div class="d">doi:10.3332/ecancer.2025.1880</div>
     </a>
     <a class="paper" href="https://doi.org/10.1111/cdoe.12990" target="_blank" rel="noopener">
@@ -181,7 +202,7 @@
   </div>
 
   <h2>Active studies</h2>
-  <p class="sub">Raw figures stay blurred until each study is published &mdash; but four of them have a fully interactive recreation in the <a href="dashboard.html">dashboard</a> (click any unlocked card). The published papers above are open access.</p>
+  <p class="sub">Raw figures stay blurred until each study is published, but four of them have a fully interactive recreation in the <a href="dashboard.html">dashboard</a> (click any unlocked card). The published papers above are open access.</p>
 
   <div class="grid">
     <div class="proj">
@@ -232,6 +253,30 @@
       <div class="lock"><svg width="10" height="12" viewBox="0 0 10 12" fill="none"><rect x="1" y="5" width="8" height="6" rx="1" stroke="#6E6D64"/><path d="M3 5V3.5C3 2.4 3.9 1.5 5 1.5C6.1 1.5 7 2.4 7 3.5V5" stroke="#6E6D64"/></svg>figures blurred until publication</div>
       <div class="chips"><span class="chip">PRISMA-ScR</span><span class="chip">evidence mapping</span></div>
     </div>
+  </div>
+
+  <h2>What I&rsquo;ve built</h2>
+  <p class="sub">Beyond the studies above, I built the software that runs them.</p>
+  <div class="build">
+    <span class="build-eyebrow">Founder &amp; developer</span>
+    <div class="build-head">
+      <span class="build-name">Covexe</span>
+      <span class="build-url">covexe.com</span>
+    </div>
+    <p class="build-lede">One platform for the whole systematic review, from protocol to publication figures: <b>planning, searching, screening, risk-of-bias appraisal, AI-assisted data extraction, meta-analysis and a full statistics suite</b>, all in one browser. AI stays assistive: every extracted value cites the exact sentence it came from, and the statistics run on your own machine, so your data never leaves it.</p>
+    <div class="build-stats">
+      <div><b>40+</b><span>methods checked against R</span></div>
+      <div><b>17+</b><span>tools, search to synthesis</span></div>
+      <div><b>1</b><span>browser, nothing to install</span></div>
+    </div>
+    <div class="chips">
+      <span class="chip">Meta-analysis &amp; NMA</span>
+      <span class="chip">PRISMA / CONSORT</span>
+      <span class="chip">RoB2 &middot; ROBINS-I &middot; GRADE</span>
+      <span class="chip">AI extraction, cited to source</span>
+      <span class="chip">Client-side statistics</span>
+    </div>
+    <div class="note" style="margin-top:1.4rem"><b>Free core, validated maths.</b> The statistics, appraisal and reporting tools are free; a methods paper validating the engine against R (metafor, survival, MASS) is in preparation with faculty co-authors.</div>
   </div>
 
   <h2>Methods &amp; tools</h2>

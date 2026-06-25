@@ -13,7 +13,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0D0C'/%3E%3Ccircle cx='32' cy='36' r='13' fill='none' stroke='%238DB0E4' stroke-width='3'/%3E%3Cline x1='32' y1='23' x2='32' y2='10' stroke='%23E8743B' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='42' y1='28' x2='49' y2='19' stroke='%238DB0E4' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='22' y1='28' x2='16' y2='21' stroke='%235FC9C0' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{
@@ -21,8 +21,8 @@
     --border:#2A2924; --accent:#8DB0E4; --accent-soft:#18222E; --warm:#D98A6E;
     --glass:rgba(15,15,13,.55); --glass-bd:rgba(236,235,228,.1);
     --r-s:4px; --r-l:10px;
-    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
-    --disp:'Space Grotesk','JetBrains Mono',system-ui,sans-serif;
+    --mono:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --disp:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
   }
   html{background:var(--bg);scrollbar-width:thin;scrollbar-color:var(--border) transparent}
   ::selection{background:rgba(141,176,228,.3);color:var(--text)}
@@ -165,7 +165,7 @@
 
   <div class="bar">
     <div class="seg" id="popseg">
-      <button data-pop="adol" class="on">Youth 5&ndash;19</button>
+      <button data-pop="adol" class="on">Youth 5-19</button>
       <button data-pop="adult">Adults 20+</button>
     </div>
     <div class="chips" id="regchips"></div>
@@ -193,7 +193,7 @@
     </div>
     <div>
       <div class="card" style="margin-bottom:1rem">
-        <h2>Trends, 1990&ndash;2024</h2>
+        <h2>Trends, 1990-2024</h2>
         <div class="hint">global mean + pinned countries · drag the year slider to move the cursor</div>
         <canvas class="chart" id="trend" height="200"></canvas>
       </div>
@@ -213,7 +213,7 @@
     <div style="overflow-x:auto">
     <table>
       <thead><tr id="hdr">
-        <th data-k="name">Country</th><th data-k="y0">1990</th><th data-k="y1" class="on">Latest ↓</th><th data-k="chg">Change</th><th data-k="aapc">AAPC %/yr</th><th>1990&ndash;2024</th>
+        <th data-k="name">Country</th><th data-k="y0">1990</th><th data-k="y1" class="on">Latest ↓</th><th data-k="chg">Change</th><th data-k="aapc">AAPC %/yr</th><th>1990-2024</th>
       </tr></thead>
       <tbody id="tbody"></tbody>
     </table>
@@ -223,19 +223,19 @@
 
   <section class="sf">
     <h2>Figures from my studies</h2>
-    <p class="sf-sub">Beyond the atlas above: headline figures from my other work &mdash; diet quality across the life course, Africa&rsquo;s double burden, and adult prevalence &mdash; rebuilt as live charts. Pick the cut, hover for the numbers.</p>
+    <p class="sf-sub">Beyond the atlas above: headline figures from my other work (diet quality across the life course, Africa&rsquo;s double burden, and adult prevalence) rebuilt as live charts. Pick the cut, hover for the numbers.</p>
     <div class="grid">
       <div class="card" id="diet">
         <h2>Diet quality across the life course</h2>
         <div class="sub">Mean diet-quality score over time, younger adults vs older adults. Four validated indices; pick one.</div>
         <div class="ctl"><div class="seg alt" id="d-index"></div><div class="seg" id="d-sex"></div></div>
         <canvas class="chart" id="d-cv" height="240"></canvas>
-        <div class="legend"><span><i style="background:#8DB0E4"></i>ages 15&ndash;49</span><span><i style="background:#D98A6E"></i>ages 50+</span></div>
+        <div class="legend"><span><i style="background:#8DB0E4"></i>ages 15-49</span><span><i style="background:#D98A6E"></i>ages 50+</span></div>
         <div class="readout" id="d-read"></div>
       </div>
       <div class="card" id="burden">
         <h2>The double burden, country by country</h2>
-        <div class="sub">Obesity rising while underweight falls, 1990&ndash;2022. Watch the lines cross. Choose a country and sex.</div>
+        <div class="sub">Obesity rising while underweight falls, 1990-2022. Watch the lines cross. Choose a country and sex.</div>
         <div class="ctl"><select id="b-country" aria-label="Country"></select><div class="seg" id="b-sex"></div></div>
         <canvas class="chart" id="b-cv" height="240"></canvas>
         <div class="legend"><span><i style="background:#D98A6E"></i>obesity</span><span><i style="background:#7BBFA0"></i>underweight</span></div>
@@ -243,7 +243,7 @@
       </div>
       <div class="card" id="adult">
         <h2>Adult prevalence, three decades</h2>
-        <div class="sub">Modelled adult prevalence by country, 1990&ndash;2022, with its average annual rate of change. Choose a country and sex.</div>
+        <div class="sub">Modelled adult prevalence by country, 1990-2022, with its average annual rate of change. Choose a country and sex.</div>
         <div class="ctl"><select id="a-country" aria-label="Country"></select><div class="seg" id="a-sex"></div></div>
         <canvas class="chart" id="a-cv" height="240"></canvas>
         <div class="readout" id="a-read"></div>
@@ -252,7 +252,7 @@
   </section>
 
   <p class="foot">
-    Source: NCD Risk Factor Collaboration (NCD-RisC) age-standardised obesity prevalence estimates, 1990&ndash;2024. Built without chart libraries; reproducible inputs and exportable views.
+    Source: NCD Risk Factor Collaboration (NCD-RisC) age-standardised obesity prevalence estimates, 1990-2024. Built without chart libraries; reproducible inputs and exportable views.
     <span class="cta-line"><a class="btn" href="index.html#hire">Build one for your data</a></span>
   </p>
 </main>
@@ -279,7 +279,7 @@ function rows() {
 }
 if (!CanvasRenderingContext2D.prototype.roundRect) CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r){ r=Math.min(r,w/2,h/2); this.moveTo(x+r,y); this.arcTo(x+w,y,x+w,y+h,r); this.arcTo(x+w,y+h,x,y+h,r); this.arcTo(x,y+h,x,y,r); this.arcTo(x,y,x+w,y,r); this.closePath(); };
 function setupCanvas(cv) {
-  if (!cv.dataset.dh) cv.dataset.dh = cv.getAttribute('height');   // design height, fixed — cv.height writes would otherwise compound each redraw
+  if (!cv.dataset.dh) cv.dataset.dh = cv.getAttribute('height');   // design height, fixed, cv.height writes would otherwise compound each redraw
   const dpr = Math.min(2, devicePixelRatio||1), h = +cv.dataset.dh, w = cv.clientWidth || 300;
   cv.width = w*dpr; cv.height = h*dpr; cv.style.height = h+'px';
   const ctx = cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -370,7 +370,7 @@ function drawTable() {
     tb.appendChild(tr);
   });
   $('more').textContent = S.showAll ? 'show top 25' : `show all ${data.length}`;
-  $('tbltitle').textContent = (S.region||'All countries') + ' · ' + (S.pop==='adol'?'youth 5–19':'adults 20+') + (S.q?` · “${S.q}” (${data.length})`:'');
+  $('tbltitle').textContent = (S.region||'All countries') + ' · ' + (S.pop==='adol'?'youth 5-19':'adults 20+') + (S.q?` · “${S.q}” (${data.length})`:'');
 }
 function drawKpis() {
   const ys = years(), g = OB.layers[S.pop].global, data = rows();
@@ -468,7 +468,7 @@ drawAll();
     line(ctx,a,X,Y,'#8DB0E4',2.2); line(ctx,b,X,Y,'#D98A6E',2.2);
     a.forEach((v,i)=>v!=null&&dot(ctx,X(i),Y(v),'#8DB0E4',2.6)); b.forEach((v,i)=>v!=null&&dot(ctx,X(i),Y(v),'#D98A6E',2.6));
     const la=a[a.length-1], lb=b[b.length-1];
-    $('d-read').innerHTML = ds.ix+' · '+ds.sex.toLowerCase()+' · '+ys[ys.length-1]+': <b>'+lb+'</b> at 50+ vs <b>'+la+'</b> at 15–49 (higher = better quality).';
+    $('d-read').innerHTML = ds.ix+' · '+ds.sex.toLowerCase()+' · '+ys[ys.length-1]+': <b>'+lb+'</b> at 50+ vs <b>'+la+'</b> at 15-49 (higher = better quality).';
   }
   seg($('d-index'), ['AHEI','DASH','aMED','PDQS'].map(v=>({label:v,v})), ()=>ds.ix, v=>{ds.ix=v;drawDiet();});
   seg($('d-sex'), ['Both','Men','Women'].map(v=>({label:v,v})), ()=>ds.sex, v=>{ds.sex=v;drawDiet();});

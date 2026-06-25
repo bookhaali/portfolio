@@ -114,8 +114,8 @@ function makeLabel(text, { size = 0.3, color = '#ECEBE4' } = {}) {
   const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
   const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
   function draw(t) {
-    ctx.font = `700 ${fs}px JetBrains Mono, monospace`; c.width = Math.ceil(ctx.measureText(t).width) + pad * 2; c.height = fs + pad * 2;
-    ctx.font = `700 ${fs}px JetBrains Mono, monospace`; ctx.clearRect(0, 0, c.width, c.height); ctx.fillStyle = color; ctx.textBaseline = 'middle'; ctx.fillText(t, pad, c.height / 2);
+    ctx.font = `700 ${fs}px Open Sans, sans-serif`; c.width = Math.ceil(ctx.measureText(t).width) + pad * 2; c.height = fs + pad * 2;
+    ctx.font = `700 ${fs}px Open Sans, sans-serif`; ctx.clearRect(0, 0, c.width, c.height); ctx.fillStyle = color; ctx.textBaseline = 'middle'; ctx.fillText(t, pad, c.height / 2);
     tex.needsUpdate = true; spr.scale.set(size * c.width / c.height, size, 1); spr.userData.text = t;
   }
   draw(text); spr.userData.kind = 'label'; spr.userData.set = draw; return spr;
@@ -418,7 +418,7 @@ function drawLag() {
   const ctx = lagPlane.ctx, W = lagPlane.lw, H = lagPlane.lh; ctx.setTransform(lagPlane.dpr,0,0,lagPlane.dpr,0,0); panelBg(ctx, W, H);
   const ob = OB.layers[pop].global, obYears = OB.layers[pop].years, cYears = CAN.years, cVals = cancerTotal.both;
   const m = { l: 70, r: 30, t: 90, b: 70 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 34px JetBrains Mono'; ctx.fillText('Obesity today, cancer tomorrow', m.l, 56);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 34px Open Sans'; ctx.fillText('Obesity today, cancer tomorrow', m.l, 56);
   // align years 1990..2021
   const y0 = 1990, y1 = 2021; const obAt = y => ob[clamp(y - obYears[0], 0, ob.length - 1)]; const cAt = y => cVals[clamp(y - cYears[0], 0, cVals.length - 1)];
   const obS = [], cS = []; for (let y = y0; y <= y1 - lag; y++) { obS.push(obAt(y)); cS.push(cAt(y + lag)); }
@@ -429,9 +429,9 @@ function drawLag() {
   const cFull = []; for (let y = y0; y <= y1; y++) cFull.push(cAt(y));
   drawLine(obFull, 0, '#8DB0E4');
   drawLine(cFull, -lag, '#D98A6E', [10, 8]);
-  ctx.font = '600 22px JetBrains Mono'; ctx.fillStyle = '#8DB0E4'; ctx.fillText('obesity (youth)', m.l, H - 28);
+  ctx.font = '600 22px Open Sans'; ctx.fillStyle = '#8DB0E4'; ctx.fillText('obesity (youth)', m.l, H - 28);
   ctx.fillStyle = '#D98A6E'; ctx.fillText('cancer incidence, shifted ' + lag + 'y', m.l + 260, H - 28);
-  ctx.font = '700 30px JetBrains Mono'; ctx.fillStyle = '#ECEBE4'; ctx.textAlign = 'right'; ctx.fillText('r = ' + r.toFixed(2) + '   lag ' + lag + 'y', W - m.r, 56); ctx.textAlign = 'left';
+  ctx.font = '700 30px Open Sans'; ctx.fillStyle = '#ECEBE4'; ctx.textAlign = 'right'; ctx.fillText('r = ' + r.toFixed(2) + '   lag ' + lag + 'y', W - m.r, 56); ctx.textAlign = 'left';
   lagPlane.tex.needsUpdate = true;
 }
 
@@ -444,7 +444,7 @@ function drawForecast() {
   const ctx = fcPlane.ctx, W = fcPlane.lw, H = fcPlane.lh; ctx.setTransform(fcPlane.dpr,0,0,fcPlane.dpr,0,0); panelBg(ctx, W, H);
   const ob = OB.layers[pop].global, years = OB.layers[pop].years, y0 = years[0], yLast = years[years.length - 1], yEnd = 2050;
   const m = { l: 70, r: 40, t: 90, b: 64 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 34px JetBrains Mono'; ctx.fillText('Where it is heading, to 2050', m.l, 56);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 34px Open Sans'; ctx.fillText('Where it is heading, to 2050', m.l, 56);
   // log-linear fit on last 12 points
   const k = Math.min(12, ob.length); const xs = [], ys = []; for (let i = ob.length - k; i < ob.length; i++) { xs.push(i); ys.push(Math.log(Math.max(0.1, ob[i]))); }
   let sx = 0, sy = 0, sxx = 0, sxy = 0; for (let i = 0; i < k; i++) { sx += xs[i]; sy += ys[i]; sxx += xs[i] * xs[i]; sxy += xs[i] * ys[i]; }
@@ -456,7 +456,7 @@ function drawForecast() {
   const X = yr => m.l + ((yr - y0) / (yEnd - y0)) * iw, Y = v => m.t + ih - (v / allMax) * ih;
   // horizontal gridlines + % labels
   const step = allMax > 16 ? 5 : 2;
-  ctx.font = '400 20px JetBrains Mono';
+  ctx.font = '400 20px Open Sans';
   for (let v = step; v < allMax; v += step) { ctx.strokeStyle = '#1E1D1A'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(m.l, Y(v)); ctx.lineTo(m.l + iw, Y(v)); ctx.stroke(); ctx.fillStyle = '#55544D'; ctx.fillText(v + '%', m.l - 58, Y(v) + 7); }
   // axis baseline
   ctx.strokeStyle = '#2A2924'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(m.l, m.t + ih); ctx.lineTo(m.l + iw, m.t + ih); ctx.stroke();
@@ -469,8 +469,8 @@ function drawForecast() {
   // forecast central
   ctx.strokeStyle = '#8DB0E4'; ctx.setLineDash([10, 8]); ctx.beginPath(); for (let f = 0; f <= nFut; f++) { const idx = ob.length - 1 + f, yr = yLast + f, c = Math.exp(b0 + b1 * idx); const x = X(yr), yy = Y(c); f ? ctx.lineTo(x, yy) : ctx.moveTo(x, yy); } ctx.stroke(); ctx.setLineDash([]);
   ctx.fillStyle = '#8DB0E4'; ctx.beginPath(); ctx.arc(X(2050), Y(projEnd), 7, 0, 7); ctx.fill();   // landing point
-  ctx.font = '700 28px JetBrains Mono'; ctx.fillStyle = '#ECEBE4'; ctx.textAlign = 'right'; ctx.fillText('~' + projEnd.toFixed(0) + '% by 2050', W - m.r, 56); ctx.textAlign = 'left';
-  ctx.font = '600 22px JetBrains Mono'; ctx.fillStyle = '#6E6D64'; ctx.fillText(y0 + '', m.l, m.t + ih + 36); ctx.fillText('2050', X(2050) - 40, m.t + ih + 36);
+  ctx.font = '700 28px Open Sans'; ctx.fillStyle = '#ECEBE4'; ctx.textAlign = 'right'; ctx.fillText('~' + projEnd.toFixed(0) + '% by 2050', W - m.r, 56); ctx.textAlign = 'left';
+  ctx.font = '600 22px Open Sans'; ctx.fillStyle = '#6E6D64'; ctx.fillText(y0 + '', m.l, m.t + ih + 36); ctx.fillText('2050', X(2050) - 40, m.t + ih + 36);
   fcPlane.tex.needsUpdate = true;
 }
 
@@ -514,7 +514,7 @@ const META = [{ n: 'Cohort A 2014', e: 0.20, se: 0.10 }, { n: 'Case-ctrl 2016', 
 function dlMeta(st) { const k = st.length; let sw = 0, swe = 0; for (const s of st) { const w = 1 / (s.se * s.se); sw += w; swe += w * s.e; } const fixed = swe / sw; let Q = 0, sw2 = 0; for (const s of st) { const w = 1 / (s.se * s.se); Q += w * (s.e - fixed) ** 2; sw2 += w * w; } const df = k - 1, C = sw - sw2 / sw, tau2 = Math.max(0, (Q - df) / C); let swr = 0, swre = 0; for (const s of st) { const w = 1 / (s.se * s.se + tau2); swr += w; swre += w * s.e; } let I2 = (Q - df) / Q * 100; if (!isFinite(I2) || I2 < 0) I2 = 0; return { pooled: swre / swr, sep: Math.sqrt(1 / swr), I2 }; }
 function drawForest(n) {
   const st = META.slice(0, n), { ctx, tex } = forest, W = forest.lw, H = forest.lh; ctx.setTransform(forest.dpr,0,0,forest.dpr,0,0); panelBg(ctx, W, H);
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 30px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('Forest plot, random effects', 40, 46);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 30px Open Sans'; ctx.textAlign = 'left'; ctx.fillText('Forest plot, random effects', 40, 46);
   const m = { l: 210, r: 90, t: 78, b: 80 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
   const all = st.flatMap(s => [s.e - 1.96 * s.se, s.e + 1.96 * s.se]), xmin = Math.min(0, ...all) - 0.1, xmax = Math.max(...all) + 0.1, X = v => m.l + (v - xmin) / (xmax - xmin) * iw;
   ctx.strokeStyle = '#3A3934'; ctx.setLineDash([6, 6]); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(X(0), m.t - 8); ctx.lineTo(X(0), m.t + ih + 6); ctx.stroke(); ctx.setLineDash([]);
@@ -522,23 +522,23 @@ function drawForest(n) {
   st.forEach((s, i) => { const y = m.t + rowH * (i + 0.5);
     ctx.strokeStyle = '#8DB0E4'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(s.e - 1.96 * s.se), y); ctx.lineTo(X(s.e + 1.96 * s.se), y); ctx.stroke();
     const sz = Math.max(6, 14 - s.se * 22); ctx.fillStyle = '#8DB0E4'; ctx.fillRect(X(s.e) - sz / 2, y - sz / 2, sz, sz);
-    ctx.fillStyle = '#9C9B91'; ctx.font = '400 19px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText(s.n, 28, y + 6);
+    ctx.fillStyle = '#9C9B91'; ctx.font = '400 19px Open Sans'; ctx.textAlign = 'left'; ctx.fillText(s.n, 28, y + 6);
     ctx.fillStyle = '#ECEBE4'; ctx.textAlign = 'right'; ctx.fillText(Math.exp(s.e).toFixed(2), W - 30, y + 6); ctx.textAlign = 'left'; });
   const meta = dlMeta(st), yD = m.t + ih + 22, lo = X(meta.pooled - 1.96 * meta.sep), hi = X(meta.pooled + 1.96 * meta.sep), mid = X(meta.pooled);
   ctx.fillStyle = '#D98A6E'; ctx.beginPath(); ctx.moveTo(lo, yD); ctx.lineTo(mid, yD - 11); ctx.lineTo(hi, yD); ctx.lineTo(mid, yD + 11); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 24px JetBrains Mono'; ctx.fillText('Pooled RR ' + Math.exp(meta.pooled).toFixed(2) + '   I² ' + meta.I2.toFixed(0) + '%', m.l, H - 24);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 24px Open Sans'; ctx.fillText('Pooled RR ' + Math.exp(meta.pooled).toFixed(2) + '   I² ' + meta.I2.toFixed(0) + '%', m.l, H - 24);
   tex.needsUpdate = true;
 }
 function drawFunnel(n) {
   const st = META.slice(0, n), { ctx, tex } = funnel, W = funnel.lw, H = funnel.lh; ctx.setTransform(funnel.dpr,0,0,funnel.dpr,0,0); panelBg(ctx, W, H);
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 30px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('Funnel plot', 40, 46);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 30px Open Sans'; ctx.textAlign = 'left'; ctx.fillText('Funnel plot', 40, 46);
   const meta = dlMeta(st), m = { l: 60, r: 46, t: 78, b: 80 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
   const semax = Math.max(...st.map(s => s.se)) * 1.15, xc = meta.pooled, xspan = Math.max(0.6, Math.max(...st.map(s => Math.abs(s.e - xc))) * 1.5);
   const X = v => m.l + iw / 2 + (v - xc) / xspan * (iw / 2), Y = se => m.t + (se / semax) * ih;
   ctx.strokeStyle = '#3A3934'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(X(xc), Y(0)); ctx.lineTo(X(xc - 1.96 * semax), Y(semax)); ctx.moveTo(X(xc), Y(0)); ctx.lineTo(X(xc + 1.96 * semax), Y(semax)); ctx.stroke();
   ctx.strokeStyle = '#2A2924'; ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.moveTo(X(xc), m.t); ctx.lineTo(X(xc), m.t + ih); ctx.stroke(); ctx.setLineDash([]);
   st.forEach(s => { ctx.fillStyle = '#8DB0E4'; ctx.beginPath(); ctx.arc(X(s.e), Y(s.se), 6, 0, 7); ctx.fill(); });
-  ctx.fillStyle = '#6E6D64'; ctx.font = '400 18px JetBrains Mono'; ctx.textAlign = 'center'; ctx.fillText('effect size', W / 2, H - 28); ctx.textAlign = 'left';
+  ctx.fillStyle = '#6E6D64'; ctx.font = '400 18px Open Sans'; ctx.textAlign = 'center'; ctx.fillText('effect size', W / 2, H - 28); ctx.textAlign = 'left';
   tex.needsUpdate = true;
 }
 // ---- tools (3D badges) ----
@@ -548,8 +548,8 @@ function makeBadge(name, mono, color) {
   ctx.fillStyle = 'rgba(20,20,18,0.98)'; roundRect(ctx, 4, 4, w - 8, h - 8, 20); ctx.fill();
   ctx.strokeStyle = hex(color); ctx.lineWidth = 3; roundRect(ctx, 4, 4, w - 8, h - 8, 20); ctx.stroke();
   ctx.fillStyle = hex(color); ctx.beginPath(); ctx.arc(48, h / 2, 28, 0, 7); ctx.fill();
-  ctx.fillStyle = '#0D0D0C'; ctx.font = '800 30px JetBrains Mono'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(mono, 48, h / 2 + 1);
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 33px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText(name, 90, h / 2 + 1);
+  ctx.fillStyle = '#0D0D0C'; ctx.font = '800 30px Open Sans'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(mono, 48, h / 2 + 1);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 33px Open Sans'; ctx.textAlign = 'left'; ctx.fillText(name, 90, h / 2 + 1);
   const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
   const g = new THREE.Group();
   g.add(new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.5, 0.1), new THREE.MeshStandardMaterial({ color: 0x14140f, roughness: 0.55, metalness: 0.1 })));
@@ -570,48 +570,48 @@ function drawRegression() {
   let sx = 0, sy = 0, sxx = 0, sxy = 0, nn = pts.length; for (const [x, y] of pts) { sx += x; sy += y; sxx += x * x; sxy += x * y; }
   const b = (nn * sxy - sx * sy) / (nn * sxx - sx * sx), a = (sy - b * sx) / nn; let sst = 0, ssr = 0; const my = sy / nn;
   for (const [x, y] of pts) { sst += (y - my) ** 2; ssr += (y - (a + b * x)) ** 2; } const r2 = 1 - ssr / sst;
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 30px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('Linear regression', 40, 46);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 30px Open Sans'; ctx.textAlign = 'left'; ctx.fillText('Linear regression', 40, 46);
   const m = { l: 64, r: 40, t: 78, b: 70 }, iw = W - m.l - m.r, ih = H - m.t - m.b, X = x => m.l + x / 10 * iw, Y = y => m.t + ih - y / 12 * ih;
   ctx.strokeStyle = '#2A2924'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(m.l, m.t); ctx.lineTo(m.l, m.t + ih); ctx.lineTo(m.l + iw, m.t + ih); ctx.stroke();
   ctx.fillStyle = '#8DB0E4'; for (const [x, y] of pts) { ctx.beginPath(); ctx.arc(X(x), Y(y), 5, 0, 7); ctx.fill(); }
   ctx.strokeStyle = '#D98A6E'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(X(0), Y(a)); ctx.lineTo(X(10), Y(a + b * 10)); ctx.stroke();
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 24px JetBrains Mono'; ctx.fillText('y = ' + a.toFixed(1) + ' + ' + b.toFixed(2) + 'x    R² = ' + r2.toFixed(2), m.l, H - 24); F.tex.needsUpdate = true;
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 24px Open Sans'; ctx.fillText('y = ' + a.toFixed(1) + ' + ' + b.toFixed(2) + 'x    R² = ' + r2.toFixed(2), m.l, H - 24); F.tex.needsUpdate = true;
   const G = funnel, c2 = G.ctx, W2 = G.lw, H2 = G.lh; c2.setTransform(G.dpr,0,0,G.dpr,0,0); panelBg(c2, W2, H2);
-  c2.fillStyle = '#ECEBE4'; c2.font = '700 26px JetBrains Mono'; c2.textAlign = 'left'; c2.fillText('Residuals', 36, 44);
+  c2.fillStyle = '#ECEBE4'; c2.font = '700 26px Open Sans'; c2.textAlign = 'left'; c2.fillText('Residuals', 36, 44);
   const m2 = { l: 50, r: 36, t: 64, b: 56 }, iw2 = W2 - m2.l - m2.r, ih2 = H2 - m2.t - m2.b, midY = m2.t + ih2 / 2;
   c2.strokeStyle = '#2A2924'; c2.beginPath(); c2.moveTo(m2.l, midY); c2.lineTo(m2.l + iw2, midY); c2.stroke();
   c2.fillStyle = '#8DB0E4'; for (const [x, y] of pts) { const res = y - (a + b * x); c2.beginPath(); c2.arc(m2.l + x / 10 * iw2, midY - res / 6 * ih2, 4.5, 0, 7); c2.fill(); } G.tex.needsUpdate = true;
 }
 function drawSurvival() {
   const F = forest, ctx = F.ctx, W = F.lw, H = F.lh; ctx.setTransform(F.dpr,0,0,F.dpr,0,0); panelBg(ctx, W, H);
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 30px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('Kaplan-Meier survival', 40, 46);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 30px Open Sans'; ctx.textAlign = 'left'; ctx.fillText('Kaplan-Meier survival', 40, 46);
   const m = { l: 70, r: 40, t: 78, b: 72 }, iw = W - m.l - m.r, ih = H - m.t - m.b, Tmax = 60, X = t => m.l + t / Tmax * iw, Y = s => m.t + (1 - s) * ih;
   ctx.strokeStyle = '#2A2924'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(m.l, m.t); ctx.lineTo(m.l, m.t + ih); ctx.lineTo(m.l + iw, m.t + ih); ctx.stroke();
   function curve(h, color) { let s = 1; const rr = rng(Math.round(h * 1000)); ctx.strokeStyle = color; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(X(0), Y(1)); for (let t = 1; t <= Tmax; t++) { if (rr() < 0.5) { ctx.lineTo(X(t), Y(s)); s = Math.max(0, s - h * (0.5 + rr())); ctx.lineTo(X(t), Y(s)); } } ctx.lineTo(X(Tmax), Y(s)); ctx.stroke(); }
   curve(0.018, '#8DB0E4'); curve(0.034, '#D98A6E');
-  const lx = m.l + iw - 200, ly = m.t + 22; ctx.lineWidth = 3; ctx.font = '600 21px JetBrains Mono'; ctx.textAlign = 'left';
+  const lx = m.l + iw - 200, ly = m.t + 22; ctx.lineWidth = 3; ctx.font = '600 21px Open Sans'; ctx.textAlign = 'left';
   ctx.strokeStyle = '#8DB0E4'; ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + 30, ly); ctx.stroke(); ctx.fillStyle = '#8DB0E4'; ctx.fillText('treatment', lx + 40, ly + 6);
   ctx.strokeStyle = '#D98A6E'; ctx.beginPath(); ctx.moveTo(lx, ly + 32); ctx.lineTo(lx + 30, ly + 32); ctx.stroke(); ctx.fillStyle = '#D98A6E'; ctx.fillText('control', lx + 40, ly + 38);
   ctx.fillStyle = '#9C9B91'; ctx.fillText('months', m.l + iw - 90, m.t + ih + 36); F.tex.needsUpdate = true;
   const G = funnel, c2 = G.ctx, W2 = G.lw, H2 = G.lh; c2.setTransform(G.dpr,0,0,G.dpr,0,0); panelBg(c2, W2, H2);
-  c2.fillStyle = '#ECEBE4'; c2.font = '700 26px JetBrains Mono'; c2.textAlign = 'left'; c2.fillText('Cox model', 36, 42);
-  c2.font = '700 44px JetBrains Mono'; c2.fillStyle = '#8DB0E4'; c2.fillText('HR 0.52', 36, H2 / 2 - 4);
-  c2.font = '400 22px JetBrains Mono'; c2.fillStyle = '#9C9B91'; c2.fillText('95% CI 0.39 - 0.70', 36, H2 / 2 + 34); c2.fillText('log-rank p < 0.001', 36, H2 / 2 + 66); G.tex.needsUpdate = true;
+  c2.fillStyle = '#ECEBE4'; c2.font = '700 26px Open Sans'; c2.textAlign = 'left'; c2.fillText('Cox model', 36, 42);
+  c2.font = '700 44px Open Sans'; c2.fillStyle = '#8DB0E4'; c2.fillText('HR 0.52', 36, H2 / 2 - 4);
+  c2.font = '400 22px Open Sans'; c2.fillStyle = '#9C9B91'; c2.fillText('95% CI 0.39 - 0.70', 36, H2 / 2 + 34); c2.fillText('log-rank p < 0.001', 36, H2 / 2 + 66); G.tex.needsUpdate = true;
 }
 function drawROC() {
   const F = forest, ctx = F.ctx, W = F.lw, H = F.lh; ctx.setTransform(F.dpr,0,0,F.dpr,0,0); panelBg(ctx, W, H);
   const r = rng(7), pos = [], neg = []; for (let i = 0; i < 130; i++) { pos.push(1 / (1 + Math.exp(-(gauss(r) + 1.1)))); neg.push(1 / (1 + Math.exp(-(gauss(r) - 1.1)))); }
   const thr = []; for (let t = 0; t <= 1.0001; t += 0.02) { thr.push([neg.filter(v => v >= t).length / neg.length, pos.filter(v => v >= t).length / pos.length]); }
   let auc = 0; for (let i = 1; i < thr.length; i++) auc += (thr[i - 1][0] - thr[i][0]) * (thr[i - 1][1] + thr[i][1]) / 2;
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 30px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('ROC curve', 40, 46);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 30px Open Sans'; ctx.textAlign = 'left'; ctx.fillText('ROC curve', 40, 46);
   const m = { l: 70, r: 40, t: 78, b: 72 }, iw = W - m.l - m.r, ih = H - m.t - m.b, X = v => m.l + v * iw, Y = v => m.t + ih - v * ih;
   ctx.strokeStyle = '#2A2924'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(m.l, m.t); ctx.lineTo(m.l, m.t + ih); ctx.lineTo(m.l + iw, m.t + ih); ctx.stroke();
   ctx.strokeStyle = '#3A3934'; ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(1), Y(1)); ctx.stroke(); ctx.setLineDash([]);
   ctx.strokeStyle = '#8DB0E4'; ctx.lineWidth = 3; ctx.beginPath(); thr.forEach((pp, i) => { const x = X(pp[0]), y = Y(pp[1]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 26px JetBrains Mono'; ctx.fillText('AUC = ' + auc.toFixed(2), m.l + iw - 196, m.t + ih - 26);
-  ctx.fillStyle = '#9C9B91'; ctx.font = '400 18px JetBrains Mono'; ctx.fillText('false positive rate', m.l + iw / 2 - 80, m.t + ih + 36); F.tex.needsUpdate = true;
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 26px Open Sans'; ctx.fillText('AUC = ' + auc.toFixed(2), m.l + iw - 196, m.t + ih - 26);
+  ctx.fillStyle = '#9C9B91'; ctx.font = '400 18px Open Sans'; ctx.fillText('false positive rate', m.l + iw / 2 - 80, m.t + ih + 36); F.tex.needsUpdate = true;
   const G = funnel, c2 = G.ctx, W2 = G.lw, H2 = G.lh; c2.setTransform(G.dpr,0,0,G.dpr,0,0); panelBg(c2, W2, H2);
-  c2.fillStyle = '#ECEBE4'; c2.font = '700 26px JetBrains Mono'; c2.textAlign = 'left'; c2.fillText('Score distribution', 36, 42);
+  c2.fillStyle = '#ECEBE4'; c2.font = '700 26px Open Sans'; c2.textAlign = 'left'; c2.fillText('Score distribution', 36, 42);
   const m2 = { l: 40, r: 30, t: 64, b: 50 }, iw2 = W2 - m2.l - m2.r, ih2 = H2 - m2.t - m2.b, bins = 18;
   function hist(arr, color) { const bb = new Array(bins).fill(0); for (const v of arr) bb[Math.min(bins - 1, Math.floor(v * bins))]++; const mx = Math.max(...bb); c2.fillStyle = color; c2.globalAlpha = 0.55; for (let i = 0; i < bins; i++) { const bh = bb[i] / mx * ih2; c2.fillRect(m2.l + i / bins * iw2, m2.t + ih2 - bh, iw2 / bins - 2, bh); } c2.globalAlpha = 1; }
   hist(neg, '#D98A6E'); hist(pos, '#8DB0E4'); G.tex.needsUpdate = true;
@@ -639,9 +639,9 @@ const storyTablePlane = planeMesh(3.3, 1.7); storyTablePlane.mesh.position.set(0
 function drawStoryTable() {
   const { ctx } = storyTablePlane, W = storyTablePlane.lw, H = storyTablePlane.lh; ctx.setTransform(storyTablePlane.dpr, 0, 0, storyTablePlane.dpr, 0, 0); panelBg(ctx, W, H);
   ctx.textAlign = 'left';
-  ctx.fillStyle = '#8DB0E4'; ctx.font = '700 19px JetBrains Mono'; ctx.fillText('THE RESEARCH LIBRARY', 40, 62);
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 38px JetBrains Mono'; ctx.fillText('Step inside.', 40, 122);
-  ctx.fillStyle = '#9C9B91'; ctx.font = '400 22px JetBrains Mono';
+  ctx.fillStyle = '#8DB0E4'; ctx.font = '700 19px Open Sans'; ctx.fillText('THE RESEARCH LIBRARY', 40, 62);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 38px Open Sans'; ctx.fillText('Step inside.', 40, 122);
+  ctx.fillStyle = '#9C9B91'; ctx.font = '400 22px Open Sans';
   ctx.fillText('Six active studies. Two published papers.', 40, 178);
   ctx.fillText('Every figure rebuilt to explore.', 40, 212);
   const cols = ['#E0A24A', '#E0728F', '#D98A6E', '#6FC8A3', '#6FB1E0', '#9B8DE4'];
@@ -822,6 +822,55 @@ let finalPts = null;
 })();
 
 // ====================================================================
+// COVEXE (the platform I built) - a clean panel world, met just after the figures
+// ====================================================================
+const COVP = new THREE.Vector3(7, 0.8, -234);
+const covexe = chartPlane(6.6, 3.7, COVP);
+(function () {   // soft accent halo behind the panel, so the platform reads as its own place
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: nebulaTexture(ACCENT), transparent: true, opacity: 0.20, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+  halo.scale.set(10.6, 7.4, 1); halo.position.set(0, 0, -0.4); covexe.group.add(halo);
+})();
+function covPill(ctx, x, y, label, font) {
+  ctx.font = font; const tw = ctx.measureText(label).width, padX = 20, h = 50, w = tw + padX * 2;
+  ctx.fillStyle = 'rgba(141,176,228,0.10)'; ctx.strokeStyle = 'rgba(141,176,228,0.55)'; ctx.lineWidth = 2;
+  roundRect(ctx, x, y - h / 2, w, h, 10); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#ECEBE4'; ctx.textBaseline = 'middle'; ctx.textAlign = 'center'; ctx.fillText(label, x + w / 2, y + 1);
+  ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left'; return w;
+}
+function drawCovexe() {
+  const ctx = covexe.ctx, W = covexe.lw, H = covexe.lh, L = 72;
+  ctx.setTransform(covexe.dpr, 0, 0, covexe.dpr, 0, 0); panelBg(ctx, W, H);
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = '#8DB0E4'; ctx.font = '700 21px Open Sans'; ctx.letterSpacing = '3px'; ctx.fillText('THE PLATFORM I BUILT', L, 96); ctx.letterSpacing = '0px';
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 62px Open Sans'; ctx.fillText('Covexe', L, 168);
+  const wmW = ctx.measureText('Covexe').width;
+  ctx.font = '600 24px Open Sans'; ctx.fillStyle = '#8DB0E4';
+  const dx = L + wmW + 24; ctx.fillText('covexe.com  ↗', dx, 168);
+  const dw = ctx.measureText('covexe.com').width; ctx.strokeStyle = 'rgba(141,176,228,0.55)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(dx, 177); ctx.lineTo(dx + dw, 177); ctx.stroke();
+  ctx.fillStyle = '#C9C8C0'; ctx.font = '400 29px Open Sans'; ctx.fillText('One platform for the whole systematic review.', L, 224);
+  // the pipeline, search to publication, as a clean row of steps
+  const steps = ['Search', 'Screen', 'Extract', 'Meta-analysis', 'Report'], pf = '600 21px Open Sans', arrow = 32;
+  ctx.font = pf; let total = arrow * (steps.length - 1); steps.forEach(s => total += ctx.measureText(s).width + 40);
+  let x = (W - total) / 2; const y = 332;
+  steps.forEach((s, i) => {
+    x += covPill(ctx, x, y, s, pf);
+    if (i < steps.length - 1) {
+      ctx.strokeStyle = 'rgba(141,176,228,0.5)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x + 8, y); ctx.lineTo(x + arrow - 6, y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x + arrow - 6, y); ctx.lineTo(x + arrow - 14, y - 5); ctx.lineTo(x + arrow - 14, y + 5); ctx.closePath(); ctx.fillStyle = 'rgba(141,176,228,0.72)'; ctx.fill(); x += arrow;
+    }
+  });
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = '#9C9B91'; ctx.font = '400 23px Open Sans';
+  ctx.fillText('40+ statistical methods, validated against R.', L, 446);
+  ctx.fillText('AI assists, every value cites its source, and your data stays in the browser.', L, 488);
+  covexe.tex.needsUpdate = true;
+}
+drawCovexe();
+// the panel is a live link to covexe.com (reuses the journey's built-in userData.url click handling)
+const covexeLink = new THREE.Mesh(new THREE.PlaneGeometry(6.6, 3.7), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+covexeLink.position.set(0, 0, 0.05); covexeLink.userData.url = 'https://covexe.com'; covexe.group.add(covexeLink);
+
+// ====================================================================
 // STATIONS
 // ====================================================================
 const off = (p, dx, dy, dz) => p.clone().add(new THREE.Vector3(dx, dy, dz));
@@ -837,11 +886,12 @@ const STATIONS = [
   { name: 'Multivariable model', cap: '<b>Many inputs, one outcome.</b> A live OLS fit, residuals shown.', spin: regSpin, picks: () => [], camPos: off(REGP, 0, 0.5, 10.0), camTarget: off(REGP, 0, 0.1, 0), spinIdle: 0.0016 },
   { name: 'Networks', cap: '<b>Disease rarely travels alone.</b> Edges are comorbidity ties.', spin: netSpin, picks: () => netPicks, camPos: off(NETP, 0, 0.9, 11), camTarget: off(NETP, 0, 0.8, 0), spinIdle: 0.0012 },
   { name: 'Collaborate', cap: '<b>Forest, funnel, survival, ROC. Computed live.</b>', spin: collabSpin, picks: () => [], camPos: off(COLLAB, 0, 1.25, 9.2), camTarget: off(COLLAB, 0, 1.15, 0), wide: 1.5 },
+  { name: 'Covexe', cap: '<b>The platform I built.</b> One place for the whole systematic review.', spin: covexe.group, picks: () => [covexeLink], camPos: off(COVP, 0, 0.35, 9.3), camTarget: off(COVP, 0, 0.15, 0), wide: 1.18 },
   { name: 'The analyst', cap: '<b>Five global datasets. Two peer-reviewed papers.</b>', spin: aboutSpin, picks: () => aboutPicks, camPos: off(ABP, 0, 0, 7.2), camTarget: ABP.clone(), spinIdle: 0.0015 },
   { name: 'The research library', cap: '<b>Step inside the research library.</b>', spin: storySpin, picks: () => [], camPos: off(STORYP, 0, 0.5, 7), camTarget: off(STORYP, 0, 0.5, 0) }
 ];
 const N = STATIONS.length;
-const WORLD_GROUPS = [globePivot, scatterGroup, rankGroup, dietGroup, cancerGroup, lagPlane.group, fcPlane.group, dagGroup, regGroup, netGroup, collabGroup, aboutGroup, storyGroup];
+const WORLD_GROUPS = [globePivot, scatterGroup, rankGroup, dietGroup, cancerGroup, lagPlane.group, fcPlane.group, dagGroup, regGroup, netGroup, collabGroup, covexe.group, aboutGroup, storyGroup];
 const curTarget = STATIONS[0].camTarget.clone(), desiredPos = new THREE.Vector3(), desiredTarget = new THREE.Vector3();
 let curStation = -1;
 
@@ -946,7 +996,8 @@ canvas.addEventListener('pointermove', e => {
   if (storyMode) { if (storyMode === 'idle') { setNdc(e); ray.setFromCamera(ndc, camera); canvas.style.cursor = ray.intersectObjects(storyPick, false).length ? 'pointer' : ''; } return; }
   const now = performance.now(); if (now - hoverT < 33) return; hoverT = now;
   const m = pick(e);
-  if (m && m.userData.tip) { setHover(m); showInfo(m.userData.tip()); canvas.style.cursor = 'pointer'; }
+  if (m && m.userData.url) { setHover(null); canvas.style.cursor = 'pointer'; }
+  else if (m && m.userData.tip) { setHover(m); showInfo(m.userData.tip()); canvas.style.cursor = 'pointer'; }
   else { setHover(null); if (selected) showInfo(selected.tip()); else panel.classList.remove('show'); canvas.style.cursor = ''; }
 });
 addEventListener('pointerup', e => {
@@ -1026,22 +1077,22 @@ qov.addEventListener('click', e => { if (e.target === qov) closeQuote(); });
 function wrapText(ctx, text, x, y, maxW, lh) { const words = text.split(' '); let line = '', yy = y; for (const w of words) { const t = line + w + ' '; if (ctx.measureText(t).width > maxW && line) { ctx.fillText(line.trim(), x, yy); line = w + ' '; yy += lh; } else line = t; } ctx.fillText(line.trim(), x, yy); return yy; }
 function drawBarS(ctx, W, H) {
   const m = { l: 96, r: 80, t: 150, b: 130 }, iw = W - m.l - m.r, ih = H - m.t - m.b, N = SD_CATS.length, gap = iw / N, bw = gap * 0.56, LY = SD_YEARS.length - 1, mx = Math.max.apply(null, SD.map(r => r[LY])) * 1.18;
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText("Today's plate, plainly", m.l, 96);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px Open Sans'; ctx.textAlign = 'left'; ctx.fillText("Today's plate, plainly", m.l, 96);
   ctx.strokeStyle = '#2A2924'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(m.l, m.t + ih); ctx.lineTo(m.l + iw, m.t + ih); ctx.stroke();
-  for (let c = 0; c < N; c++) { const v = SD[c][LY], x = m.l + gap * c + (gap - bw) / 2, bh = v / mx * ih, y = m.t + ih - bh; ctx.fillStyle = SD_COL[c]; ctx.fillRect(x, y, bw, bh); ctx.fillStyle = '#ECEBE4'; ctx.font = '700 30px JetBrains Mono'; ctx.textAlign = 'center'; ctx.fillText(v.toFixed(0), x + bw / 2, y - 18); ctx.fillStyle = '#9C9B91'; ctx.font = '400 22px JetBrains Mono'; ctx.fillText(SD_CATS[c].split(' ')[0], x + bw / 2, m.t + ih + 46); }
+  for (let c = 0; c < N; c++) { const v = SD[c][LY], x = m.l + gap * c + (gap - bw) / 2, bh = v / mx * ih, y = m.t + ih - bh; ctx.fillStyle = SD_COL[c]; ctx.fillRect(x, y, bw, bh); ctx.fillStyle = '#ECEBE4'; ctx.font = '700 30px Open Sans'; ctx.textAlign = 'center'; ctx.fillText(v.toFixed(0), x + bw / 2, y - 18); ctx.fillStyle = '#9C9B91'; ctx.font = '400 22px Open Sans'; ctx.fillText(SD_CATS[c].split(' ')[0], x + bw / 2, m.t + ih + 46); }
   ctx.textAlign = 'left';
 }
 function drawDonut(ctx, W, H) {
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('The whole plate, 2024', 96, 96);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px Open Sans'; ctx.textAlign = 'left'; ctx.fillText('The whole plate, 2024', 96, 96);
   const cx = W * 0.36, cy = H * 0.56, rO = Math.min(W, H) * 0.33, rI = rO * 0.56, LY = SD_YEARS.length - 1, tot = SD.reduce((a, r) => a + r[LY], 0); let an = -Math.PI / 2;
   for (let c = 0; c < SD_CATS.length; c++) { const a2 = an + SD[c][LY] / tot * 6.2832; ctx.fillStyle = SD_COL[c]; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, rO, an, a2); ctx.closePath(); ctx.fill(); an = a2; }
   ctx.fillStyle = '#0C0C0B'; ctx.beginPath(); ctx.arc(cx, cy, rI, 0, 7); ctx.fill();
-  let ly = cy - rO + 26; const lx = W * 0.66; ctx.font = '400 24px JetBrains Mono'; ctx.textAlign = 'left';
+  let ly = cy - rO + 26; const lx = W * 0.66; ctx.font = '400 24px Open Sans'; ctx.textAlign = 'left';
   for (let c = 0; c < SD_CATS.length; c++) { ctx.fillStyle = SD_COL[c]; ctx.fillRect(lx, ly - 18, 22, 22); ctx.fillStyle = '#ECEBE4'; ctx.fillText(SD_CATS[c] + '  ' + Math.round(SD[c][LY] / tot * 100) + '%', lx + 32, ly); ly += 44; }
 }
 function drawStream(ctx, W, H) {
   const m = { l: 96, r: 230, t: 130, b: 96 }, iw = W - m.l - m.r, ih = H - m.t - m.b, T = SD_YEARS.length, N = SD_CATS.length;
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('All of it, flowing at once', m.l, 96);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px Open Sans'; ctx.textAlign = 'left'; ctx.fillText('All of it, flowing at once', m.l, 96);
   const tot = SD_YEARS.map((_, j) => SD.reduce((a, row) => a + row[j], 0)), maxTot = Math.max.apply(null, tot);
   const X = j => m.l + j / (T - 1) * iw, yh = v => v / (maxTot * 1.05) * ih, base = SD_YEARS.map((_, j) => m.t + ih / 2 + yh(tot[j]) / 2);
   for (let c = 0; c < N; c++) {
@@ -1051,13 +1102,13 @@ function drawStream(ctx, W, H) {
     for (let j = 1; j < T; j++) { const xm = (top[j - 1][0] + top[j][0]) / 2; ctx.bezierCurveTo(xm, top[j - 1][1], xm, top[j][1], top[j][0], top[j][1]); }
     for (let j = T - 1; j > 0; j--) { const xm = (bot[j][0] + bot[j - 1][0]) / 2; ctx.bezierCurveTo(xm, bot[j][1], xm, bot[j - 1][1], bot[j - 1][0], bot[j - 1][1]); }
     ctx.closePath(); ctx.fillStyle = SD_COL[c]; ctx.globalAlpha = 0.92; ctx.fill(); ctx.globalAlpha = 1;
-    ctx.fillStyle = SD_COL[c]; ctx.font = '600 20px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText(SD_CATS[c], m.l + iw + 14, (top[T - 1][1] + bot[T - 1][1]) / 2 + 6);
+    ctx.fillStyle = SD_COL[c]; ctx.font = '600 20px Open Sans'; ctx.textAlign = 'left'; ctx.fillText(SD_CATS[c], m.l + iw + 14, (top[T - 1][1] + bot[T - 1][1]) / 2 + 6);
   }
-  ctx.fillStyle = '#6E6D64'; ctx.font = '400 21px JetBrains Mono'; ctx.textAlign = 'center';[0, T - 1].forEach(j => ctx.fillText(SD_YEARS[j], X(j), m.t + ih + 48)); ctx.textAlign = 'left';
+  ctx.fillStyle = '#6E6D64'; ctx.font = '400 21px Open Sans'; ctx.textAlign = 'center';[0, T - 1].forEach(j => ctx.fillText(SD_YEARS[j], X(j), m.t + ih + 48)); ctx.textAlign = 'left';
 }
 function drawBump(ctx, W, H) {
   const m = { l: 116, r: 250, t: 130, b: 90 }, iw = W - m.l - m.r, ih = H - m.t - m.b, T = SD_YEARS.length, N = SD_CATS.length;
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('Who climbs past whom', m.l, 96);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px Open Sans'; ctx.textAlign = 'left'; ctx.fillText('Who climbs past whom', m.l, 96);
   const rank = SD_CATS.map(() => new Array(T));
   for (let j = 0; j < T; j++) { const order = SD_CATS.map((_, c) => c).sort((p, q) => SD[q][j] - SD[p][j]); order.forEach((c, r) => rank[c][j] = r); }
   const X = j => m.l + j / (T - 1) * iw, Y = r => m.t + r / (N - 1) * ih;
@@ -1065,13 +1116,13 @@ function drawBump(ctx, W, H) {
     ctx.strokeStyle = SD_COL[c]; ctx.lineWidth = 6; ctx.beginPath();
     for (let j = 0; j < T; j++) { const x = X(j), y = Y(rank[c][j]); if (j) { const xm = (X(j - 1) + x) / 2; ctx.bezierCurveTo(xm, Y(rank[c][j - 1]), xm, y, x, y); } else ctx.moveTo(x, y); }
     ctx.stroke(); for (let j = 0; j < T; j++) { ctx.fillStyle = SD_COL[c]; ctx.beginPath(); ctx.arc(X(j), Y(rank[c][j]), 8, 0, 7); ctx.fill(); }
-    ctx.fillStyle = SD_COL[c]; ctx.font = '600 20px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText(SD_CATS[c], m.l + iw + 16, Y(rank[c][T - 1]) + 6);
+    ctx.fillStyle = SD_COL[c]; ctx.font = '600 20px Open Sans'; ctx.textAlign = 'left'; ctx.fillText(SD_CATS[c], m.l + iw + 16, Y(rank[c][T - 1]) + 6);
   }
-  ctx.fillStyle = '#6E6D64'; ctx.font = '400 20px JetBrains Mono'; ctx.textAlign = 'center';[0, T - 1].forEach(j => ctx.fillText(SD_YEARS[j], X(j), m.t + ih + 44)); ctx.textAlign = 'left';
+  ctx.fillStyle = '#6E6D64'; ctx.font = '400 20px Open Sans'; ctx.textAlign = 'center';[0, T - 1].forEach(j => ctx.fillText(SD_YEARS[j], X(j), m.t + ih + 44)); ctx.textAlign = 'left';
 }
 function drawTraj(ctx, W, H) {
   const m = { l: 140, r: 96, t: 130, b: 116 }, iw = W - m.l - m.r, ih = H - m.t - m.b, T = SD_YEARS.length;
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('Healthy against unhealthy', m.l, 96);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px Open Sans'; ctx.textAlign = 'left'; ctx.fillText('Healthy against unhealthy', m.l, 96);
   const xs = SD_YEARS.map((_, j) => SD[0][j] + SD[1][j] + SD[2][j]), ys = SD_YEARS.map((_, j) => SD[3][j] + SD[4][j] + SD[5][j]);
   const xmin = Math.min.apply(null, xs) - 3, xmax = Math.max.apply(null, xs) + 3, ymin = Math.min.apply(null, ys) - 3, ymax = Math.max.apply(null, ys) + 3;
   const X = v => m.l + (v - xmin) / (xmax - xmin) * iw, Y = v => m.t + ih - (v - ymin) / (ymax - ymin) * ih;
@@ -1079,63 +1130,63 @@ function drawTraj(ctx, W, H) {
   ctx.strokeStyle = '#8DB0E4'; ctx.lineWidth = 4; ctx.beginPath(); SD_YEARS.forEach((_, j) => { const x = X(xs[j]), y = Y(ys[j]); j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
   SD_YEARS.forEach((_, j) => { ctx.fillStyle = j === 0 ? '#6FB1E0' : j === T - 1 ? '#E8743B' : '#9C9B91'; ctx.beginPath(); ctx.arc(X(xs[j]), Y(ys[j]), j === 0 || j === T - 1 ? 12 : 7, 0, 7); ctx.fill(); });
   const j = T - 1, x1 = X(xs[j]), y1 = Y(ys[j]), an = Math.atan2(y1 - Y(ys[j - 1]), x1 - X(xs[j - 1])); ctx.fillStyle = '#E8743B'; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 - 22 * Math.cos(an - 0.4), y1 - 22 * Math.sin(an - 0.4)); ctx.lineTo(x1 - 22 * Math.cos(an + 0.4), y1 - 22 * Math.sin(an + 0.4)); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = '#6FB1E0'; ctx.font = '600 22px JetBrains Mono'; ctx.textAlign = 'right'; ctx.fillText(SD_YEARS[0], X(xs[0]) - 16, Y(ys[0]) + 6); ctx.fillStyle = '#E8743B'; ctx.textAlign = 'left'; ctx.fillText(SD_YEARS[T - 1], X(xs[T - 1]) + 16, Y(ys[T - 1]) + 6);
-  ctx.fillStyle = '#6E6D64'; ctx.font = '400 23px JetBrains Mono'; ctx.textAlign = 'center'; ctx.fillText('unhealthy share', m.l + iw / 2, m.t + ih + 60); ctx.save(); ctx.translate(m.l - 70, m.t + ih / 2); ctx.rotate(-Math.PI / 2); ctx.fillText('healthy share', 0, 0); ctx.restore(); ctx.textAlign = 'left';
+  ctx.fillStyle = '#6FB1E0'; ctx.font = '600 22px Open Sans'; ctx.textAlign = 'right'; ctx.fillText(SD_YEARS[0], X(xs[0]) - 16, Y(ys[0]) + 6); ctx.fillStyle = '#E8743B'; ctx.textAlign = 'left'; ctx.fillText(SD_YEARS[T - 1], X(xs[T - 1]) + 16, Y(ys[T - 1]) + 6);
+  ctx.fillStyle = '#6E6D64'; ctx.font = '400 23px Open Sans'; ctx.textAlign = 'center'; ctx.fillText('unhealthy share', m.l + iw / 2, m.t + ih + 60); ctx.save(); ctx.translate(m.l - 70, m.t + ih / 2); ctx.rotate(-Math.PI / 2); ctx.fillText('healthy share', 0, 0); ctx.restore(); ctx.textAlign = 'left';
 }
 function drawRose(ctx, W, H) {
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('The shift, in the round', 96, 96);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px Open Sans'; ctx.textAlign = 'left'; ctx.fillText('The shift, in the round', 96, 96);
   const cx = W / 2, cy = H / 2 + 40, N = SD_CATS.length, RR = Math.min(W, H) * 0.34, LY = SD_YEARS.length - 1, mx = Math.max.apply(null, SD.flat());
   ctx.strokeStyle = '#2A2924'; ctx.lineWidth = 1; for (let g = 1; g <= 3; g++) { ctx.beginPath(); ctx.arc(cx, cy, RR * g / 3, 0, 7); ctx.stroke(); }
   for (let c = 0; c < N; c++) {
     const a0 = -Math.PI / 2 + c / N * 6.2832, a1 = -Math.PI / 2 + (c + 1) / N * 6.2832, mid = (a0 + a1) / 2, r24 = SD[c][LY] / mx * RR, r90 = SD[c][0] / mx * RR;
     ctx.fillStyle = SD_COL[c]; ctx.globalAlpha = 0.82; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r24, a0 + 0.02, a1 - 0.02); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
     ctx.strokeStyle = '#ECEBE4'; ctx.lineWidth = 2; ctx.setLineDash([4, 5]); ctx.beginPath(); ctx.arc(cx, cy, r90, a0 + 0.02, a1 - 0.02); ctx.stroke(); ctx.setLineDash([]);
-    const lr = RR + 44; ctx.fillStyle = SD_COL[c]; ctx.font = '500 19px JetBrains Mono'; ctx.textAlign = Math.cos(mid) < -0.3 ? 'right' : Math.cos(mid) > 0.3 ? 'left' : 'center'; ctx.fillText(SD_CATS[c], cx + Math.cos(mid) * lr, cy + Math.sin(mid) * lr + 5);
+    const lr = RR + 44; ctx.fillStyle = SD_COL[c]; ctx.font = '500 19px Open Sans'; ctx.textAlign = Math.cos(mid) < -0.3 ? 'right' : Math.cos(mid) > 0.3 ? 'left' : 'center'; ctx.fillText(SD_CATS[c], cx + Math.cos(mid) * lr, cy + Math.sin(mid) * lr + 5);
   }
 }
 const TAPW = matchMedia('(hover: none)').matches ? 'tap' : 'click';
 function drawSlogan(ctx, W, H) {
-  ctx.textAlign = 'center'; ctx.fillStyle = '#ECEBE4'; ctx.font = '700 58px JetBrains Mono';
+  ctx.textAlign = 'center'; ctx.fillStyle = '#ECEBE4'; ctx.font = '700 58px Open Sans';
   ctx.fillText('Now imagine what', W / 2, H * 0.32); ctx.fillText("I'll do with", W / 2, H * 0.32 + 74);
   ctx.fillStyle = '#8DB0E4'; ctx.fillText('your data.', W / 2, H * 0.32 + 152);
-  ctx.fillStyle = '#9C9B91'; ctx.font = '400 32px JetBrains Mono'; ctx.fillText(TAPW + ' to start a project', W / 2, H * 0.80); ctx.textAlign = 'left';
+  ctx.fillStyle = '#9C9B91'; ctx.font = '400 32px Open Sans'; ctx.fillText(TAPW + ' to start a project', W / 2, H * 0.80); ctx.textAlign = 'left';
 }
 function drawCardBack(ctx, W, H, title, story) {
-  ctx.textAlign = 'left'; ctx.fillStyle = '#8DB0E4'; ctx.font = '700 50px JetBrains Mono'; const ty = wrapText(ctx, title, 100, 170, W - 200, 62);
-  ctx.fillStyle = '#C9C8C0'; ctx.font = '400 36px JetBrains Mono'; wrapText(ctx, story, 100, ty + 84, W - 200, 56);
-  ctx.fillStyle = '#6E6D64'; ctx.font = '400 28px JetBrains Mono'; ctx.fillText(TAPW + ' to flip back', 100, H - 76);
+  ctx.textAlign = 'left'; ctx.fillStyle = '#8DB0E4'; ctx.font = '700 50px Open Sans'; const ty = wrapText(ctx, title, 100, 170, W - 200, 62);
+  ctx.fillStyle = '#C9C8C0'; ctx.font = '400 36px Open Sans'; wrapText(ctx, story, 100, ty + 84, W - 200, 56);
+  ctx.fillStyle = '#6E6D64'; ctx.font = '400 28px Open Sans'; ctx.fillText(TAPW + ' to flip back', 100, H - 76);
 }
 function heatColor(t) { const A = [16, 42, 67], B = [111, 177, 224], C = [232, 116, 59]; let r, g, b; if (t < 0.5) { const u = t / 0.5; r = A[0] + (B[0] - A[0]) * u; g = A[1] + (B[1] - A[1]) * u; b = A[2] + (B[2] - A[2]) * u; } else { const u = (t - 0.5) / 0.5; r = B[0] + (C[0] - B[0]) * u; g = B[1] + (C[1] - B[1]) * u; b = B[2] + (C[2] - B[2]) * u; } return 'rgb(' + (r | 0) + ',' + (g | 0) + ',' + (b | 0) + ')'; }
 function drawHeat(ctx, W, H) {
   const m = { l: 340, r: 90, t: 140, b: 90 }, iw = W - m.l - m.r, ih = H - m.t - m.b, T = SD_YEARS.length, N = SD_CATS.length, cw = iw / T, ch = ih / N, mx = Math.max.apply(null, SD.flat());
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('The same numbers, as heat', 96, 96);
-  for (let c = 0; c < N; c++) { for (let j = 0; j < T; j++) { ctx.fillStyle = heatColor(SD[c][j] / mx); roundRect(ctx, m.l + j * cw + 3, m.t + c * ch + 3, cw - 6, ch - 6, 6); ctx.fill(); } ctx.fillStyle = SD_COL[c]; ctx.font = '500 22px JetBrains Mono'; ctx.textAlign = 'right'; ctx.fillText(SD_CATS[c], m.l - 18, m.t + c * ch + ch / 2 + 7); }
-  ctx.fillStyle = '#6E6D64'; ctx.font = '400 20px JetBrains Mono'; ctx.textAlign = 'center';[0, T - 1].forEach(j => ctx.fillText(SD_YEARS[j], m.l + j * cw + cw / 2, m.t + ih + 42)); ctx.textAlign = 'left';
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px Open Sans'; ctx.textAlign = 'left'; ctx.fillText('The same numbers, as heat', 96, 96);
+  for (let c = 0; c < N; c++) { for (let j = 0; j < T; j++) { ctx.fillStyle = heatColor(SD[c][j] / mx); roundRect(ctx, m.l + j * cw + 3, m.t + c * ch + 3, cw - 6, ch - 6, 6); ctx.fill(); } ctx.fillStyle = SD_COL[c]; ctx.font = '500 22px Open Sans'; ctx.textAlign = 'right'; ctx.fillText(SD_CATS[c], m.l - 18, m.t + c * ch + ch / 2 + 7); }
+  ctx.fillStyle = '#6E6D64'; ctx.font = '400 20px Open Sans'; ctx.textAlign = 'center';[0, T - 1].forEach(j => ctx.fillText(SD_YEARS[j], m.l + j * cw + cw / 2, m.t + ih + 42)); ctx.textAlign = 'left';
 }
 function drawRadar(ctx, W, H) {
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('Every food at once', 96, 96);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px Open Sans'; ctx.textAlign = 'left'; ctx.fillText('Every food at once', 96, 96);
   const cx = W / 2, cy = H / 2 + 40, R = Math.min(W, H) * 0.32, N = SD_CATS.length, LY = SD_YEARS.length - 1, mx = Math.max.apply(null, SD.flat());
   ctx.strokeStyle = '#2A2924'; ctx.lineWidth = 1;
   for (let g = 1; g <= 3; g++) { ctx.beginPath(); for (let c = 0; c <= N; c++) { const a = -Math.PI / 2 + c / N * 6.2832, r = R * g / 3, x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r; c ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.closePath(); ctx.stroke(); }
-  for (let c = 0; c < N; c++) { const a = -Math.PI / 2 + c / N * 6.2832; ctx.strokeStyle = '#2A2924'; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); ctx.stroke(); const lr = R + 38; ctx.fillStyle = SD_COL[c]; ctx.font = '500 18px JetBrains Mono'; ctx.textAlign = Math.cos(a) < -0.3 ? 'right' : Math.cos(a) > 0.3 ? 'left' : 'center'; ctx.fillText(SD_CATS[c].split(' ')[0], cx + Math.cos(a) * lr, cy + Math.sin(a) * lr + 5); }
+  for (let c = 0; c < N; c++) { const a = -Math.PI / 2 + c / N * 6.2832; ctx.strokeStyle = '#2A2924'; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); ctx.stroke(); const lr = R + 38; ctx.fillStyle = SD_COL[c]; ctx.font = '500 18px Open Sans'; ctx.textAlign = Math.cos(a) < -0.3 ? 'right' : Math.cos(a) > 0.3 ? 'left' : 'center'; ctx.fillText(SD_CATS[c].split(' ')[0], cx + Math.cos(a) * lr, cy + Math.sin(a) * lr + 5); }
   function poly(idx, color, fill) { ctx.beginPath(); for (let c = 0; c <= N; c++) { const cc = c % N, a = -Math.PI / 2 + cc / N * 6.2832, r = SD[cc][idx] / mx * R, x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r; c ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.closePath(); if (fill) { ctx.fillStyle = fill; ctx.fill(); } ctx.strokeStyle = color; ctx.lineWidth = 3.5; ctx.stroke(); }
   poly(0, 'rgba(141,176,228,0.8)', null); poly(LY, '#E8743B', 'rgba(232,116,59,0.16)');
-  ctx.fillStyle = '#8DB0E4'; ctx.font = '500 22px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('1990', 96, H - 56); ctx.fillStyle = '#E8743B'; ctx.fillText('2024', 230, H - 56);
+  ctx.fillStyle = '#8DB0E4'; ctx.font = '500 22px Open Sans'; ctx.textAlign = 'left'; ctx.fillText('1990', 96, H - 56); ctx.fillStyle = '#E8743B'; ctx.fillText('2024', 230, H - 56);
 }
 function drawWaffle(ctx, W, H) {
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('A hundred plates', 96, 96);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px Open Sans'; ctx.textAlign = 'left'; ctx.fillText('A hundred plates', 96, 96);
   const LY = SD_YEARS.length - 1, tot = SD.reduce((s, r) => s + r[LY], 0), counts = SD.map(r => Math.round(r[LY] / tot * 100)), cells = []; counts.forEach((c, i) => { for (let k = 0; k < c; k++) cells.push(i); }); while (cells.length < 100) cells.push(0); cells.length = 100;
   const gx = 120, gy = 170, cell = Math.min((W - 660) / 10, (H - 260) / 10), gap = cell * 0.16;
   for (let i = 0; i < 100; i++) { const col = i % 10, row = (i / 10) | 0; ctx.fillStyle = SD_COL[cells[i]]; roundRect(ctx, gx + col * cell, gy + row * cell, cell - gap, cell - gap, 6); ctx.fill(); }
-  let ly = gy + 22; const lx = gx + 10 * cell + 50; ctx.font = '400 23px JetBrains Mono'; ctx.textAlign = 'left';
+  let ly = gy + 22; const lx = gx + 10 * cell + 50; ctx.font = '400 23px Open Sans'; ctx.textAlign = 'left';
   SD_CATS.forEach((nm, c) => { ctx.fillStyle = SD_COL[c]; ctx.fillRect(lx, ly - 18, 22, 22); ctx.fillStyle = '#ECEBE4'; ctx.fillText(nm + '  ' + counts[c], lx + 32, ly); ly += 46; });
 }
 function drawLollipop(ctx, W, H) {
   const recs = SD_CATS.map((nm, c) => ({ c: c, nm: nm, a: SD[c][0], b: SD[c][SD_YEARS.length - 1] })).sort((p, q) => q.b - p.b);
   const m = { l: 290, r: 110, t: 150, b: 80 }, iw = W - m.l - m.r, ih = H - m.t - m.b, N = recs.length, gap = ih / N, mx = Math.max.apply(null, SD.flat()) * 1.1, X = v => m.l + v / mx * iw;
-  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('From 1990 to now', 96, 96);
-  recs.forEach((d, k) => { const y = m.t + gap * k + gap / 2; ctx.strokeStyle = '#3A3934'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(X(d.a), y); ctx.lineTo(X(d.b), y); ctx.stroke(); ctx.fillStyle = '#5d6470'; ctx.beginPath(); ctx.arc(X(d.a), y, 10, 0, 7); ctx.fill(); ctx.fillStyle = SD_COL[d.c]; ctx.beginPath(); ctx.arc(X(d.b), y, 15, 0, 7); ctx.fill(); ctx.fillStyle = '#9C9B91'; ctx.font = '400 25px JetBrains Mono'; ctx.textAlign = 'right'; ctx.fillText(d.nm, m.l - 24, y + 8); });
-  ctx.fillStyle = '#5d6470'; ctx.font = '500 22px JetBrains Mono'; ctx.textAlign = 'left'; ctx.fillText('1990', 96, H - 50); ctx.fillStyle = '#ECEBE4'; ctx.fillText('2024', 230, H - 50);
+  ctx.fillStyle = '#ECEBE4'; ctx.font = '700 44px Open Sans'; ctx.textAlign = 'left'; ctx.fillText('From 1990 to now', 96, 96);
+  recs.forEach((d, k) => { const y = m.t + gap * k + gap / 2; ctx.strokeStyle = '#3A3934'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(X(d.a), y); ctx.lineTo(X(d.b), y); ctx.stroke(); ctx.fillStyle = '#5d6470'; ctx.beginPath(); ctx.arc(X(d.a), y, 10, 0, 7); ctx.fill(); ctx.fillStyle = SD_COL[d.c]; ctx.beginPath(); ctx.arc(X(d.b), y, 15, 0, 7); ctx.fill(); ctx.fillStyle = '#9C9B91'; ctx.font = '400 25px Open Sans'; ctx.textAlign = 'right'; ctx.fillText(d.nm, m.l - 24, y + 8); });
+  ctx.fillStyle = '#5d6470'; ctx.font = '500 22px Open Sans'; ctx.textAlign = 'left'; ctx.fillText('1990', 96, H - 50); ctx.fillStyle = '#ECEBE4'; ctx.fillText('2024', 230, H - 50);
 }
 function cardCanvas(drawInner, ss) {
   ss = ss || 1; const cv = document.createElement('canvas'); cv.width = 1500 * ss; cv.height = 900 * ss; const ctx = cv.getContext('2d'); ctx.scale(ss, ss);
@@ -1381,6 +1432,7 @@ function animate() {
     globe.rotation.y += 0.0006 * f60; aboutSpin.rotation.y += 0.0012 * f60; finalSpin.rotation.y += 0.0022 * f60; moon.rotation.y += 0.0008 * f60; rankSpin.rotation.y += 0.0014 * f60;
     regSpin.rotation.y += 0.0016 * f60; netSpin.rotation.y += 0.0011 * f60; dagSpin.rotation.y = Math.sin(nowT * 0.0003) * 0.18; updateNetPulse(f60);
     toolsGroup.rotation.y = Math.sin(nowT * 0.00045) * 0.13;
+    covexe.group.position.y = COVP.y + Math.sin(nowT * 0.0006) * 0.06;   // a gentle float, so the platform panel feels alive without spinning away
   }
   for (const m of spikes) { if (!m.visible) continue; const u = m.userData; u.cur += (u.target - u.cur) * K(0.16); m.scale.y = u.cur; }
   if (hotSpike && globePivot.visible) { const b = hotSpike.position, len = Math.hypot(b.x, b.y, b.z), ux = b.x / len, uy = b.y / len, uz = b.z / len, h = hotSpike.userData.cur; hotMarker.position.set(b.x + ux * (h + 0.02), b.y + uy * (h + 0.02), b.z + uz * (h + 0.02)); hotMarker.scale.setScalar(1 + 0.4 * Math.sin(performance.now() * 0.005)); hotLabel.position.set(b.x + ux * (h + 0.14), b.y + uy * (h + 0.14), b.z + uz * (h + 0.14)); }
