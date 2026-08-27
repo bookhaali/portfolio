@@ -490,11 +490,12 @@ const aboutNodes = [
   { t: 'NCD-RisC', tip: { name: 'NCD-RisC', sub: 'dataset', valHTML: 'risk factor collaboration' } },
   { t: 'WHO', tip: { name: 'WHO', sub: 'dataset', valHTML: 'indicators' } },
   { t: 'UN WPP', tip: { name: 'UN WPP', sub: 'dataset', valHTML: 'population denominators' } },
-  { t: 'Obesity 2026', url: 'https://doi.org/10.1002/oby.70290', tip: { name: 'Obesity, 2026', sub: 'publication', valHTML: 'Obesity in early vs later adulthood, 196 countries, 1990-2022. Click to open.' } },
+  { t: 'Oslo 2022', url: 'https://doi.org/10.1111/cdoe.12990', tip: { name: 'University of Oslo, 2022', sub: 'field research', valHTML: 'Paid field researcher: child dental-health study, Somaliland (CDOE 2022). Click to open.' } },
+  { t: 'Oslo 2026', url: 'https://doi.org/10.1016/j.identj.2026.109766', tip: { name: 'International Dental Journal, 2026', sub: 'field research', valHTML: 'Paid field researcher: caries &amp; quality of life, Somali schoolchildren in Hargeisa. Click to open.' } },
   { t: 'Public Health 2026', url: 'https://doi.org/10.1016/j.puhe.2026.106177', tip: { name: 'Public Health, 2026', sub: 'publication', valHTML: 'Khat & oral/esophageal cancer: review &amp; meta-analysis. Click to open.' } },
   { t: 'BCT 2026', url: 'https://bct.apbmt.org/articles/bct-2026-007/', tip: { name: 'Blood Cell Therapy, 2026', sub: 'publication (coauthor)', valHTML: 'Return to work after stem-cell transplantation: fatigue &amp; chronic GvHD. Click to open.' } },
-  { t: 'ecancer 2025', url: 'https://doi.org/10.3332/ecancer.2025.1880', tip: { name: 'ecancermedicalscience, 2025', sub: 'publication', valHTML: 'Khat & upper-digestive cancers: case-control. Click to open.' } },
-  { t: 'Oslo 2022', url: 'https://doi.org/10.1111/cdoe.12990', tip: { name: 'University of Oslo, 2022', sub: 'field research', valHTML: 'Paid field researcher: child dental-health study, Somaliland (CDOE 2022). Click to open.' } }
+  { t: 'Obesity 2026', url: 'https://doi.org/10.1002/oby.70290', tip: { name: 'Obesity, 2026', sub: 'publication', valHTML: 'Obesity in early vs later adulthood, 196 countries, 1990-2022. Click to open.' } },
+  { t: 'ecancer 2025', url: 'https://doi.org/10.3332/ecancer.2025.1880', tip: { name: 'ecancermedicalscience, 2025', sub: 'publication', valHTML: 'Khat & upper-digestive cancers: case-control. Click to open.' } }
 ];
 aboutNodes.forEach((nd, i) => {
   const a = (i / aboutNodes.length) * Math.PI * 2, r = 2.4;   // tighter ring: 10 nodes keep the 8-node footprint
