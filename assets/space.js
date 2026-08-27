@@ -490,12 +490,14 @@ const aboutNodes = [
   { t: 'NCD-RisC', tip: { name: 'NCD-RisC', sub: 'dataset', valHTML: 'risk factor collaboration' } },
   { t: 'WHO', tip: { name: 'WHO', sub: 'dataset', valHTML: 'indicators' } },
   { t: 'UN WPP', tip: { name: 'UN WPP', sub: 'dataset', valHTML: 'population denominators' } },
+  { t: 'Obesity 2026', url: 'https://doi.org/10.1002/oby.70290', tip: { name: 'Obesity, 2026', sub: 'publication', valHTML: 'Obesity in early vs later adulthood, 196 countries, 1990-2022. Click to open.' } },
   { t: 'Public Health 2026', url: 'https://doi.org/10.1016/j.puhe.2026.106177', tip: { name: 'Public Health, 2026', sub: 'publication', valHTML: 'Khat & oral/esophageal cancer: review &amp; meta-analysis. Click to open.' } },
+  { t: 'BCT 2026', url: 'https://bct.apbmt.org/articles/bct-2026-007/', tip: { name: 'Blood Cell Therapy, 2026', sub: 'publication (coauthor)', valHTML: 'Return to work after stem-cell transplantation: fatigue &amp; chronic GvHD. Click to open.' } },
   { t: 'ecancer 2025', url: 'https://doi.org/10.3332/ecancer.2025.1880', tip: { name: 'ecancermedicalscience, 2025', sub: 'publication', valHTML: 'Khat & upper-digestive cancers: case-control. Click to open.' } },
   { t: 'Oslo 2022', url: 'https://doi.org/10.1111/cdoe.12990', tip: { name: 'University of Oslo, 2022', sub: 'field research', valHTML: 'Paid field researcher: child dental-health study, Somaliland (CDOE 2022). Click to open.' } }
 ];
 aboutNodes.forEach((nd, i) => {
-  const a = (i / aboutNodes.length) * Math.PI * 2, r = 2.6;
+  const a = (i / aboutNodes.length) * Math.PI * 2, r = 2.4;   // tighter ring: 10 nodes keep the 8-node footprint
   const m = new THREE.Mesh(new THREE.SphereGeometry(0.13, 18, 18), new THREE.MeshBasicMaterial({ color: nd.url ? WARM : ACCENT }));
   m.position.set(Math.cos(a) * r, Math.sin(a) * r * 0.6, Math.sin(a) * 0.8); m.userData = { mat0: m.material, url: nd.url, tip: () => nd.tip }; aboutSpin.add(m); aboutPicks.push(m);
   const lab = makeLabel(nd.t, { size: 0.26, color: '#9C9B91' }); lab.position.copy(m.position).add(new THREE.Vector3(0, 0.28, 0)); aboutSpin.add(lab);
@@ -642,7 +644,7 @@ function drawStoryTable() {
   ctx.fillStyle = '#8DB0E4'; ctx.font = '700 19px Open Sans'; ctx.fillText('THE RESEARCH LIBRARY', 40, 62);
   ctx.fillStyle = '#ECEBE4'; ctx.font = '700 38px Open Sans'; ctx.fillText('Step inside.', 40, 122);
   ctx.fillStyle = '#9C9B91'; ctx.font = '400 22px Open Sans';
-  ctx.fillText('Six active studies. Two published papers.', 40, 178);
+  ctx.fillText('Five active studies. Four published papers.', 40, 178);
   ctx.fillText('Every figure rebuilt to explore.', 40, 212);
   const cols = ['#E0A24A', '#E0728F', '#D98A6E', '#6FC8A3', '#6FB1E0', '#9B8DE4'];
   cols.forEach((c, i) => { ctx.fillStyle = c; ctx.fillRect(40 + i * 30, H - 64, 18, 38); });
@@ -887,7 +889,7 @@ const STATIONS = [
   { name: 'Networks', cap: '<b>Disease rarely travels alone.</b> Edges are comorbidity ties.', spin: netSpin, picks: () => netPicks, camPos: off(NETP, 0, 0.9, 11), camTarget: off(NETP, 0, 0.8, 0), spinIdle: 0.0012 },
   { name: 'Collaborate', cap: '<b>Forest, funnel, survival, ROC. Computed live.</b>', spin: collabSpin, picks: () => [], camPos: off(COLLAB, 0, 1.25, 9.2), camTarget: off(COLLAB, 0, 1.15, 0), wide: 1.5 },
   { name: 'Covexe', cap: '<b>The platform I built.</b> One place for the whole systematic review.', spin: covexe.group, picks: () => [covexeLink], camPos: off(COVP, 0, 0.35, 9.3), camTarget: off(COVP, 0, 0.15, 0), wide: 1.18 },
-  { name: 'The analyst', cap: '<b>Five global datasets. Two peer-reviewed papers.</b>', spin: aboutSpin, picks: () => aboutPicks, camPos: off(ABP, 0, 0, 7.2), camTarget: ABP.clone(), spinIdle: 0.0015 },
+  { name: 'The analyst', cap: '<b>Five global datasets. Four peer-reviewed papers.</b>', spin: aboutSpin, picks: () => aboutPicks, camPos: off(ABP, 0, 0, 7.2), camTarget: ABP.clone(), spinIdle: 0.0015 },
   { name: 'The research library', cap: '<b>Step inside the research library.</b>', spin: storySpin, picks: () => [], camPos: off(STORYP, 0, 0.5, 7), camTarget: off(STORYP, 0, 0.5, 0) }
 ];
 const N = STATIONS.length;
