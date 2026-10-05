@@ -350,6 +350,15 @@
   a.fun.on{background:linear-gradient(110deg,#E8C9A0,#D98A6E) padding-box,linear-gradient(110deg,#E8C9A0,#D98A6E,#B08DE4,#8DB0E4,#E8C9A0) border-box!important;color:#1A130E!important}
   @keyframes funBorder{to{background-position:0 0,300% 0}}
   @media (prefers-reduced-motion: reduce){a.fun{animation:none}}
+
+  /* a minimal first screen: while the title is up (before the first scroll) only Earth, the name, the
+     tagline, the menu, Demo flight and the scroll cue show; the data fades in once the visitor explores */
+  .ui .brand,.datahint,.station,.controls{transition:opacity .8s ease,visibility 0s linear 0s}
+  body:has(#intro:not(.gone)) .ui .brand,
+  body:has(#intro:not(.gone)) .datahint,
+  body:has(#intro:not(.gone)) .station,
+  body:has(#intro:not(.gone)) .controls{opacity:0!important;visibility:hidden;transition:opacity .4s ease,visibility 0s linear .4s}
+  .legend,.ui .hint{display:none!important}
 </style>
 <script>document.documentElement.classList.add('arriving');</script>
 <script>(function(){try{var c=document.createElement('canvas');if(c.getContext('webgl')||c.getContext('experimental-webgl'))document.documentElement.classList.add('webgl-ok');}catch(e){}})();</script>

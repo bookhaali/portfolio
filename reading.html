@@ -13,18 +13,21 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0D0C'/%3E%3Ccircle cx='32' cy='36' r='13' fill='none' stroke='%238DB0E4' stroke-width='3'/%3E%3Cline x1='32' y1='23' x2='32' y2='10' stroke='%23E8743B' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='42' y1='28' x2='49' y2='19' stroke='%238DB0E4' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='22' y1='28' x2='16' y2='21' stroke='%235FC9C0' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Caveat:wght@500;700&family=Cinzel:wght@500;600&family=Oswald:wght@500;600&family=Josefin+Sans:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,500;1,600&display=swap" rel="stylesheet">
+<script src="assets/theme.js"></script>
+<!-- fonts load without holding up the first paint, so arriving through the warp never waits on them -->
+<link id="fontcss" rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Caveat:wght@500;700&family=Cinzel:wght@500;600&family=Oswald:wght@500;600&family=Josefin+Sans:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,500;1,600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Caveat:wght@500;700&family=Cinzel:wght@500;600&family=Oswald:wght@500;600&family=Josefin+Sans:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,500;1,600&display=swap"></noscript>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{
     --bg:#0B0A09; --text:#ECEBE4; --muted:#9C9B91; --faint:#6E6D64; --border:#2A2924;
     --accent:#8DB0E4; --accent-hi:#A6C4EE; --warm:#D98A6E; --brass:#D4AE6A;
-    --glass-bd:rgba(236,235,228,.1); --r-s:4px;
+    --glass-bd:rgba(236,235,228,.1); --r-s:4px; --ink:#E8C9A0;
     --font:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
     --serif:'Fraunces',Georgia,serif; --hand:'Caveat',cursive;
     --spring:cubic-bezier(.16,1,.3,1);
   }
-  html{background:var(--bg);scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+  html{background:var(--bg);scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
   body{min-height:100vh;color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;line-height:1.6;animation:pgfade .75s ease both;
     background:radial-gradient(760px 560px at 30% 8%, rgba(232,190,130,.15), transparent 70%), linear-gradient(180deg,#13110F 0%,var(--bg) 100%) fixed}
   @keyframes pgfade{from{opacity:0}to{opacity:1}}
@@ -81,7 +84,7 @@
   .row .b3 .cv,.row .b3 .bc,.row .b3 .pg,.row .b3 .tp{opacity:0;transition:opacity .2s}
   .row .b3:hover,.row .b3:focus-visible{transform:translate3d(0,-10px,0);z-index:60}
   .row .b3:hover .sp,.row .b3:focus-visible .sp{box-shadow:inset -3px 0 6px rgba(0,0,0,.35),0 14px 20px rgba(0,0,0,.55)}
-  .row .b3.out{transform:translate3d(0,-20px,80px) rotateY(-70deg);opacity:0;transition:transform .5s var(--spring),opacity .35s .1s}
+  .row .b3.out{opacity:0;transition:none}
   .b3.intro{animation:bkin .7s var(--spring) both;animation-delay:var(--d)}
   /* spines rebuilt from each book's real colours and lettering */
   .gs{display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:3%;padding:7% 0 6%}
@@ -94,9 +97,9 @@
   .gs .num{border:1px solid currentColor;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;line-height:1;opacity:.85}
   .gs .mk{width:42%;aspect-ratio:1;display:flex}
   .stage3d{perspective:1700px;perspective-origin:50% 40%}
-  .stage3d .b3{position:relative;cursor:grab;transition:none}
+  .stage3d .b3{position:relative;cursor:grab;transition:none;will-change:transform}
   .stage3d .b3:active{cursor:grabbing}
-  .tag{position:absolute;font-family:var(--hand);font-size:1.05rem;color:#E8C9A0;transform:rotate(-4deg);pointer-events:none;white-space:nowrap}
+  .tag{position:absolute;font-family:var(--hand);font-size:1.05rem;color:var(--ink);transform:rotate(-4deg);pointer-events:none;white-space:nowrap}
 
   .earth{position:absolute;bottom:0;width:86px;height:120px}
   .earth .g{position:absolute;left:13px;top:0;width:60px;height:60px;border-radius:50%;overflow:hidden;background:#1E4E86;box-shadow:inset -10px -8px 18px rgba(0,0,0,.6),0 0 22px rgba(95,150,220,.25)}
@@ -137,28 +140,28 @@
   /* reader */
   .reader{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:5rem 1.5rem 2rem}
   .reader[hidden]{display:none}
-  .reader .bg{position:absolute;inset:0;background:rgba(6,5,4,.8);backdrop-filter:blur(6px);animation:pgfade .35s both}
+  .reader .bg{position:absolute;inset:0;will-change:opacity;background:rgba(6,5,4,.8);backdrop-filter:blur(6px);animation:pgfade .35s both}
   .reader .sheet{position:relative;display:flex;gap:2.6rem;align-items:center;max-width:860px;width:100%;flex-wrap:wrap;justify-content:center}
-  .reader .fig{flex:none;animation:fly .7s var(--spring) both}
+  .reader .fig{flex:none}
   .reader .fig img{display:block;border-radius:3px;box-shadow:0 30px 60px rgba(0,0,0,.6)}
   @keyframes fly{from{opacity:0;transform:translateY(40px) scale(.7) rotate(-6deg)}to{opacity:1;transform:none}}
-  .reader .info{flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:.6rem;animation:fade .6s .25s both}
+  .reader .info{flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:.6rem;animation:fade .6s .5s both}
   @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   .reader .st{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--brass)}
   .reader h3{font-family:var(--serif);font-weight:400;font-size:2.2rem;line-height:1.1}
   .reader .au{font-size:.95rem;color:var(--muted)}
   .reader .se{font-size:.8rem;color:var(--faint)}
   .reader .ab{font-size:.95rem;line-height:1.7;color:#C9C6BC;max-width:440px;margin-top:.4rem}
-  .reader .gr{align-self:flex-start;font-size:.82rem;color:#E8C9A0;text-decoration:none;border-bottom:1px solid rgba(232,201,160,.35);padding-bottom:2px;margin-top:.2rem;transition:color .2s,border-color .2s}
+  .reader .gr{align-self:flex-start;font-size:.82rem;color:var(--ink);text-decoration:none;border-bottom:1px solid rgba(232,201,160,.35);padding-bottom:2px;margin-top:.2rem;transition:color .2s,border-color .2s}
   .reader .gr:hover{color:#FFF1DA;border-color:#E8C9A0}
   .tally{display:flex;flex-wrap:wrap;align-items:flex-end;gap:1.2rem 2.6rem;margin-top:1.6rem}
   .tally div{display:flex;align-items:baseline;gap:.6rem}
-  .tally b{font-family:var(--serif);font-weight:400;font-variant-numeric:tabular-nums;color:#E8C9A0;line-height:1}
+  .tally b{font-family:var(--serif);font-weight:400;font-variant-numeric:tabular-nums;color:var(--ink);line-height:1}
   .tally .big b{font-size:clamp(3rem,7vw,4.6rem)}
   .tally .big span{font-size:.95rem;color:var(--text)}
   .tally .small b{font-size:1.8rem;color:var(--muted)}
   .tally .small span{font-size:.8rem;color:var(--muted)}
-  .reader .note{font-family:var(--hand);font-size:1.5rem;line-height:1.3;color:#E8C9A0;margin-top:.4rem}
+  .reader .note{font-family:var(--hand);font-size:1.5rem;line-height:1.3;color:var(--ink);margin-top:.4rem}
   .reader .close{align-self:flex-start;margin-top:1rem;background:rgba(21,21,19,.9);color:var(--text);border:1px solid #3A3934;border-radius:99px;padding:12px 20px;font-size:.82rem;cursor:pointer}
   .reader .close:hover{border-color:var(--faint)}
 
@@ -194,6 +197,42 @@
   @keyframes funBorder{to{background-position:0 0,300% 0}}
   @media(max-width:640px){header.site nav.top a.fun{display:flex!important;justify-content:center;margin:2px 0}}
   @media (prefers-reduced-motion: reduce){a.fun{animation:none}}
+  /* light mode: a bright room, the same bookcase in lighter oak. Dark mode above is unchanged. */
+  html[data-theme="light"]{
+    --bg:#F6ECE3; --surface:#FFF8F0; --text:#1E2230; --muted:#5F6170; --faint:#8E8F99; --border:rgba(30,34,48,.12);
+    --accent:#2F5BEA; --accent-hi:#2349C9; --warm:#B05A38; --glass-bd:rgba(30,34,48,.1); --ink:#9A5A32;
+    scrollbar-color:rgba(30,34,48,.28) transparent}
+  html[data-theme="light"] ::selection{background:rgba(47,91,234,.2);color:var(--text)}
+  html[data-theme="light"] body{background:radial-gradient(760px 560px at 30% 8%, rgba(255,214,160,.38), transparent 70%), linear-gradient(180deg,#FBF4EC 0%,var(--bg) 100%) fixed}
+  html[data-theme="light"] header.site{background:rgba(246,236,227,.8)}
+  html[data-theme="light"] nav.top a.primary{color:#FFF8F0}
+  html[data-theme="light"] a.fun:not(.on){background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(110deg,#E8C9A0,#D98A6E,#B08DE4,#8DB0E4,#E8C9A0) border-box!important;background-size:100% 100%,300% 100%!important;color:#8A4A2A!important}
+  html[data-theme="light"] a.fun:not(.on):hover,html[data-theme="light"] a.fun:not(.on):focus-visible{color:#6A3418!important}
+  html[data-theme="light"] a.fun:hover,html[data-theme="light"] a.fun:focus-visible{box-shadow:0 8px 20px rgba(217,138,110,.28)}
+  html[data-theme="light"] .dust i{background:rgba(176,120,60,.45)}
+  html[data-theme="light"] .case{background:linear-gradient(90deg,#B58A5E,#C9A27A 50%,#B58A5E);box-shadow:0 30px 60px rgba(110,72,36,.22),0 6px 14px rgba(110,72,36,.12),inset 0 1px 0 rgba(255,240,220,.45)}
+  html[data-theme="light"] .shelf{background:linear-gradient(180deg,#957252 0%,#AE8D6A 100%);box-shadow:inset 0 18px 28px rgba(70,42,18,.35),inset 0 -6px 12px rgba(70,42,18,.18);scrollbar-color:#8A6440 transparent}
+  html[data-theme="light"] .board{background:linear-gradient(180deg,#BC9064,#9A6E45);box-shadow:inset 0 1px 0 rgba(255,235,210,.35)}
+  html[data-theme="light"] .plinth{background:#8A6442;box-shadow:0 16px 30px rgba(110,72,36,.22)}
+  html[data-theme="light"] .bookend{box-shadow:2px 0 4px rgba(70,42,18,.3)}
+  html[data-theme="light"] .tag{color:#3A200C}
+  html[data-theme="light"] .b3 .sp{box-shadow:inset -3px 0 6px rgba(0,0,0,.35),2px 0 3px rgba(40,22,8,.32)}
+  html[data-theme="light"] .row .b3:hover .sp,html[data-theme="light"] .row .b3:focus-visible .sp{box-shadow:inset -3px 0 6px rgba(0,0,0,.35),0 14px 20px rgba(40,22,8,.35)}
+  html[data-theme="light"] .earth .g{box-shadow:inset -10px -8px 18px rgba(0,0,0,.5),0 0 18px rgba(95,150,220,.2)}
+  html[data-theme="light"] .pin{box-shadow:0 4px 6px rgba(80,40,20,.3)}
+  html[data-theme="light"] .face{box-shadow:0 18px 36px rgba(110,72,36,.2),0 3px 8px rgba(110,72,36,.1)}
+  html[data-theme="light"] .reader .bg{background:rgba(246,236,227,.86)}
+  html[data-theme="light"] .reader .st{color:#8A5F22}
+  html[data-theme="light"] .reader .ab{color:#3E4150}
+  html[data-theme="light"] .reader .note{color:#8A4A22}
+  html[data-theme="light"] .reader .gr{color:var(--accent);border-bottom-color:rgba(47,91,234,.35)}
+  html[data-theme="light"] .reader .gr:hover{color:#1E3FB0;border-color:var(--accent)}
+  html[data-theme="light"] .reader .close{background:var(--surface);color:var(--text);border-color:rgba(30,34,48,.18);box-shadow:0 2px 8px rgba(30,34,48,.06)}
+  html[data-theme="light"] .reader .close:hover{border-color:var(--muted)}
+  @media(max-width:640px){
+    /* the mobile menu from nav.js is dark; give it the light surface */
+    html[data-theme="light"] header.site nav.top{background:rgba(255,248,240,.98);border-color:rgba(30,34,48,.12);box-shadow:0 18px 40px rgba(60,40,20,.16)}
+  }
 </style>
 </head>
 <body>
@@ -425,7 +464,77 @@
   const reader = document.getElementById('reader'), fig = document.getElementById('r-fig');
   let ry = -32, rx = -6, drag = null, idle = 0, spinRaf = 0;
   function setRot(box) { box.style.transform = 'rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)'; }
+  // the flight between the shelf and the reader: the spine on the shelf and the book in the
+  // reader are matched by their pivot point (the middle of the bottom edge), so the book
+  // leaves its exact slot, comes toward you while it turns to show the cover, and goes back.
+  function shelfPose(btn, box) {
+    const a = btn.getBoundingClientRect(), keep = box.style.transform; box.style.transform = 'none';
+    const r = box.getBoundingClientRect(); box.style.transform = keep;
+    const dx = (a.left + a.width / 2) - (r.left + r.width / 2), dy = a.bottom - r.bottom;
+    return { dx, dy, s: a.height / r.height };
+  }
+  // one continuous move, driven by a single eased progress: the position follows an arc that
+  // lifts the book off the shelf and toward you, while the scale and the turn ride the same curve,
+  // so there is no stop or second push anywhere in the flight. Closing plays the same path backwards.
+  const ease = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+  // pose at path position e (0 = in its slot, 1 = in front of you)
+  function pose(box, e, P) {
+    // the path is how you handle a real book: it slides straight out of (or into) its slot first,
+    // toward you along z, and only then travels across. Sideways travel follows a smoothstep, which
+    // is flat at both ends, while the depth follows a sine, which is steep at both ends, so near the
+    // shelf the book is already lined up with its slot and the last part is a straight push in.
+    const a = e * e * (3 - 2 * e), arc = Math.sin(Math.PI * e);
+    const x = P.dx * (1 - a), y = P.dy * (1 - a), z = arc * 170, tilt = -2.5 * arc;
+    // scale3d, not scale: the book's depth (its cover width) must shrink with it
+    const sc = P.s + (1 - P.s) * a;
+    const turn = Math.pow(e, 1.6), tip = -13 * Math.sin(Math.PI * Math.min(1, e * 1.6));
+    // the viewpoint travels with the book: at the shelf it sits straight in front of the slot, so the
+    // spine hides the book's sides the way it does on a real shelf, and the sides only come into view
+    // as the book tips out by its top and turns toward you
+    P.stage.style.perspectiveOrigin = (P.o0x + (P.o1x - P.o0x) * a) + 'px ' + (P.o0y + (P.o1y - P.o0y) * a) + 'px';
+    box.style.transform = 'translate3d(' + x + 'px,' + y + 'px,' + z + 'px) rotateZ(' + tilt + 'deg) scale3d(' + sc + ',' + sc + ',' + sc + ') rotateX(' + (rx * e + tip) + 'deg) rotateY(' + ry * turn + 'deg)';
+  }
+
+
+  // taking a book out, in overlapping steps the way a hand does it: it pulls out and tips toward
+  // you straight away, is carried across at an even pace, and turns to show its cover as it arrives
+  const clamp01 = v => Math.min(1, Math.max(0, v)), sine = v => .5 - .5 * Math.cos(Math.PI * v), outQ = v => 1 - Math.pow(1 - v, 3);
+  function posePick(box, ms, P) {
+    const pull = outQ(clamp01(ms / 320)), carry = sine(clamp01((ms - 140) / 760)), turn = sine(clamp01((ms - 320) / 680));
+    const x = P.dx * (1 - carry), y = P.dy * (1 - carry), z = 90 * pull * (1 - carry) + 120 * Math.sin(Math.PI * carry);
+    const sc = P.s + (1 - P.s) * carry, tilt = -2 * Math.sin(Math.PI * carry);
+    const rxNow = -11 * pull * (1 - turn) + rx * turn;
+    P.stage.style.perspectiveOrigin = (P.o0x + (P.o1x - P.o0x) * carry) + 'px ' + (P.o0y + (P.o1y - P.o0y) * carry) + 'px';
+    box.style.transform = 'translate3d(' + x + 'px,' + y + 'px,' + z + 'px) rotateZ(' + tilt + 'deg) scale3d(' + sc + ',' + sc + ',' + sc + ') rotateX(' + rxNow + 'deg) rotateY(' + ry * turn + 'deg)';
+  }
+  function fly(box, btn, dir, done) {
+    // out: ease in and out, so it lifts gently and settles. back: it moves the moment you let go
+    // (no slow start), then slows into the slot
+    const P = shelfPose(btn, box), dur = dir > 0 ? 1000 : 820, t0 = performance.now();
+    // where the viewpoint sits: in front of the slot's middle at the shelf, the stage's usual spot in the reader
+    const stage = box.parentElement, sr = stage.getBoundingClientRect(), a0 = btn.getBoundingClientRect();
+    Object.assign(P, { stage, o0x: a0.left + a0.width / 2 - sr.left, o0y: a0.top + a0.height / 2 - sr.top, o1x: sr.width * .5, o1y: sr.height * .4 });
+    const path = dir > 0 ? ease : k => Math.pow(1 - k, 2.6);
+    flying = true; box.style.pointerEvents = 'none';
+    // one clock for the start and every frame (a frame's own timestamp can be earlier than the
+    // click that started the flight, which made the first frame overshoot), clamped to 0..1
+    const step = () => {
+      const k = Math.min(1, Math.max(0, (performance.now() - t0) / dur));
+      if (dir > 0) posePick(box, k * dur, P); else pose(box, path(k), P);
+      if (k < 1) return requestAnimationFrame(step);
+      flying = false; box.style.pointerEvents = ''; if (dir > 0) { setRot(box); stage.style.perspectiveOrigin = ''; } if (done) done();
+    };
+    if (dir > 0) posePick(box, 0, P); else pose(box, path(0), P);
+    requestAnimationFrame(step);
+  }
+  function flyIn(btn, box) { fly(box, btn, 1); }
+  function flyOut(btn, box, done) {
+    FADES = [reader.querySelector('.bg').animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, easing: 'ease-out', fill: 'forwards' }), reader.querySelector('.info').animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, fill: 'forwards' })];
+    fly(box, btn, -1, done);
+  }
+  var flying = false, FADES = [];
   function open(b, kind, btn) {
+    if (flying) return;
     opener = btn; btn.classList.add('out');
     fig.innerHTML = '';
     const stage = el('div', 'stage3d', fig);
@@ -434,10 +543,7 @@
     stage.style.width = (c + 60) + 'px'; stage.style.height = H + 'px'; stage.style.display = 'flex'; stage.style.justifyContent = 'center';
     stage.appendChild(box);
     ry = -32; rx = -6;
-    if (!reduce) {
-      box.animate([{ transform: 'translateZ(-260px) rotateX(-6deg) rotateY(0deg)', opacity: 0 }, { transform: 'rotateX(-6deg) rotateY(-32deg)', opacity: 1 }], { duration: 900, easing: 'cubic-bezier(.16,1,.3,1)' });
-    }
-    setRot(box);
+    setRot(box); curBox = box;
     box.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY, ry, rx }; box.setPointerCapture(e.pointerId); });
     box.addEventListener('pointermove', e => { if (!drag) return; ry = drag.ry + (e.clientX - drag.x) * 0.5; rx = Math.max(-35, Math.min(25, drag.rx - (e.clientY - drag.y) * 0.3)); setRot(box); });
     box.addEventListener('pointerup', () => { drag = null; });
@@ -449,12 +555,19 @@
     const ab = document.getElementById('r-ab'); ab.textContent = b.about || ''; ab.hidden = !b.about;
     document.getElementById('r-link').href = 'https://www.goodreads.com/search?q=' + encodeURIComponent(b.isbn || (b.title.replace(/ \(.*\)$/, '') + ' ' + b.author));
     reader.hidden = false; document.body.style.overflow = 'hidden';
-    reader.querySelector('.close').focus();
+    if (!reduce) flyIn(btn, box);
+    reader.querySelector('.close').focus({ preventScroll: true });
   }
+  let curBox = null;
   function close() {
-    if (reader.hidden) return;
-    reader.hidden = true; document.body.style.overflow = ''; drag = null;
-    if (opener) { opener.classList.remove('out'); opener.focus({ preventScroll: true }); opener = null; }
+    if (reader.hidden || flying) return;
+    drag = null;
+    const finish = () => {
+      reader.hidden = true; FADES.forEach(a => a.cancel()); FADES = []; document.body.style.overflow = '';
+      if (opener) { opener.classList.remove('out'); opener.focus({ preventScroll: true }); opener = null; }
+    };
+    if (reduce || !opener || !curBox) return finish();
+    flyOut(opener, curBox, finish);
   }
   reader.addEventListener('click', e => { if (e.target.closest('[data-close]')) close(); });
   addEventListener('keydown', e => { if (e.key === 'Escape') close(); });

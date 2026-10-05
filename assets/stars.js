@@ -1,13 +1,19 @@
 /* Shared ambient starfield for the content pages (research / studio / notes).
    Subtle twinkle + slow drift so they feel continuous with the 3D journey.
    Uses an existing <canvas id="stars">. Respects prefers-reduced-motion;
-   pauses when the tab is hidden. */
+   pauses when the tab is hidden. In light mode the same stars are drawn as
+   soft dark specks (ink and muted brand hues) at a lower alpha. */
 (function () {
   const cv = document.getElementById('stars');
   if (!cv || !cv.getContext) return;
   const ctx = cv.getContext('2d');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const COLS = ['255,255,255', '188,212,245', '245,225,194', '158,192,238', '224,162,74', '111,200,163'];
+  // light-mode partner for each colour above, same index
+  const COLS_LIGHT = ['30,34,48', '52,66,104', '120,84,52', '47,91,234', '185,96,40', '22,128,112'];
+  const LIGHT_ALPHA = 0.55;
+  const root = document.documentElement;
+  let light = root.getAttribute('data-theme') === 'light';
   let stars = [], W = 0, H = 0, dpr = 1, raf = 0;
 
   function build() {
@@ -26,16 +32,17 @@
         sp: 0.5 + Math.random() * 1.3, ph: Math.random() * 6.283,
         vx: (Math.random() - 0.5) * 0.05 * dpr,
         vy: (-0.02 - Math.random() * 0.05) * dpr,
-        col: warm ? COLS[2 + (Math.random() * 4 | 0)] : (Math.random() > 0.5 ? COLS[1] : COLS[0])
+        ci: warm ? 2 + (Math.random() * 4 | 0) : (Math.random() > 0.5 ? 1 : 0)
       });
     }
   }
 
   function paint(tw) {
     ctx.clearRect(0, 0, W, H);
+    const pal = light ? COLS_LIGHT : COLS, k = light ? LIGHT_ALPHA : 1;
     for (const s of stars) {
-      const a = tw == null ? s.base : s.base * (0.5 + 0.5 * Math.sin(tw * s.sp + s.ph));
-      ctx.fillStyle = 'rgba(' + s.col + ',' + a.toFixed(3) + ')';
+      const a = k * (tw == null ? s.base : s.base * (0.5 + 0.5 * Math.sin(tw * s.sp + s.ph)));
+      ctx.fillStyle = 'rgba(' + pal[s.ci] + ',' + a.toFixed(3) + ')';
       ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.2832); ctx.fill();
     }
   }
@@ -54,6 +61,10 @@
 
   build();
   addEventListener('resize', () => { build(); if (reduce) paint(null); });
+  if (window.SiteTheme && SiteTheme.onChange) SiteTheme.onChange(function (m) {
+    light = m === 'light';
+    if (reduce || !raf) paint(null);
+  });
   if (reduce) paint(null);
   else raf = requestAnimationFrame(frame);
 
@@ -70,8 +81,9 @@
   let fade = null;
   function go() {
     if (!fade) {
+      // the Journey is always dark space, so the hand-off fades to its colour in either mode
       fade = document.createElement('div'); fade.id = 'leave-fade';
-      fade.style.cssText = 'position:fixed;inset:0;background:var(--bg,#0D0D0C);opacity:0;pointer-events:none;z-index:9999;transition:opacity .4s ease';
+      fade.style.cssText = 'position:fixed;inset:0;background:#0D0D0C;opacity:0;pointer-events:none;z-index:9999;transition:opacity .4s ease';
       document.body.appendChild(fade);
       void fade.offsetWidth;
     }

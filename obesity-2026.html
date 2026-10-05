@@ -13,7 +13,10 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0D0C'/%3E%3Ccircle cx='32' cy='36' r='13' fill='none' stroke='%238DB0E4' stroke-width='3'/%3E%3Cline x1='32' y1='23' x2='32' y2='10' stroke='%23E8743B' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='42' y1='28' x2='49' y2='19' stroke='%238DB0E4' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='22' y1='28' x2='16' y2='21' stroke='%235FC9C0' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<!-- fonts load without holding up the first paint, so arriving through the warp never waits on them -->
+<link id="fontcss" rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"></noscript>
+<script src="assets/theme.js"></script>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{
@@ -22,6 +25,7 @@
     --glass-bd:rgba(236,235,228,.1); --r-s:4px; --r-l:10px;
     --font:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
     --spring:cubic-bezier(.16,1,.3,1);
+    --r-african:#D98A6E; --r-americas:#8DB0E4; --r-emed:#E8C9A0; --r-europe:#B08DE4; --r-sea:#5FC9C0; --r-wpac:#C9A55F; --r-other:#6E6D64;
   }
   html{background:var(--bg);scrollbar-width:thin;scrollbar-color:var(--border) transparent}
   body{background:radial-gradient(1000px 700px at 35% 40%, #11151C 0%, var(--bg) 70%) fixed;color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;line-height:1.6;animation:pgfade .75s ease both}
@@ -69,6 +73,8 @@
   .plot.focusing .ridge polyline{stroke-opacity:.35}
   .ridge.on polyline{stroke:#ECEBE4!important;stroke-width:2.2;stroke-opacity:1!important}
   .ridge.on polygon{fill:#2A1C17}
+  #c-spark{stroke:var(--accent)}
+  #c-dot{fill:var(--warm)}
   .ridge.intro{animation:rise .9s var(--spring) both;animation-delay:var(--d)}
   @keyframes rise{from{opacity:0;transform:translateY(calc(var(--y) + 24px))}to{opacity:1;transform:translateY(var(--y))}}
   .cursor{position:absolute;top:0;bottom:24px;width:1px;pointer-events:none;z-index:1000;background:linear-gradient(180deg,transparent,rgba(217,138,110,.75) 15%,rgba(217,138,110,.75) 85%,transparent);opacity:0;transition:opacity .3s}
@@ -130,6 +136,30 @@
   @keyframes funBorder{to{background-position:0 0,300% 0}}
   @media(max-width:640px){header.site nav.top a.fun{display:flex!important;justify-content:center;margin:2px 0}}
   @media (prefers-reduced-motion: reduce){a.fun{animation:none}}
+
+  /* Light mode */
+  html[data-theme="light"]{
+    --bg:#F6ECE3; --surface:#FFF8F0; --text:#1E2230; --muted:#5F6170; --faint:#8E8F99;
+    --border:rgba(30,34,48,.12); --accent:#2F5BEA; --accent-hi:#2449C4; --warm:#B9532C;
+    --glass-bd:rgba(30,34,48,.1);
+    --r-african:#C4552C; --r-americas:#2F5BEA; --r-emed:#B07A12; --r-europe:#7B4FCC; --r-sea:#138A80; --r-wpac:#5F7A1C; --r-other:#8E8F99;
+  }
+  html[data-theme="light"] body{background:radial-gradient(1000px 700px at 35% 40%, #FFF8F0 0%, var(--bg) 70%) fixed}
+  html[data-theme="light"] header.site{background:rgba(246,236,227,.8)}
+  html[data-theme="light"] nav.top a.primary,html[data-theme="light"] .btn{color:#FFF8F0}
+  html[data-theme="light"] .seg,html[data-theme="light"] .find input{background:rgba(255,248,240,.85)}
+  html[data-theme="light"] .seg button[aria-pressed="true"]{color:#FFF8F0}
+  html[data-theme="light"] .ridge polygon{fill:#FAF2EA}
+  html[data-theme="light"] .ridge polyline{stroke-opacity:.85;stroke-width:1.2}
+  html[data-theme="light"] .plot.focusing .ridge polyline{stroke-opacity:.4}
+  html[data-theme="light"] .ridge.on polyline{stroke:#1E2230!important;stroke-width:2.2}
+  html[data-theme="light"] .ridge.on polygon{fill:#F6DDCF}
+  html[data-theme="light"] .cursor{background:linear-gradient(180deg,transparent,rgba(185,83,44,.7) 15%,rgba(185,83,44,.7) 85%,transparent)}
+  html[data-theme="light"] .card{background:rgba(255,248,240,.9);box-shadow:0 10px 30px rgba(30,34,48,.07)}
+  html[data-theme="light"] a.fun{color:#8A3F1E!important;
+    background:linear-gradient(#FFF8F0,#FFF8F0) padding-box,linear-gradient(110deg,#D9A66A,#C4552C,#7B4FCC,#2F5BEA,#D9A66A) border-box!important;background-size:100% 100%,300% 100%!important}
+  html[data-theme="light"] a.fun:hover,html[data-theme="light"] a.fun:focus-visible{color:#6E2F14!important;box-shadow:0 8px 22px rgba(185,83,44,.22)}
+  html[data-theme="light"] a.fun.on{background:linear-gradient(110deg,#F3D3B2,#E9A988) padding-box,linear-gradient(110deg,#D9A66A,#C4552C,#7B4FCC,#2F5BEA,#D9A66A) border-box!important;color:#3A1C0E!important}
 </style>
 </head>
 <body>
@@ -174,7 +204,7 @@
         <label class="yr"><span>Year</span><input id="c-range" type="range" min="0" max="32" value="32"></label>
         <div class="grid">
           <div><span>1990 to 2022</span><b id="c-span"></b></div>
-          <div><span>Average yearly change</span><b id="c-aapc" style="color:#8DB0E4"></b></div>
+          <div><span>Average yearly change</span><b id="c-aapc" style="color:var(--accent)"></b></div>
           <div><span>Women, 2022</span><b id="c-w"></b></div>
           <div><span>Men, 2022</span><b id="c-m"></b></div>
         </div>
@@ -201,7 +231,8 @@
 (function () {
   const A = window.ATLAS_DATA, S = (window.STUDIO_DATA || {}).adult || { c: {} };
   if (!A) return;
-  const REG = { 'African': ['Africa', '#D98A6E'], 'Americas': ['Americas', '#8DB0E4'], 'Eastern Mediterranean': ['Eastern Mediterranean', '#E8C9A0'], 'European': ['Europe', '#B08DE4'], 'South-East Asia': ['South-East Asia', '#5FC9C0'], 'Western Pacific': ['Western Pacific', '#C9A55F'], 'Other': ['Other territories', '#6E6D64'] };
+  // region colours live in CSS (--r-*), so light and dark mode switch them without a redraw
+  const REG = { 'African': ['Africa', 'var(--r-african)'], 'Americas': ['Americas', 'var(--r-americas)'], 'Eastern Mediterranean': ['Eastern Mediterranean', 'var(--r-emed)'], 'European': ['Europe', 'var(--r-europe)'], 'South-East Asia': ['South-East Asia', 'var(--r-sea)'], 'Western Pacific': ['Western Pacific', 'var(--r-wpac)'], 'Other': ['Other territories', 'var(--r-other)'] };
   const REG_ORDER = ['African', 'Americas', 'Eastern Mediterranean', 'European', 'South-East Asia', 'Western Pacific', 'Other'];
   const C = Object.values(A.countries).filter(v => v.adult && v.adult.series && v.adult.series.length === 33).map(v => {
     const sx = S.c[v.name];
@@ -254,8 +285,8 @@
         lab(REG[r][0], first * STEP + m.length * STEP / 2 + 66, REG[r][1]);
       });
     } else {
-      lab(sort === 'level' ? 'Highest in 2022' : 'Fastest rise', 70, '#9C9B91');
-      lab(sort === 'level' ? 'Lowest' : 'Slowest', (N - 1) * STEP + 70, '#9C9B91');
+      lab(sort === 'level' ? 'Highest in 2022' : 'Fastest rise', 70, 'var(--muted)');
+      lab(sort === 'level' ? 'Lowest' : 'Slowest', (N - 1) * STEP + 70, 'var(--muted)');
     }
   }
   function focusIdx() { return hov >= 0 ? hov : sel >= 0 ? sel : egypt; }
@@ -305,6 +336,10 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!reduce) C.forEach((c, i) => { c.el.style.setProperty('--d', (rank[i] * 4) + 'ms'); c.el.classList.add('intro'); c.el.addEventListener('animationend', () => c.el.classList.remove('intro'), { once: true }); });
   paint();
+  // keep the browser chrome colour in step with the page
+  const tc = document.querySelector('meta[name="theme-color"]');
+  const setTc = m => { if (tc) tc.setAttribute('content', m === 'light' ? '#F6ECE3' : '#08090B'); };
+  if (window.SiteTheme) { setTc(SiteTheme.get()); SiteTheme.onChange(setTc); }
 })();
 </script>
 <script src="assets/stars.js"></script>

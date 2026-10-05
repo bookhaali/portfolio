@@ -5,397 +5,420 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Research · Abdiwahab Ali</title>
 <meta name="description" content="Research in obesity, diet and cancer epidemiology: published papers with DOIs, studies in progress and field research in Hargeisa.">
-<meta name="theme-color" content="#0B0A09">
+<meta name="theme-color" content="#0D0D0C">
 <meta name="color-scheme" content="dark">
 <meta property="og:title" content="Research · Abdiwahab Ali">
 <meta property="og:description" content="Obesity, diet and cancer epidemiology. Published papers, studies in progress and field research.">
 <meta property="og:image" content="https://bookhaali.github.io/portfolio/assets/og.jpg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0D0C'/%3E%3Ccircle cx='32' cy='36' r='13' fill='none' stroke='%238DB0E4' stroke-width='3'/%3E%3Cline x1='32' y1='23' x2='32' y2='10' stroke='%23E8743B' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='42' y1='28' x2='49' y2='19' stroke='%238DB0E4' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='22' y1='28' x2='16' y2='21' stroke='%235FC9C0' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<script src="assets/theme.js"></script>
+<script>
+  // paint the right page colour on the first frame; the 3D room takes over the same values once it loads
+  (function () { var r = document.documentElement, dark = r.getAttribute('data-theme') !== 'light', bg = dark ? '#0D0D0C' : '#F6ECE3';
+    r.setAttribute('data-night', dark ? '1' : '0'); r.style.setProperty('--bg', bg); r.style.setProperty('--bgc', bg); r.style.background = bg; })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Caveat:wght@500;700&family=Special+Elite&display=swap" rel="stylesheet">
+<!-- fonts load without holding up the first paint, so arriving through the warp never waits on them -->
+<link id="fontcss" rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --text:#ECEBE4; --muted:#9C9B91; --faint:#6E6D64; --border:#2E2620; --accent:#8DB0E4; --accent-hi:#A6C4EE;
-    --warm:#D98A6E; --brass:#D4AE6A; --cream:#E8C9A0; --paper:#F2EEE4; --surface:rgba(30,24,19,.72);
-    --glass-bd:rgba(236,235,228,.1); --r-s:4px;
-    --font:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-    --serif:'Fraunces',Georgia,serif; --hand:'Caveat',cursive; --type:'Special Elite','Courier New',monospace;
-    --spring:cubic-bezier(.16,1,.3,1);
-  }
-  html{background:#0B0A09;scrollbar-width:thin;scrollbar-color:#3A2A1F transparent}
-  ::selection{background:rgba(232,201,160,.3);color:var(--text)}
-  body{min-height:100vh;color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;line-height:1.6;animation:pgfade .75s ease both;
-    background:radial-gradient(760px 560px at 30% 8%,rgba(232,190,130,.15),transparent 70%),linear-gradient(180deg,#13110F 0%,#0B0A09 100%) fixed}
-  @keyframes pgfade{from{opacity:0}to{opacity:1}}
-  a{color:var(--cream)}
-  button{font-family:inherit}
-  button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:var(--r-s)}
-
-  header.site{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
-    padding:1.1rem 1.9rem;background:rgba(11,10,9,.72);backdrop-filter:blur(14px) saturate(1.2);border-bottom:1px solid var(--glass-bd)}
-  .brand{text-decoration:none;color:var(--text)}
-  .brand .name{font-size:.92rem;font-weight:700}
-  .brand .role{font-size:.66rem;color:var(--muted);margin-top:.15rem}
-  nav.top{display:flex;gap:.6rem;align-items:center}
-  nav.top a{font-size:.66rem;letter-spacing:.04em;text-decoration:none;color:var(--muted);border:1px solid transparent;border-radius:var(--r-s);padding:8px 12px;transition:color .18s,border-color .18s}
-  nav.top a:hover,nav.top a.on{color:var(--text);border-color:#3A322A}
-  nav.top a.primary{background:var(--accent);color:#0D0D0C;font-weight:700;border:1px solid var(--accent)}
-  nav.top a.primary:hover{background:var(--accent-hi);border-color:var(--accent-hi)}
-
-  .dust{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-  .dust i{position:absolute;width:2px;height:2px;border-radius:50%;background:rgba(240,210,160,.7);animation:dust linear infinite}
-  @keyframes dust{0%{transform:translate(0,0);opacity:0}15%{opacity:.8}100%{transform:translate(40px,-260px);opacity:0}}
-
-  main{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:7.5rem 2rem 4rem;display:flex;flex-direction:column;gap:4rem}
-  .kicker{font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--warm)}
-  h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.3rem,5vw,3.6rem);line-height:1.04;letter-spacing:-.02em;margin-top:.8rem;max-width:860px}
-  .cap{font-size:.9rem;color:var(--muted);margin-top:.9rem;max-width:640px}
-  .cap b{color:var(--text);font-weight:600}
-
-  /* the desk */
-  .desk{position:relative;height:640px;border-radius:10px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.7);margin-top:2rem;
-    background:radial-gradient(520px 380px at 46% 40%,rgba(255,214,150,.22),transparent 70%),repeating-linear-gradient(92deg,rgba(0,0,0,.08) 0 3px,rgba(255,255,255,.015) 3px 9px,rgba(0,0,0,.05) 9px 14px),linear-gradient(180deg,#3A2718,#2A1C12)}
-  .desk-in{position:absolute;left:50%;top:0;width:1176px;height:640px;margin-left:-588px}
-  .zone{position:absolute;font-family:var(--hand);font-size:1.15rem;color:var(--cream);transform:rotate(-3deg);pointer-events:none}
-  .obj{position:absolute;padding:0;border:0;cursor:pointer;text-align:left;transform:rotate(var(--r));transition:transform .45s var(--spring),box-shadow .35s;animation:land .8s var(--spring) backwards;animation-delay:var(--d)}
-  .obj:hover,.obj:focus-visible{transform:rotate(0deg) translateY(-16px) scale(1.04);z-index:30}
-  @keyframes land{from{opacity:0;transform:translateY(-50px) rotate(0deg) scale(1.06)}to{opacity:1}}
-  .page{width:184px;height:258px;background:var(--paper);box-shadow:0 10px 20px rgba(0,0,0,.45);padding:0 14px 12px;display:flex;flex-direction:column;gap:6px;color:#1D1B17;overflow:hidden}
-  .page:hover{box-shadow:0 28px 34px rgba(0,0,0,.55)}
-  .page .mast{margin:0 -14px;padding:7px 14px;color:#fff;font-family:var(--serif);font-size:.74rem;display:flex;justify-content:space-between;align-items:baseline;gap:6px;white-space:nowrap}
-  .page .mast small{font-family:var(--font);font-size:.55rem;opacity:.85}
-  .page .ty{font-size:.46rem;letter-spacing:.14em;text-transform:uppercase;color:#8A6A4A}
-  .page .tt{font-family:var(--serif);font-size:.66rem;line-height:1.3;font-weight:600;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
-  .page .au{font-size:.48rem;color:#5A564D}
-  .page .ln{height:3px;border-radius:2px;background:#D4CEC0;flex:none}
-  .page .ft{margin-top:auto;font-size:.46rem;color:#8A847A}
-  .page .first{position:absolute;right:10px;bottom:20px;font-family:var(--hand);font-size:.95rem;color:#B8352C;transform:rotate(-8deg)}
-  .folder{width:172px;height:150px;background:linear-gradient(180deg,#D8B878,#C9A45E);border-radius:2px 6px 4px 4px;box-shadow:0 8px 16px rgba(0,0,0,.45);padding:18px 14px}
-  .folder::before{content:'';position:absolute;left:12px;top:-14px;width:84px;height:16px;background:#D8B878;border-radius:5px 5px 0 0}
-  .folder .tab{position:absolute;left:18px;top:-13px;font-family:var(--hand);font-size:.95rem;color:#3A2A12}
-  .folder .tt{font-family:var(--hand);font-size:1.2rem;line-height:1.1;color:#2B1F0E}
-  .folder .clip{position:absolute;right:16px;top:-8px;width:12px;height:34px;border:2px solid #9a9a9a;border-radius:6px}
-  .folder .st{position:absolute;left:14px;bottom:12px;font-family:var(--type);font-size:.6rem;letter-spacing:.12em;color:#6B4C1E}
-  .nb{width:120px;height:170px;background:#161616;border-radius:3px 8px 8px 3px;box-shadow:0 8px 16px rgba(0,0,0,.5);padding:16px 14px;color:#E8E2D0}
-  .nb::after{content:'';position:absolute;top:0;bottom:0;right:16px;width:6px;background:#0a0a0a;box-shadow:inset 1px 0 0 rgba(255,255,255,.08)}
-  .nb .tt{font-family:var(--hand);font-size:1.15rem;line-height:1.1}
-  .cup{position:absolute;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,#3A2416 0 44%,#E9E4DA 45% 56%,#CFC8BB 57% 100%);box-shadow:0 14px 26px rgba(0,0,0,.6);pointer-events:none}
-  .ring{position:absolute;width:130px;height:130px;border-radius:50%;border:6px solid rgba(110,70,40,.22);pointer-events:none}
-  .pen,.glasses{position:absolute;pointer-events:none;filter:drop-shadow(0 6px 8px rgba(0,0,0,.5))}
-  .desk-hint{font-size:.75rem;color:var(--faint);margin-top:1rem;text-align:center}
-
-  /* viewer */
-  .viewer{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:5rem 1.5rem 2rem}
-  .viewer[hidden]{display:none}
-  .viewer .bg{position:absolute;inset:0;background:rgba(6,5,4,.82);backdrop-filter:blur(6px);animation:pgfade .35s both}
-  .viewer .sheet{position:relative;display:flex;gap:2.6rem;align-items:center;max-width:920px;width:100%;flex-wrap:wrap;justify-content:center}
-  .viewer .info{flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:.6rem;animation:rise .6s .2s both}
-  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-  .viewer .st{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--brass)}
-  .viewer h3{font-family:var(--serif);font-weight:400;font-size:1.6rem;line-height:1.22}
-  .viewer .meta{font-size:.88rem;color:var(--muted)}
-  .viewer .ab{font-size:.95rem;line-height:1.7;color:#C9C6BC;max-width:480px}
-  .viewer .links{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.4rem;align-items:center}
-  .viewer .links a{font-size:.82rem;text-decoration:none;border-radius:99px;padding:10px 16px;border:1px solid #3A3934;color:var(--text)}
-  .viewer .links a.go{background:var(--cream);border-color:var(--cream);color:#1A130E;font-weight:700}
-  .viewer .close{align-self:flex-start;margin-top:.8rem;background:rgba(21,21,19,.9);color:var(--text);border:1px solid #3A3934;border-radius:99px;padding:11px 18px;font-size:.82rem;cursor:pointer}
-  .bigpage{transform:none!important;animation:flyin .7s var(--spring) both;width:min(360px,80vw);height:auto;aspect-ratio:210/297;cursor:default;padding:0 26px 22px;gap:11px}
-  .bigpage .mast{margin:0 -26px;padding:14px 26px;font-size:1.15rem}.bigpage .mast small{font-size:.75rem}.bigpage .ty{font-size:.62rem}.bigpage .tt{font-size:1.05rem;-webkit-line-clamp:8}.bigpage .au{font-size:.72rem}.bigpage .ln{height:5px}.bigpage .ft{font-size:.68rem}.bigpage .first{font-size:1.5rem;bottom:40px}
-  .big-obj{position:relative;animation:flyin .7s var(--spring) both}
-  @keyframes flyin{from{opacity:0;transform:translateY(60px) rotate(-8deg) scale(.6)}to{opacity:1}}
-
-  /* lists below the desk */
-  h2.sec{font-family:var(--serif);font-weight:400;font-size:1.9rem;letter-spacing:-.01em}
-  .sub{font-size:.85rem;color:var(--muted);margin-top:.4rem}
-  .cites{list-style:none;display:flex;flex-direction:column;gap:.7rem;margin-top:1.4rem}
-  .cite{display:flex;gap:1.2rem;align-items:flex-start;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.25rem;transition:border-color .25s,transform .35s var(--spring)}
-  .cite:hover{border-color:#5A4632;transform:translateX(4px)}
-  .cite .yr{flex:0 0 52px;font-family:var(--serif);font-size:1.15rem;color:var(--cream)}
-  .cite .body{flex:999 1 420px;min-width:0;display:flex;flex-direction:column;gap:.35rem}
-  .cite .t{font-family:var(--serif);font-size:1.05rem;line-height:1.4}
-  .cite .au{font-size:.8rem;color:var(--muted)}
-  .cite .au b{color:var(--text);font-weight:600}
-  .cite .j{font-size:.8rem;color:var(--muted)}
-  .cite .j i{color:var(--text)}
-  .cite .go{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.35rem}
-  .cite .go a{font-size:.75rem;text-decoration:none;padding:7px 12px;border-radius:99px;border:1px solid #4A3A2A;color:var(--cream);transition:background .2s,color .2s}
-  .cite .go a:hover{background:var(--cream);color:#1A130E}
-  .cite .go a.doi{font-family:var(--type);letter-spacing:.02em}
-  .cite .role{font-family:var(--hand);font-size:1.1rem;color:#E07A5F;margin-left:auto;white-space:nowrap}
-  .cite.field{background:transparent;border-style:dashed}
-  .studies{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.7rem;margin-top:1.4rem}
-  .study{background:linear-gradient(180deg,#D8B878,#C9A45E);color:#2B1F0E;border-radius:3px 8px 6px 6px;padding:1rem 1rem .9rem;box-shadow:0 8px 16px rgba(0,0,0,.4);display:flex;flex-direction:column;gap:.4rem;transition:transform .35s var(--spring)}
-  .study:hover{transform:translateY(-4px) rotate(-.6deg)}
-  .study .l{font-family:var(--hand);font-size:1rem;color:#5A3E1E}
-  .study .t{font-family:var(--hand);font-size:1.3rem;line-height:1.1}
-  .study .d{font-size:.75rem;line-height:1.5;color:#4A3818}
-  .study .s{font-family:var(--type);font-size:.62rem;letter-spacing:.12em;color:#6B4C1E;margin-top:auto}
-
-  .pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.4rem;display:flex;flex-direction:column;gap:.7rem}
-  .card .ey{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--warm)}
-  .card .nm{font-family:var(--serif);font-size:1.5rem}
-  .card p{font-size:.84rem;line-height:1.7;color:var(--muted)}
-  .card p b{color:var(--text);font-weight:500}
-  .tags{display:flex;flex-wrap:wrap;gap:.35rem}
-  .tags span{font-size:.72rem;border:1px solid #3A322A;border-radius:99px;padding:4px 10px}
-  .tg-h{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:.3rem}
-  .cta{text-align:center;border-top:1px solid var(--border);padding-top:3rem}
-  .cta .row{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:1.3rem}
-  .btn{font-size:.82rem;font-weight:700;text-decoration:none;background:var(--accent);color:#0D0D0C;border-radius:99px;padding:13px 22px;transition:background .18s}
-  .btn:hover{background:var(--accent-hi)}
-  .btn.ghost{background:none;color:var(--cream);border:1px solid #4A3A2A;font-weight:600}
-  .btn.ghost:hover{background:rgba(232,201,160,.08)}
-  footer{position:relative;z-index:1;border-top:1px solid var(--border);margin-top:2rem;padding:1.6rem;display:flex;justify-content:center;gap:1.4rem;flex-wrap:wrap}
-  footer a{font-size:.7rem;color:var(--faint);text-decoration:none}
-  footer a:hover{color:var(--text)}
-  /* Hobby: the one playful button in the menu */
-  a.fun{position:relative;display:inline-flex!important;align-items:center;gap:.45rem;padding:7px 15px 7px 11px!important;border-radius:99px!important;border:1.5px solid transparent!important;color:#F6DDB4!important;font-weight:700!important;letter-spacing:.04em;text-decoration:none;
-    background:linear-gradient(#1A130E,#1A130E) padding-box,linear-gradient(110deg,#E8C9A0,#D98A6E,#B08DE4,#8DB0E4,#E8C9A0) border-box!important;background-size:100% 100%,300% 100%!important;animation:funBorder 7s linear infinite;
-    box-shadow:0 0 0 0 rgba(217,138,110,.0);transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .35s,color .2s!important}
+  :root{--bg:#0D0D0C;--ink:#17181C;--muted:#6B6C72;--line:rgba(23,24,28,.1);--acc:#2F5BEA;--card:rgba(255,255,255,.82);--chip:rgba(255,255,255,.55);--f:'Instrument Sans',system-ui,sans-serif;--m:'JetBrains Mono',monospace}
+  html[data-night="1"]{--ink:#ECEBE4;--muted:#9C9B91;--line:rgba(236,235,228,.14);--acc:#8DB0E4;--card:rgba(20,22,28,.86);--chip:rgba(20,22,28,.6)}
+  /* names the shared scripts (theme toggle, mobile menu) read */
+  :root{--text:var(--ink);--border:var(--line);--accent:var(--acc)}
+  body,.panel,.chips button{transition:color .6s,background .6s,border-color .6s}
+  html,body{height:100%;overflow:hidden;background:var(--bg)}
+  /* the page's own background, seen around the room and through its window: by day the light page
+     with the stars as soft specks, by night the Journey's dark space with its nebulae */
+  .sky{position:fixed;inset:0;z-index:0;pointer-events:none}
+  .sky::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .9s ease;
+    background:radial-gradient(60vmax 45vmax at 12% 18%,rgba(46,92,158,.28),transparent 70%),radial-gradient(50vmax 40vmax at 88% 80%,rgba(122,74,56,.2),transparent 70%),radial-gradient(45vmax 35vmax at 80% 12%,rgba(74,62,122,.22),transparent 70%),#0D0D0C}
+  .sky canvas{position:absolute;inset:0}
+  html[data-night="1"] .sky::before{opacity:1}
+  body{color:var(--ink);font-family:var(--f);-webkit-font-smoothing:antialiased}
+  canvas{position:fixed;inset:0;display:block}
+  body>canvas{z-index:1}
+  header.site{position:fixed;left:32px;right:32px;top:24px;display:flex;justify-content:space-between;align-items:center;z-index:5;pointer-events:none}
+  header.site>*{pointer-events:auto}
+  .brand{text-decoration:none;color:var(--ink)}
+  .brand .name{font-size:16px;font-weight:600;letter-spacing:-.01em}
+  .brand .role{font-size:13px;color:var(--muted);margin-top:2px}
+  nav.top{display:flex;gap:6px;align-items:center}
+  nav.top a{font-size:14px;text-decoration:none;color:var(--muted);padding:8px 12px;border-radius:99px;transition:color .2s,background .2s}
+  nav.top a:hover,nav.top a.on{color:var(--ink)}
+  nav.top a.primary{background:var(--acc);color:#FFF8F0;font-weight:600;padding:8px 16px}
+  html[data-night="1"] nav.top a.primary{color:#0D0D0C}
+  nav.top .theme-toggle{margin:0 2px;background:var(--chip);backdrop-filter:blur(10px)}
+  /* Hobby: the one playful button in the menu, as on every page */
+  a.fun{position:relative;display:inline-flex!important;align-items:center;gap:7px;padding:7px 15px 7px 11px!important;border:1.5px solid transparent;color:#8A4B2E!important;font-weight:700;
+    background:linear-gradient(#FFF8F0,#FFF8F0) padding-box,linear-gradient(110deg,#E8C9A0,#D98A6E,#B08DE4,#8DB0E4,#E8C9A0) border-box;background-size:100% 100%,300% 100%;animation:funBorder 7s linear infinite;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .35s}
+  html[data-night="1"] a.fun{color:#F6DDB4!important;background:linear-gradient(#1A130E,#1A130E) padding-box,linear-gradient(110deg,#E8C9A0,#D98A6E,#B08DE4,#8DB0E4,#E8C9A0) border-box;background-size:100% 100%,300% 100%}
   a.fun svg{width:16px;height:16px;flex:none;overflow:visible;transition:transform .45s cubic-bezier(.34,1.56,.64,1)}
   a.fun .pg{transform-box:fill-box;transform-origin:0% 50%;transition:transform .5s cubic-bezier(.65,0,.35,1)}
-  a.fun::after{content:'\2726';position:absolute;top:-7px;right:-4px;font-size:10px;color:#F2C14E;opacity:0;transform:scale(.4) rotate(-30deg);transition:opacity .3s,transform .45s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
-  a.fun:hover,a.fun:focus-visible{transform:translateY(-2px) rotate(-2deg);box-shadow:0 8px 22px rgba(217,138,110,.35);color:#FFF1DA!important}
+  a.fun::after{content:'\2726';position:absolute;top:-7px;right:-4px;font-size:10px;color:#E0A23A;opacity:0;transform:scale(.4) rotate(-30deg);transition:opacity .3s,transform .45s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+  a.fun:hover,a.fun:focus-visible{transform:translateY(-2px) rotate(-2deg);box-shadow:0 8px 22px rgba(217,138,110,.35)}
   a.fun:hover svg,a.fun:focus-visible svg{transform:rotate(-10deg) scale(1.15)}
   a.fun:hover .pg,a.fun:focus-visible .pg{transform:scaleX(-1)}
   a.fun:hover::after,a.fun:focus-visible::after{opacity:1;transform:scale(1) rotate(0)}
-  a.fun.on{background:linear-gradient(110deg,#E8C9A0,#D98A6E) padding-box,linear-gradient(110deg,#E8C9A0,#D98A6E,#B08DE4,#8DB0E4,#E8C9A0) border-box!important;color:#1A130E!important}
   @keyframes funBorder{to{background-position:0 0,300% 0}}
-  @media(max-width:640px){header.site nav.top a.fun{display:flex!important;justify-content:center;margin:2px 0}}
-  @media(max-width:1240px){.desk-in{left:0;margin-left:0;transform-origin:0 0}}
-  @media(max-width:900px){
-    .desk{height:auto;padding:24px 16px}
-    .desk-in{position:static;width:auto;height:auto;margin:0;display:flex;flex-wrap:wrap;gap:22px;justify-content:center;transform:none!important}
-    .obj{position:relative;left:auto!important;top:auto!important}
-    .cup,.ring,.pen,.glasses,.zone{display:none}
-    .pair{grid-template-columns:minmax(0,1fr)}
-  }
-  @media(max-width:680px){
-    header.site{padding:.7rem .9rem}
-    .brand .role{display:none}
-    .brand .name{font-size:.82rem;white-space:nowrap}
-    main{padding:6rem 1rem 3rem;gap:3rem}
-    .cite .role{margin-left:0}
-  }
-  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+  .lede{position:fixed;left:32px;bottom:96px;z-index:5;max-width:380px}
+  .lede h1{font-size:clamp(28px,3.2vw,44px);font-weight:600;letter-spacing:-.035em;line-height:1.02}
+  .lede p{font-size:15px;line-height:1.55;color:var(--muted);margin-top:12px}
+  .chips{position:fixed;left:32px;bottom:30px;z-index:5;display:flex;gap:6px;flex-wrap:wrap}
+  .chips button{font-family:var(--f);font-size:13px;font-weight:500;border:1px solid var(--line);background:var(--chip);backdrop-filter:blur(10px);color:var(--ink);padding:9px 14px;border-radius:99px;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+  .chips button:hover{border-color:var(--ink)}
+  .chips button[aria-pressed="true"]{background:var(--ink);color:var(--bgc,#fff);border-color:var(--ink)}
+  html[data-night="1"] .chips button[aria-pressed="true"]{color:#111}
+  .lede{transition:opacity .4s ease}
+  html.pon .lede{opacity:0;pointer-events:none}
+  .hl{animation:hl 1.6s ease}@keyframes hl{0%,40%{background:rgba(47,91,234,.1)}100%{background:transparent}}
+  .tip{position:fixed;z-index:6;pointer-events:none;font-family:var(--m);font-size:12px;background:var(--ink);color:var(--bgc,#fff);padding:6px 9px;border-radius:6px;opacity:0;transform:translate(14px,-50%);transition:opacity .15s}
+  .panel{position:fixed;right:24px;top:84px;bottom:24px;width:min(420px,calc(100vw - 48px));z-index:7;background:var(--card);backdrop-filter:blur(18px) saturate(1.2);border:1px solid var(--line);border-radius:20px;box-shadow:0 30px 60px rgba(23,24,28,.12);padding:26px;overflow:auto;transform:translateX(calc(100% + 40px));transition:transform .6s cubic-bezier(.16,1,.3,1)}
+  .panel.on{transform:none}
+  .panel .k{font-family:var(--m);font-size:12px;color:var(--acc);letter-spacing:.02em}
+  .panel h2{font-size:26px;font-weight:600;letter-spacing:-.03em;line-height:1.1;margin:8px 0 6px}
+  .panel .sub{font-size:14px;color:var(--muted);line-height:1.5}
+  .panel .x{position:absolute;right:16px;top:16px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer;font-size:16px}
+  .item{padding:16px 0;border-top:1px solid var(--line)}
+  .item:first-of-type{margin-top:18px}
+  .item .t{font-size:15px;font-weight:500;line-height:1.4}
+  .item .m{font-size:13px;color:var(--muted);line-height:1.5;margin-top:5px}
+  .item .m b{color:var(--ink);font-weight:600}
+  .item a{display:inline-block;margin-top:8px;margin-right:12px;font-family:var(--m);font-size:12px;color:var(--acc);text-decoration:none}
+  .item a:hover{text-decoration:underline}
+  .tag{display:inline-block;font-family:var(--m);font-size:11px;padding:2px 7px;border-radius:5px;background:rgba(47,91,234,.1);color:var(--acc);margin-left:6px;vertical-align:2px}
+  .go{display:inline-block;margin-top:14px;font-size:14px;font-weight:600;text-decoration:none;color:var(--bgc,#fff);background:var(--ink);padding:11px 16px;border-radius:99px}
+  html.nogl,html.nogl body{overflow:auto;height:auto}.nogl .lede,.nogl .chips,.nogl #panel{display:none}
+  .list{position:relative;z-index:2;max-width:760px;margin:0 auto;padding:110px 24px 80px}
+  .list h1{font-size:44px;font-weight:600;letter-spacing:-.035em}.list h2{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-top:44px}
+  .list .sub{font-size:15px;color:var(--muted);margin-top:8px}
+  .loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--m);font-size:13px;color:var(--muted);z-index:1}
+  @media(max-width:760px){header.site{left:16px;right:16px;top:14px}.brand .role{display:none}.lede{bottom:auto;top:84px;left:20px;right:20px}.lede h1{font-size:28px}.chips{left:12px;right:12px;bottom:16px}.panel{top:auto;height:62vh;right:12px;left:12px;width:auto;transform:translateY(calc(100% + 40px))}}
 </style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
 <body>
-<div class="dust" aria-hidden="true"></div>
+<div class="loading" id="loading">setting up the lab…</div>
 <header class="site">
   <a class="brand" href="index.html"><div class="name">Abdiwahab Ali</div><div class="role">Health data analyst &middot; Doctoral researcher &middot; Taipei</div></a>
   <nav class="top">
     <a href="index.html" class="home">Journey</a>
-    <a href="research.html" class="on">Research</a>
+    <a href="research.html" class="on" aria-current="page">Research</a>
     <a href="reading.html" class="fun"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5C10 5 7 4.6 3.5 5v13c3.5-.4 6.5 0 8.5 1.5"/><path class="pg" d="M12 6.5c2-1.5 5-1.9 8.5-1.5v13c-3.5-.4-6.5 0-8.5 1.5z"/><path d="M12 6.5V19.5"/></svg><span>Hobby</span></a>
     <a href="index.html#hire" class="primary">Hire me</a>
   </nav>
 </header>
+<section class="lede"><h1>Step into<br>the lab.</h1><p>Obesity, diet and cancer epidemiology. Click anything in the room and the guide will show you around.</p></section>
+<div class="chips" id="chips" role="group" aria-label="Parts of the lab"></div>
 
-<main>
-  <section>
-    <div class="kicker">Research</div>
-    <h1>Obesity, diet and cancer epidemiology across 190+ countries</h1>
-    <p class="cap"><b>Published papers on the desk, work in progress in the folders.</b> Hover to lift a page, click to read it.</p>
-    <div class="desk" id="desk">
-      <div class="desk-in" id="desk-in">
-        <div class="ring" style="left:900px;top:430px" aria-hidden="true"></div>
-        <div class="cup" style="left:1010px;top:40px" aria-hidden="true"></div>
-        <svg class="pen" width="230" height="40" viewBox="0 0 230 40" style="left:600px;top:560px;transform:rotate(-12deg)" aria-hidden="true"><rect x="0" y="12" width="186" height="16" rx="3" fill="#1F3A66"/><rect x="146" y="12" width="12" height="16" fill="#C9A55F"/><path d="M186 12 L222 20 L186 28 Z" fill="#E9E4DA"/><path d="M214 18 L222 20 L214 22 Z" fill="#2B2B2B"/></svg>
-        <svg class="glasses" width="150" height="56" viewBox="0 0 150 56" style="left:1010px;top:250px;transform:rotate(18deg)" aria-hidden="true"><circle cx="34" cy="28" r="24" fill="rgba(200,220,240,.08)" stroke="#111" stroke-width="5"/><circle cx="116" cy="28" r="24" fill="rgba(200,220,240,.08)" stroke="#111" stroke-width="5"/><path d="M58 26 Q75 16 92 26" fill="none" stroke="#111" stroke-width="5"/></svg>
-        <span class="zone" style="left:44px;top:22px">published</span>
-        <span class="zone" style="left:56px;top:350px">in progress</span>
-        <span class="zone" style="left:870px;top:330px">fieldwork</span>
-      </div>
-    </div>
-    <p class="desk-hint">Printed first pages are published papers, folders are studies in progress, and the notebooks hold field research.</p>
-  </section>
+<div class="sky" aria-hidden="true"><canvas id="stars"></canvas></div>
+<div class="tip" id="tip"></div>
 
-  <section aria-labelledby="pubs">
-    <h2 class="sec" id="pubs">Publications</h2>
-    <p class="sub">Peer-reviewed papers, newest first. Every DOI links to the published version.</p>
-    <ol class="cites" id="cites"></ol>
-  </section>
+<aside class="panel" id="panel" aria-live="polite"><button class="x" id="px" aria-label="Close">×</button><div id="pc"></div></aside>
+<script src="data/atlas.js"></script>
+<script src="data/centroids.js"></script>
+<script src="data/research.js"></script>
+<script src="assets/lab/botavatars.js"></script>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { createGhost } from './assets/lab/ghostsprite.js';
 
-  <section aria-labelledby="prog">
-    <h2 class="sec" id="prog">In progress</h2>
-    <p class="sub">Figures stay private until each study is published.</p>
-    <div class="studies" id="studies"></div>
-  </section>
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// without WebGL the room cannot be drawn, so the same content is shown as a plain page
+function listView() {
+  const root = document.documentElement; root.classList.add('nogl');
+  const tone = m => { root.dataset.night = m === 'dark' ? '1' : '0'; const bg = m === 'dark' ? '#0D0D0C' : '#F6ECE3'; root.style.background = bg; root.style.setProperty('--bg', bg); root.style.setProperty('--bgc', bg); };
+  tone(window.SiteTheme ? SiteTheme.get() : 'dark'); if (window.SiteTheme) SiteTheme.onChange(tone);
+  const d = window.RS, doiA = x => '<a href="' + d.doiUrl(x) + '" target="_blank" rel="noopener">doi:' + x + '</a>';
+  const main = document.createElement('main'); main.className = 'list';
+  main.innerHTML = '<h1>Research</h1><p class="sub">Obesity, diet and cancer epidemiology.</p>'
+    + '<h2>Published papers</h2>' + d.papers.map(p => '<div class="item"><div class="t">' + p.title + (p.first ? '<span class="tag">first author</span>' : '') + '</div><div class="m">' + d.authorHTML(p) + '. <i>' + p.journal + '</i> ' + p.where + '.</div>' + doiA(p.doi) + (p.extra ? '<a href="' + p.extra.href + '">' + p.extra.label + ' →</a>' : '') + '</div>').join('')
+    + '<h2>Working on</h2><p class="sub">Results stay private until each study is published.</p>' + d.studies.map(x => '<div class="item"><div class="t">' + x.title + '<span class="tag">' + x.status.toLowerCase() + '</span></div><div class="m">' + x.about + ' ' + x.method + '.</div></div>').join('')
+    + '<h2>Fieldwork, Hargeisa</h2><p class="sub">Paid field researcher on two school oral-health studies. Not an author on either.</p>' + d.field.map(f => '<div class="item"><div class="t">' + f.title + '</div><div class="m"><i>' + f.journal + '</i> ' + f.where + '.</div>' + doiA(f.doi) + '</div>').join('')
+    + '<h2>Covexe and the stack</h2><p class="sub">' + d.covexe.about + '</p><div class="item"><a href="https://covexe.com" target="_blank" rel="noopener">covexe.com ↗</a><div class="m">' + d.methods.join(' · ') + '</div></div>';
+  document.body.appendChild(main);
+  const l = document.getElementById('loading'); if (l) l.remove();
+}
+const QS = new URLSearchParams(location.search);
+const FONT = 'Instrument Sans';
+// the labels drawn into the room need the real font: wait for its stylesheet, then the font files
+await new Promise(r => { const l = document.getElementById('fontcss'); if (!l || l.rel === 'stylesheet') return r(); l.addEventListener('load', () => setTimeout(r, 0)); l.addEventListener('error', r); setTimeout(r, 2500); });
+await Promise.all([document.fonts.load('600 40px "' + FONT + '"'), document.fonts.load('500 24px "JetBrains Mono"')]).catch(() => {});
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); }
+catch (e) { listView(); throw e; } renderer.setClearColor(0x000000, 0);
+renderer.setPixelRatio(Math.min(2, devicePixelRatio)); renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.prepend(renderer.domElement);
+const scene = new THREE.Scene(); const BG = new THREE.Color(0xECEAE6);
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), .04).texture;
 
-  <section aria-labelledby="field">
-    <h2 class="sec" id="field">Field research</h2>
-    <p class="sub">I was a paid field researcher on these two studies in Hargeisa. I am not an author on either.</p>
-    <ol class="cites" id="fieldcites"></ol>
-  </section>
+// camera: isometric, a little parallax with the pointer
+const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, .1, 100);
+const SHIFT = new THREE.Vector3(-.8, 0, .8), CAM0 = new THREE.Vector3(10, 8.6, 10).add(SHIFT), LOOK = new THREE.Vector3(0, 1.1, 0).add(SHIFT);
+function fit() { const a = innerWidth / innerHeight, h = innerWidth < 760 ? 11 : 8.2; cam.left = -h * a / 2; cam.right = h * a / 2; cam.top = h / 2; cam.bottom = -h / 2; cam.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); }
+fit(); addEventListener('resize', fit);
+cam.position.copy(CAM0); cam.lookAt(LOOK);
+// camera focus: glides and zooms to whatever was clicked, and frames it beside the panel
+const OFF0 = CAM0.clone().sub(LOOK), FOCUS = { look: LOOK.clone(), zoom: 1 }, VIEW = { look: LOOK.clone(), zoom: 1, off: 0 };
+const ZOOM = { papers: 2.1, progress: 2.0, data: 2.2, field: 2.3, tools: 2.6 };
+const AIM = { papers: [-1.9, 1.55, -3.0], progress: [-3.9, 2.0, .5], data: [1.9, 1.3, -2.6], field: [-.1, 2.45, -3.9], tools: [2.6, 1.0, .9] };
+const _r = new THREE.Vector3(), _u = new THREE.Vector3(), _t = new THREE.Vector3();
 
-  <section class="pair">
-    <div class="card">
-      <span class="ey">What I built</span>
-      <span class="nm">Covexe</span>
-      <p>One browser platform for the whole systematic review: <b>planning, searching, screening, risk-of-bias appraisal, AI-assisted data extraction and meta-analysis</b>. Every extracted value cites the sentence it came from, and the statistics run on your own machine.</p>
-      <a href="https://covexe.com" target="_blank" rel="noopener" style="font-size:.85rem;text-decoration:none">covexe.com &#8599;</a>
-    </div>
-    <div class="card">
-      <span class="ey">Methods and tools</span>
-      <span class="tg-h">Languages</span>
-      <div class="tags"><span>R</span><span>Python</span><span>Stata</span><span>SQL</span></div>
-      <span class="tg-h">Methods</span>
-      <div class="tags"><span>Joinpoint regression</span><span>AAPC trend analysis</span><span>Meta-analysis</span><span>Systematic and scoping review</span><span>Survival analysis</span><span>Sensitivity analysis</span></div>
-      <span class="tg-h">Data and visualisation</span>
-      <div class="tags"><span>ggplot2</span><span>Interactive figures</span><span>Choropleth maps</span><span>NCD-RisC &middot; GBD &middot; GDD &middot; WHO</span></div>
-    </div>
-  </section>
+// light
+const hemi = new THREE.HemisphereLight(0xffffff, 0xd8d2c8, .7); scene.add(hemi);
+let LAMP = null, BULB = null; const DOTS = [];
+const sun = new THREE.DirectionalLight(0xfff4e6, 2.2); sun.position.set(6, 10, 4); sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7 }); sun.shadow.radius = 4; sun.shadow.bias = -.0005; scene.add(sun);
 
-  <section class="cta">
-    <h2 class="sec">Work with me</h2>
-    <div class="row">
-      <a class="btn" href="index.html#hire">Start a project</a>
-      <a class="btn ghost" href="reading.html">My bookshelf</a>
-      <a class="btn ghost" href="assets/Abdiwahab_Ali_CV.pdf" download>Download CV (PDF)</a>
-    </div>
-  </section>
-</main>
+// materials: soft clay, one blue accent
+const clay = c => new THREE.MeshStandardMaterial({ color: c, roughness: .85 });
+const M = { floor: clay(0xE4E0D9), wall: clay(0xF2F0EC), wood: clay(0xC9B79C), dark: clay(0x2A2C33), acc: clay(0x2F5BEA), white: clay(0xFAFAF8), rug: clay(0xDCE3F1), metal: clay(0xBFC3CC) };
+const box = (w, h, d, m, r = .06) => { const o = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 4, r), m); o.castShadow = o.receiveShadow = true; return o; };
+const cyl = (rt, rb, h, m, n = 32) => { const o = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, n), m); o.castShadow = o.receiveShadow = true; return o; };
+const canvasTex = (w, h, draw) => { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; };
 
-<div class="viewer" id="viewer" hidden role="dialog" aria-modal="true" aria-labelledby="v-title">
-  <div class="bg" data-close></div>
-  <div class="sheet">
-    <div id="v-fig"></div>
-    <div class="info"><span class="st" id="v-st"></span><h3 id="v-title"></h3><span class="meta" id="v-meta"></span><p class="ab" id="v-ab"></p><div class="links" id="v-links"></div><button class="close" type="button" data-close>Put it down</button></div>
-  </div>
-</div>
+// room
+const room = new THREE.Group(); scene.add(room);
+const floor = box(8, .3, 8, M.floor, .12); floor.position.y = -.15; room.add(floor);
+const wallL = box(.3, 4.2, 8, M.wall, .1); wallL.position.set(-4.15, 1.95, 0); room.add(wallL);
+const wallB = box(8.3, 4.2, .3, M.wall, .1); wallB.position.set(-.15, 1.95, -4.15); room.add(wallB);
+const rug = cyl(1.7, 1.7, .03, M.rug, 64); rug.position.set(.4, .02, .6); rug.castShadow = false; room.add(rug);
 
-<footer>
-  <a href="https://www.linkedin.com/in/bookhaali/" target="_blank" rel="noopener">LinkedIn</a>
-  <a href="https://orcid.org/0009-0007-4069-2282" target="_blank" rel="noopener">ORCID</a>
-  <a href="mailto:bookhaali@gmail.com">bookhaali@gmail.com</a>
-</footer>
+const stations = {};
+function station(id, group, stand, look) { group.userData.station = id; group.traverse(o => { o.userData.station = id; }); room.add(group); stations[id] = { group, stand: new THREE.Vector3(...stand), look: new THREE.Vector3(...look) }; }
 
-<script>
-(function () {
-  /* Citations from Crossref. Bold marks my name in the author list. */
-  const PAPERS = [
-    { id: 'oby', year: 2026, journal: 'Obesity', color: '#1F4E6B', first: true, doi: '10.1002/oby.70290',
-      title: 'Trends of Obesity in Early Adulthood and Later Adulthood Across 196 Countries and Territories, 1990-2022',
-      authors: ['Ali AM', 'Giovannucci E', 'Liu JJ'], where: '2026;34(10):1979-1988',
-      about: 'Obesity prevalence in adults aged 20-49 and 50 and over in 196 countries and territories, 1990-2022, with segmented-regression trend estimates for each country.',
-      extra: { label: 'See every country', href: 'obesity-2026.html' } },
-    { id: 'puh', year: 2026, journal: 'Public Health', color: '#B4532A', first: true, doi: '10.1016/j.puhe.2026.106177',
-      title: 'Khat chewing and its association with oral/esophageal squamous cell carcinoma and oral white lesions: A systematic review and meta-analysis',
-      authors: ['Ali AM', 'Huang N', 'Liu JJ'], where: '2026;252:106177',
-      about: 'A systematic review and meta-analysis of khat chewing and the risk of oral and esophageal squamous cell carcinoma and oral white lesions.' },
-    { id: 'bct', year: 2026, journal: 'Blood Cell Therapy', color: '#6E2335', first: false, doi: '10.31547/bct-2026-007',
-      title: 'Return to Work After Hematopoietic Stem Cell Transplantation: A Longitudinal Analysis of Fatigue and Organ-Specific Chronic Graft-versus-Host Disease',
-      authors: ['Chiang MK', 'Hsiao YM', 'Ali AM', 'Tan TD', 'Chiou LW'], where: '2026;9(3):114-124',
-      about: 'A longitudinal analysis of how fatigue and chronic graft-versus-host disease in specific organs relate to return to work after stem cell transplantation.' },
-    { id: 'eca', year: 2025, journal: 'ecancermedicalscience', color: '#2F6F6A', first: true, doi: '10.3332/ecancer.2025.1880',
-      title: 'Relationship between Khat chewing and upper digestive tract cancers among male patients in Hargeisa: case control study',
-      authors: ['Ali AM', 'Mutuku MN', 'Hashi A', 'Muhumed OM'], where: '2025;19:1880',
-      about: 'A case-control study of khat chewing and cancers of the upper digestive tract among male patients in Hargeisa.' }
-  ];
-  const STUDIES = [
-    { label: 'Study 01', title: 'Child and adolescent obesity', about: 'Global trends in obesity among children and adolescents, 1990 to 2024, by sex and age band.', status: 'In preparation' },
-    { label: 'Study 02', title: 'Global diet quality', about: 'Multi-country analysis of dietary trends across age groups, 1990 to 2018.', status: 'In preparation' },
-    { label: 'Study 03', title: 'Obesity-related cancers', about: 'Cancer incidence and mortality trends in relation to obesity, by country and sex.', status: 'In preparation' },
-    { label: 'Study 04', title: 'Obesity in Africa', about: 'Trend analysis across the 54 countries of Africa and three age groups.', status: 'In preparation' },
-    { label: 'Study 06', title: 'Scoping review: NCDs in East Africa', about: 'Evidence mapping of non-communicable disease research in East Africa.', status: 'Under review' }
-  ];
-  const FIELD = [
-    { year: 2026, fieldwork: null, journal: 'International Dental Journal', where: '2026;76(5):109766', doi: '10.1016/j.identj.2026.109766',
-      title: 'Association of Higher Caries Levels With Reduced Oral Health-Related Quality of Life Among Somali School Children in Hargeisa' },
-    { year: 2024, fieldwork: 2022, journal: 'Community Dentistry and Oral Epidemiology', where: '2024;52(6):861-870', doi: '10.1111/cdoe.12990',
-      title: 'Dental caries status and related factors among 12-year-old Somali school children in Hargeisa' }
-  ];
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const el = (tag, cls, parent) => { const e = document.createElement(tag); if (cls) e.className = cls; if (parent) parent.appendChild(e); return e; };
-  const doiUrl = d => 'https://doi.org/' + d;
-  const authorLine = p => p.authors ? p.authors.map(a => a === 'Ali AM' ? '<b>Ali AM</b>' : a).join(', ') : 'Coauthor, third of five';
+const wrap = (x, text, maxW, lh, x0, y0) => { let line = '', y = y0; text.split(' ').forEach(wd => { const t = line ? line + ' ' + wd : wd; if (x.measureText(t).width > maxW && line) { x.fillText(line, x0, y); y += lh; line = wd; } else line = t; }); x.fillText(line, x0, y); return y; };
+const hex = n => '#' + n.toString(16).padStart(6, '0');
+const plane = (w, h, tex, basic) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), basic ? new THREE.MeshBasicMaterial({ map: tex }) : new THREE.MeshStandardMaterial({ map: tex, roughness: .85 })); m.receiveShadow = true; return m; };
+const JC = { oby: 0x3F7C9C, puh: 0xC0663F, bct: 0x8C3A50, eca: 0x3E8A82 };
+const JNAME = { oby: 'Obesity', puh: 'Public Health', bct: 'Blood Cell Therapy', eca: 'ecancermedicalscience' };
+// a journal cover: colour, masthead, year, the paper's short title
+const coverTex = pp => canvasTex(360, 500, (x, w, h) => { x.fillStyle = hex(JC[pp.id]); x.fillRect(0, 0, w, h); x.fillStyle = 'rgba(255,255,255,.14)'; x.fillRect(0, 118, w, 3); x.fillStyle = '#fff'; x.font = '700 ' + (JNAME[pp.id].length > 14 ? 30 : 46) + 'px ' + FONT + ', sans-serif'; x.fillText(JNAME[pp.id], 24, 70); x.font = '400 20px JetBrains Mono, monospace'; x.fillText(pp.year + ' · ' + pp.where.split('(')[0].replace(/^\d{4};/, 'vol ').replace(/:.*/, ''), 24, 104); x.font = '600 30px ' + FONT + ', sans-serif'; wrap(x, pp.short, 300, 38, 24, 190); x.font = '400 19px JetBrains Mono, monospace'; x.globalAlpha = .8; x.fillText(pp.first ? 'Ali AM et al.' : pp.authors[0] + ' et al.', 24, 466); });
+// 1. desk with the published papers
+{ const g = new THREE.Group(); g.position.set(-1.9, 0, -3.05);
+  const top = box(2.6, .12, 1.15, M.wood, .04); top.position.y = 1.02; g.add(top);
+  [[-1.2, -.48], [1.2, -.48], [-1.2, .48], [1.2, .48]].forEach(([x, z]) => { const l = cyl(.045, .045, 1, M.dark, 12); l.position.set(x, .5, z); g.add(l); });
+  // a jointed desk lamp: weighted base, two arms, a dome shade aimed at the papers, and a real spotlight
+  { const L = new THREE.Group(); g.add(L);
+    const limb = (a, b, r) => { const d = new THREE.Vector3().subVectors(b, a), m = cyl(r, r, d.length(), M.dark, 12); m.position.copy(a).addScaledVector(d, .5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); return m; };
+    const joint = (p, r = .032) => { const j = new THREE.Mesh(new THREE.SphereGeometry(r, 16, 12), M.dark); j.position.copy(p); j.castShadow = true; return j; };
+    const B0 = new THREE.Vector3(1.0, 1.1, -.32), J = new THREE.Vector3(1.1, 1.66, -.44), H = new THREE.Vector3(.72, 1.86, -.12), T = new THREE.Vector3(.1, 1.08, .12);
+    const base = cyl(.15, .17, .045, M.dark, 32); base.position.set(B0.x, 1.1, B0.z); L.add(base);
+    L.add(limb(B0, J, .018), limb(J, H, .018), joint(B0, .035), joint(J), joint(H, .028));
+    const dir = new THREE.Vector3().subVectors(T, H).normalize();
+    const head = new THREE.Group(); head.position.copy(H).addScaledVector(dir, .07); head.quaternion.setFromUnitVectors(new THREE.Vector3(0, -1, 0), dir); L.add(head);
+    const shade = new THREE.Mesh(new THREE.SphereGeometry(.15, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), M.acc); shade.material.side = THREE.DoubleSide; shade.castShadow = true; head.add(shade);
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(.15, .008, 8, 48), M.dark); rim.rotation.x = Math.PI / 2; head.add(rim);
+    BULB = new THREE.MeshStandardMaterial({ color: 0xFFF3DC, emissive: 0xFFD9A0, emissiveIntensity: 1.2 });
+    const bulb = new THREE.Mesh(new THREE.SphereGeometry(.055, 16, 12), BULB); bulb.position.y = .03; head.add(bulb);
+    const spot = new THREE.SpotLight(0xFFD9A8, 4, 4.5, .62, .85, 1.6); spot.position.copy(H).addScaledVector(dir, .1); spot.target.position.copy(T); spot.castShadow = true; spot.shadow.mapSize.set(512, 512); spot.shadow.bias = -.002;
+    L.add(spot, spot.target); LAMP = spot; }
 
-  const dust = document.querySelector('.dust');
-  if (!reduce) for (let i = 0; i < 14; i++) { const d = el('i', '', dust); d.style.left = (12 + (i * 5.3) % 40) + '%'; d.style.top = (30 + (i * 3.7) % 30) + '%'; d.style.animationDuration = (9 + i % 5 * 2) + 's'; d.style.animationDelay = (-i * 1.3) + 's'; }
+  // A: the journals in a stack, a loose page beside them
+  const A = new THREE.Group();
+  RS.papers.forEach((pp, i) => { const j = box(.62, .07, .86, clay(JC[pp.id]), .015); j.position.set(-.55 + (i % 2) * .05, 1.12 + i * .075, .05 + (i % 2 ? .04 : -.03)); j.rotation.y = (i % 2 ? .12 : -.08); j.userData.paper = pp.id; A.add(j);
+    const c = plane(.56, .8, coverTex(pp)); c.rotation.x = -Math.PI / 2; c.position.y = .036; c.userData.paper = pp.id; j.add(c); });
+  const paper = box(.5, .01, .68, M.white, .005); paper.position.set(.45, 1.09, .08); paper.rotation.y = -.2; A.add(paper);
 
-  // viewer
-  const v = document.getElementById('viewer'); let opener = null;
-  function open(fig, st, title, meta, about, links, from) {
-    opener = from;
-    const f = document.getElementById('v-fig'); f.innerHTML = ''; f.appendChild(fig);
-    document.getElementById('v-st').textContent = st;
-    document.getElementById('v-title').textContent = title;
-    document.getElementById('v-meta').innerHTML = meta;
-    document.getElementById('v-ab').textContent = about;
-    const L = document.getElementById('v-links'); L.innerHTML = '';
-    links.forEach(l => { if (l.text) { const s = el('span', '', L); s.textContent = l.text; s.style.cssText = 'font-size:.8rem;color:#6E6D64'; return; } const a = el('a', l.go ? 'go' : '', L); a.href = l.href; a.textContent = l.label; if (/^https?:/.test(l.href)) { a.target = '_blank'; a.rel = 'noopener'; } });
-    v.hidden = false; document.body.style.overflow = 'hidden'; v.querySelector('.close').focus();
-  }
-  function close() { if (v.hidden) return; v.hidden = true; document.body.style.overflow = ''; if (opener) { opener.focus({ preventScroll: true }); opener = null; } }
-  v.addEventListener('click', e => { if (e.target.closest('[data-close]')) close(); });
-  addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  g.add(A);
+  station('papers', g, [-3.3, 0, -1.8], [-1.9, 1.2, -3.0]); }
 
-  // the desk
-  const desk = document.getElementById('desk-in');
-  function page(p, big) {
-    const n = el(big ? 'div' : 'button', 'page' + (big ? ' bigpage' : ' obj'));
-    if (!big) n.type = 'button';
-    const m = el('div', 'mast', n); m.style.background = p.color; m.innerHTML = '<span>' + p.journal + '</span><small>' + p.year + '</small>';
-    el('span', 'ty', n).textContent = 'Original article';
-    el('span', 'tt', n).textContent = p.title;
-    el('span', 'au', n).innerHTML = authorLine(p);
-    for (let i = 0; i < (big ? 7 : 5); i++) { const l = el('span', 'ln', n); l.style.width = (68 + ((i * 37) % 30)) + '%'; }
-    el('span', 'ft', n).textContent = 'doi:' + p.doi;
-    if (p.first) el('span', 'first', n).textContent = 'first author!';
-    return n;
-  }
-  let d = 0;
-  const place = (node, x, y, r) => { node.style.left = x + 'px'; node.style.top = y + 'px'; node.style.setProperty('--r', r + 'deg'); node.style.setProperty('--d', (d++ * 90) + 'ms'); desk.appendChild(node); };
-  const paperLinks = p => [...(p.extra ? [{ go: true, href: p.extra.href, label: p.extra.label }] : []), { go: !p.extra, href: doiUrl(p.doi), label: 'Read the paper ↗' }, { href: doiUrl(p.doi), label: 'doi:' + p.doi }];
-  PAPERS.forEach((p, i) => {
-    const n = page(p, false); n.setAttribute('aria-label', p.title + ', ' + p.journal + ' ' + p.year);
-    n.addEventListener('click', () => open(page(p, true), 'Published · ' + p.year, p.title, '<i>' + p.journal + '</i> ' + p.where + ' · ' + (p.first ? 'first author' : 'coauthor'), p.about, paperLinks(p), n));
-    place(n, 40 + i * 196, 50 + (i % 2) * 14, [-5, 3, -2, 6][i]);
+// 2. whiteboard of studies in progress
+{ const g = new THREE.Group(); g.position.set(-3.96, 2.15, .5);
+  const board = box(.06, 1.55, 2.5, M.white, .03); g.add(board);
+  const frame = box(.04, 1.65, 2.6, M.dark, .03); frame.position.x = -.02; g.add(frame);
+  const notes = [0xF6D365, 0xF9B4AB, 0xA8D5E2, 0xF6D365, 0xC8E6A0];
+  RS.studies.forEach((s, i) => {
+    const tex = canvasTex(256, 256, (x, w, h) => { x.fillStyle = '#' + notes[i].toString(16).padStart(6, '0'); x.fillRect(0, 0, w, h); x.fillStyle = '#2A2C33'; x.font = '600 34px ' + FONT + ', sans-serif'; x.fillText(s.label.replace('Study ', '#'), 20, 54); x.font = '500 26px ' + FONT + ', sans-serif'; const words = s.title.split(' '); let line = '', y = 104; words.forEach(wd => { if (x.measureText(line + wd).width > 210) { x.fillText(line, 20, y); line = ''; y += 32; } line += wd + ' '; }); x.fillText(line, 20, y); x.font = '400 20px JetBrains Mono, monospace'; x.fillText(s.status.toLowerCase(), 20, 232); });
+    const n = new THREE.Mesh(new THREE.PlaneGeometry(.52, .52), new THREE.MeshStandardMaterial({ map: tex, roughness: .9 }));
+    n.rotation.y = Math.PI / 2; n.position.set(.04, (i < 3 ? .32 : -.33), -.82 + (i % 3) * .62 + (i >= 3 ? .3 : 0)); n.rotation.x = (i % 2 ? .04 : -.05); g.add(n);
   });
-  STUDIES.forEach((s, i) => {
-    const f = el('button', 'folder obj'); f.type = 'button'; f.setAttribute('aria-label', s.label + ': ' + s.title);
-    f.innerHTML = '<span class="tab">' + s.label + '</span><span class="clip"></span><span class="tt">' + s.title + '</span><span class="st">' + s.status.toUpperCase() + '</span>';
-    f.addEventListener('click', () => { const b = f.cloneNode(true); b.className = 'folder big-obj'; b.style.cssText = 'transform:scale(1.6);margin:60px'; open(b, s.label + ' · ' + s.status, s.title, 'Study in progress', s.about, [{ text: 'Figures stay private until publication.' }], f); });
-    place(f, 36 + i * 158, 386 + (i % 2) * 26, [-4, 3, -2, 5, -3][i]);
-  });
-  FIELD.forEach((s, i) => {
-    const nb = el('button', 'nb obj'); nb.type = 'button'; nb.setAttribute('aria-label', 'Field research: ' + s.title);
-    nb.innerHTML = '<span class="tt">Field notes<br>Hargeisa' + (s.fieldwork ? ' ' + s.fieldwork : '') + '</span>';
-    nb.addEventListener('click', () => { const b = nb.cloneNode(true); b.className = 'nb big-obj'; b.style.cssText = 'transform:scale(1.7);margin:80px'; open(b, 'Field research' + (s.fieldwork ? ' · ' + s.fieldwork : ''), s.title, '<i>' + s.journal + '</i> ' + s.where + ' · paid field researcher, not an author', 'I collected data in Hargeisa for this study as a paid field researcher.', [{ href: doiUrl(s.doi), label: 'See the study ↗', go: true }, { href: doiUrl(s.doi), label: 'doi:' + s.doi }], nb); });
-    place(nb, 880 + i * 130, 370 + i * 18, [-6, 4][i]);
-  });
-  // keep the whole desk in view on mid-size screens
-  function fitDesk() {
-    const box = document.getElementById('desk'), inner = desk;
-    if (innerWidth <= 900) { inner.style.transform = ''; box.style.height = ''; return; }
-    const k = Math.min(1, box.clientWidth / 1176);
-    inner.style.transform = k < 1 ? 'scale(' + k + ')' : '';
-    box.style.height = Math.round(640 * k) + 'px';
-  }
-  fitDesk(); addEventListener('resize', fitDesk);
+  station('progress', g, [-3.0, 0, 2.3], [-3.9, 2.0, .5]); }
 
-  // citation lists
-  const cites = document.getElementById('cites');
-  PAPERS.forEach(p => {
-    const li = el('li', 'cite', cites);
-    li.innerHTML = '<span class="yr">' + p.year + '</span><div class="body"><span class="t">' + p.title + '</span><span class="au">' + authorLine(p) + '</span><span class="j"><i>' + p.journal + '</i>. ' + p.where + '.</span><div class="go">' +
-      (p.extra ? '<a href="' + p.extra.href + '">' + p.extra.label + '</a>' : '') + '<a class="doi" href="' + doiUrl(p.doi) + '" target="_blank" rel="noopener">doi:' + p.doi + ' &#8599;</a></div></div>' +
-      (p.first ? '<span class="role">first author</span>' : '<span class="role" style="color:#9C9B91">coauthor</span>');
-  });
-  const studies = document.getElementById('studies');
-  STUDIES.forEach(s => { const c = el('div', 'study', studies); c.innerHTML = '<span class="l">' + s.label + '</span><span class="t">' + s.title + '</span><span class="d">' + s.about + '</span><span class="s">' + s.status.toUpperCase() + '</span>'; });
-  const fc = document.getElementById('fieldcites');
-  FIELD.forEach(s => {
-    const li = el('li', 'cite field', fc);
-    li.innerHTML = '<span class="yr">' + s.year + '</span><div class="body"><span class="t">' + s.title + '</span><span class="j"><i>' + s.journal + '</i>. ' + s.where + '.' + (s.fieldwork ? ' Fieldwork in ' + s.fieldwork + '.' : '') + '</span><div class="go"><a class="doi" href="' + doiUrl(s.doi) + '" target="_blank" rel="noopener">doi:' + s.doi + ' &#8599;</a></div></div><span class="role" style="color:#9C9B91">field researcher</span>';
-  });
-})();
+// 3. data globe: one dot per country, coloured by adult obesity in 2022
+{ const g = new THREE.Group(); g.position.set(1.9, 0, -2.6);
+  const ped = cyl(.35, .45, .9, M.dark, 32); ped.position.y = .45; g.add(ped);
+  const globe = new THREE.Group(); globe.position.y = 1.55; g.add(globe);
+  M.globe = new THREE.MeshPhysicalMaterial({ color: 0xF4F3F0, roughness: .4, clearcoat: .6 }); const sph = new THREE.Mesh(new THREE.SphereGeometry(.55, 48, 32), M.globe); sph.castShadow = true; globe.add(sph);
+  const ringM = new THREE.Mesh(new THREE.TorusGeometry(.66, .015, 8, 80), M.dark); ringM.rotation.x = Math.PI / 2 + .4; globe.add(ringM);
+  const dots = new THREE.Group(); globe.add(dots);
+  const C = ATLAS_DATA.countries, iso = Object.keys(C).filter(k => C[k].adult && ISO_CENTROIDS[k]);
+  const vals = iso.map(k => C[k].adult.series[32]).sort((a, b) => a - b);
+  const q = v => vals.findIndex(x => x >= v) / vals.length;
+  const ramp = [new THREE.Color(0xC9D3E8), new THREE.Color(0x7C97E0), new THREE.Color(0x2F5BEA), new THREE.Color(0xE0574F)];
+  const dg = new THREE.SphereGeometry(.022, 8, 6);
+  iso.forEach(k => { const [lon, lat] = ISO_CENTROIDS[k], ph = (90 - lat) * Math.PI / 180, th = (lon + 180) * Math.PI / 180; const v = q(C[k].adult.series[32]); const c = ramp[Math.min(3, Math.floor(v * 4))]; const d = new THREE.Mesh(dg, new THREE.MeshStandardMaterial({ color: c, roughness: .5, emissive: c, emissiveIntensity: 0 })); DOTS.push(d.material); d.position.setFromSphericalCoords(.56, ph, th); dots.add(d); });
+  globe.userData.spin = true; g.userData.globe = globe;
+  station('data', g, [1.1, 0, -1.4], [1.9, 1.5, -2.6]); }
+
+// 4. fieldwork on the back wall: the two school oral-health studies in Hargeisa
+const FW = [
+  { f: RS.field[1], short: 'Dental caries at age 12', note: 'School survey · 2022', col: 0x5A6FB0 },
+  { f: RS.field[0], short: 'Caries and quality of life', note: 'School children', col: 0x2E7D8C }
+];
+const hargeisa = (x, w, h, title) => { const gr = x.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#F3D9B1'); gr.addColorStop(1, '#E6A86E'); x.fillStyle = gr; x.fillRect(0, 0, w, h); x.fillStyle = '#F7E9CF'; x.beginPath(); x.arc(w * .73, h * .36, h * .14, 0, 7); x.fill(); x.fillStyle = '#B9774A'; x.beginPath(); x.moveTo(0, h * .72); x.quadraticCurveTo(w * .31, h * .5, w * .56, h * .69); x.quadraticCurveTo(w * .78, h * .57, w, h * .67); x.lineTo(w, h); x.lineTo(0, h); x.fill();
+  // a row of low houses and a school with a flag
+  x.fillStyle = '#8E5634'; [[.08, .1], [.2, .08], [.62, .09], [.76, .11]].forEach(([px, hh]) => x.fillRect(w * px, h * (.78 - hh), w * .09, h * hh + h * .02)); x.fillRect(w * .34, h * .62, w * .2, h * .18); x.fillRect(w * .44, h * .44, 3, h * .18); x.fillStyle = '#3E8A82'; x.fillRect(w * .44 + 3, h * .44, w * .06, h * .05);
+  if (title) { x.fillStyle = '#2A2C33'; x.font = '700 ' + Math.round(h * .17) + 'px ' + FONT + ', sans-serif'; x.fillText('Hargeisa', w * .055, h * .22); x.font = '400 ' + Math.round(h * .062) + 'px JetBrains Mono, monospace'; x.fillText('9°33′N 44°04′E · fieldwork', w * .06, h * .32); } };
+{ const g = new THREE.Group(); g.position.set(-.1, 2.5, -3.98);
+
+  // C: a wall shelf with the field kit: clipboard and survey form, a tooth model, a binder per study, a postcard
+  const C = new THREE.Group();
+  const sh = box(2.0, .06, .36, M.wood, .02); sh.position.set(0, -.35, .19); C.add(sh);
+  [-.75, .75].forEach(x => { const br = box(.05, .2, .3, M.dark, .01); br.position.set(x, -.46, .17); C.add(br); });
+  const clip = box(.5, .68, .025, M.wood, .01); clip.position.set(-.62, .02, .2); clip.rotation.x = -.16; C.add(clip);
+  const form = plane(.44, .58, canvasTex(352, 464, (x, w, h) => { x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, w, h); x.fillStyle = '#1E2230'; x.font = '700 26px ' + FONT + ', sans-serif'; x.fillText('Oral health survey', 20, 44); x.font = '400 16px JetBrains Mono, monospace'; x.fillStyle = '#6B6C72'; x.fillText('Hargeisa · school visit', 20, 72); x.strokeStyle = '#C9CCD3'; x.lineWidth = 2; ['School', 'Age', 'Sex', 'Teeth examined', 'Caries', 'Quality of life'].forEach((l, i) => { const y = 120 + i * 52; x.fillStyle = '#2A2C33'; x.font = '500 19px ' + FONT + ', sans-serif'; x.fillText(l, 20, y); x.beginPath(); x.moveTo(170, y + 4); x.lineTo(330, y + 4); x.stroke(); x.strokeRect(300, y - 20, 22, 22); if (i < 4) { x.strokeStyle = '#2F5BEA'; x.beginPath(); x.moveTo(304, y - 9); x.lineTo(310, y - 2); x.lineTo(320, y - 16); x.stroke(); x.strokeStyle = '#C9CCD3'; } }); }));
+  form.position.set(0, -.02, .016); clip.add(form);
+  const clamp = box(.2, .06, .04, M.metal, .01); clamp.position.set(0, .32, .02); clip.add(clamp);
+  // tooth model: crown and two roots
+  const tooth = new THREE.Group(); tooth.position.set(.05, -.06, .2);
+  const crown = new THREE.Mesh(new THREE.SphereGeometry(.13, 24, 16), M.white); crown.scale.set(1, .75, .9); crown.position.y = .16; crown.castShadow = true; tooth.add(crown);
+  [-1, 1].forEach(sd => { const rt = new THREE.Mesh(new THREE.ConeGeometry(.055, .2, 16), M.white); rt.rotation.z = Math.PI + sd * .2; rt.position.set(sd * .055, .02, 0); rt.castShadow = true; tooth.add(rt); });
+  const stand = cyl(.12, .14, .04, M.dark, 24); stand.position.y = -.08; tooth.add(stand); C.add(tooth);
+  FW.forEach((st, i) => { const b = box(.12, .55, .3, clay(st.col), .015); b.position.set(.38 + i * .14, -.04, .2); C.add(b);
+    const lab = plane(.1, .5, canvasTex(60, 300, (x, w, h) => { x.fillStyle = '#FFFDF8'; x.fillRect(4, 10, w - 8, h - 20); x.save(); x.translate(w / 2 + 7, h - 22); x.rotate(-Math.PI / 2); x.fillStyle = '#1E2230'; x.font = '600 20px ' + FONT + ', sans-serif'; x.fillText((i ? 'IDJ ' : 'CDOE ') + st.f.year, 0, 0); x.restore(); })); lab.position.z = .151; b.add(lab); });
+  const pc2 = plane(.6, .4, canvasTex(480, 320, (x, w, h) => hargeisa(x, w, h, true))); pc2.position.set(.62, .32, .012); pc2.rotation.z = -.04; C.add(pc2);
+  const pcb = box(.66, .46, .01, M.white, .004); pcb.position.set(.62, .32, .004); pcb.rotation.z = -.04; C.add(pcb);
+
+  g.add(C);
+  station('field', g, [.5, 0, -2.85], [-.1, 2.5, -3.9]); }
+
+// a window on the back wall: an opening onto the starfield behind the page
+// the pane writes nothing (alpha 0), so the page's own background and moving stars show through it
+const holeMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, depthWrite: false, blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.ZeroFactor, blendDst: THREE.ZeroFactor, blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.ZeroFactor });
+let pane = null;
+{ const g = new THREE.Group(); g.position.set(2.45, 2.55, -3.98);
+  pane = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 1.15), holeMat); pane.renderOrder = 2; g.add(pane);
+  const fr = box(1.66, 1.3, .06, M.white, .02); fr.position.z = -.04; g.add(fr);
+  const m1 = box(.05, 1.15, .05, M.white, .01); m1.position.z = .02; g.add(m1); const m2 = box(1.5, .05, .05, M.white, .01); m2.position.z = .02; g.add(m2);
+  const sill = box(1.8, .06, .22, M.white, .02); sill.position.set(0, -.66, .08); g.add(sill);
+  room.add(g); }
+
+// 5. side table with a laptop running Covexe
+{ const g = new THREE.Group(); g.position.set(2.7, 0, .9);
+  const t = cyl(.6, .6, .07, M.wood, 48); t.position.y = .78; g.add(t); const leg = cyl(.06, .08, .78, M.dark, 16); leg.position.y = .39; g.add(leg);
+  const base = box(.7, .035, .48, M.metal, .02); base.position.set(0, .83, .05); g.add(base);
+  const tex = canvasTex(640, 420, (x, w, h) => { x.fillStyle = '#17181C'; x.fillRect(0, 0, w, h); x.fillStyle = '#F2F0EC'; x.font = '700 72px ' + FONT + ', sans-serif'; x.fillText('Covexe', 40, 130); x.font = '400 26px ' + FONT + ', sans-serif'; x.fillStyle = '#A7AAB3'; x.fillText('Systematic reviews, end to end', 42, 180); ['Search', 'Screen', 'Extract', 'Analyse'].forEach((s, i) => { x.fillStyle = i === 3 ? '#2F5BEA' : '#2A2C33'; x.fillRect(42 + i * 140, 250, 124, 60); x.fillStyle = '#F2F0EC'; x.font = '500 22px ' + FONT + ', sans-serif'; x.fillText(s, 56 + i * 140, 288); }); });
+  const scr = box(.7, .46, .025, M.metal, .02); scr.position.set(0, 1.07, -.18); scr.rotation.x = -.2; g.add(scr);
+  const disp = new THREE.Mesh(new THREE.PlaneGeometry(.64, .4), new THREE.MeshBasicMaterial({ map: tex })); disp.position.set(0, 1.07, -.165); disp.rotation.x = -.2; g.add(disp);
+  station('tools', g, [1.8, 0, 1.6], [2.7, 1.0, .9]); }
+
+// the guide
+const ghost = createGhost(THREE, { camera: cam, canvas: renderer.domElement }); ghost.group.position.set(.4, 0, .9); ghost.group.rotation.y = Math.PI / 4; ghost.group.scale.setScalar(1.45); scene.add(ghost.group);
+let goal = ghost.group.position.clone(), from = goal.clone(), travel = 1;
+
+// the papers panel
+const extra = p => p.extra ? '<a href="' + p.extra.href + '">' + p.extra.label + ' →</a>' : '';
+const papersList = () => P.map(p => '<div class="item" data-p="' + p.id + '"><div class="t">' + p.title + (p.first ? '<span class="tag">first author</span>' : '') + '</div><div class="m">' + RS.authorHTML(p) + '. <i>' + p.journal + '</i> ' + p.where + '.</div>' + doi(p.doi) + extra(p) + '</div>').join('');
+
+// panel content
+const P = RS.papers, doi = d => '<a href="' + RS.doiUrl(d) + '" target="_blank" rel="noopener">doi:' + d + '</a>';
+const CONTENT = {
+  papers: { k: 'desk · published', h: 'Published papers', sub: 'Peer-reviewed, newest first. First author on three.', body: papersList },
+  progress: { k: 'whiteboard · in progress', h: 'Working on', sub: 'Results stay private until each study is published.', body: () => RS.studies.map(s => '<div class="item"><div class="t">' + s.title + '<span class="tag">' + s.status.toLowerCase() + '</span></div><div class="m">' + s.about + ' ' + s.method + '.</div></div>').join('') },
+  data: { k: 'globe · data', h: 'Every country, one dot', sub: 'Adult obesity in 2022 for 200 countries and territories, from the data behind the Obesity paper. Red is highest.', body: () => '<a class="go" href="obesity-2026.html">Explore every country →</a>' },
+  field: { k: 'postcard · fieldwork', h: 'Hargeisa', sub: 'Paid field researcher on two school oral-health studies. Not an author on either.', body: () => RS.field.map(f => '<div class="item"><div class="t">' + f.title + '</div><div class="m"><i>' + f.journal + '</i> ' + f.where + '.</div>' + doi(f.doi) + '</div>').join('') },
+  tools: { k: 'laptop · tools', h: 'Covexe and the stack', sub: RS.covexe.about, body: () => '<a class="go" href="https://covexe.com" target="_blank" rel="noopener">covexe.com ↗</a><div class="item"><div class="m">' + RS.methods.join(' · ') + '</div></div>' }
+};
+const NAMES = { papers: 'Published papers', progress: 'In progress', data: 'Data', field: 'Fieldwork', tools: 'Tools' };
+const panel = document.getElementById('panel'), pc = document.getElementById('pc'), chips = document.getElementById('chips');
+Object.keys(NAMES).forEach(id => { const b = document.createElement('button'); b.textContent = NAMES[id]; b.dataset.id = id; b.setAttribute('aria-pressed', 'false'); b.onclick = () => go(id); chips.appendChild(b); });
+function go(id, pid) {
+  FOCUS.look.set(...AIM[id]); FOCUS.zoom = ZOOM[id] || 2;
+  const s = stations[id]; from = ghost.group.position.clone(); goal = s.stand.clone(); travel = 0; ghost.lookAt(s.look);
+  const c = CONTENT[id]; pc.innerHTML = '<span class="k">' + c.k + '</span><h2>' + c.h + '</h2><p class="sub">' + c.sub + '</p>' + c.body();
+  panel.classList.add('on');
+  if (id === 'papers' && pid) { const el = pc.querySelector('[data-p="' + pid + '"]'); if (el) { el.classList.add('hl'); el.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' }); } } chips.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === id ? 'true' : 'false'));
+  setTimeout(() => ghost.wave(), 700);
+}
+document.getElementById('px').onclick = () => { panel.classList.remove('on'); FOCUS.look.copy(LOOK); FOCUS.zoom = 1; ghost.lookAt(null); chips.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', 'false')); };
+addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('px').click(); });
+new MutationObserver(() => document.documentElement.classList.toggle('pon', panel.classList.contains('on'))).observe(panel, { attributes: true, attributeFilter: ['class'] });
+
+// pointer: hover highlights, click goes to a station or pokes the guide
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), tip = document.getElementById('tip');
+let hovered = null, hoverPaper = null, px = 0, py = 0;
+renderer.domElement.addEventListener('pointermove', e => {
+  ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight * 2 - 1)); px = ndc.x; py = ndc.y;
+  ray.setFromCamera(ndc, cam);
+  const hit = ray.intersectObjects([ghost.group, ...Object.values(stations).map(s => s.group)], true)[0];
+  hoverPaper = hit && hit.object.userData.paper || null;
+  const id = hit ? (hit.object.userData.station || (ghost.group.getObjectById(hit.object.id) ? 'ghost' : null)) : null;
+  if (id !== hovered) { if (hovered && stations[hovered]) stations[hovered].group.scale.setScalar(1); hovered = id; if (id && stations[id]) stations[id].group.scale.setScalar(1.035); }
+  renderer.domElement.style.cursor = id ? 'pointer' : '';
+  if (id && id !== 'ghost') { tip.textContent = hoverPaper ? JNAME[hoverPaper] + ' · ' + P.find(p => p.id === hoverPaper).year : NAMES[id]; tip.style.left = e.clientX + 'px'; tip.style.top = e.clientY + 'px'; tip.style.opacity = 1; } else tip.style.opacity = 0;
+});
+renderer.domElement.addEventListener('click', () => { if (hovered === 'ghost') ghost.poke(); else if (hovered) go(hovered, hoverPaper); });
+
+// styles and day/night
+const PAL = {
+  clay: { day: { bg: 0xECEAE6, floor: 0xE4E0D9, wall: 0xF2F0EC, wood: 0xC9B79C, dark: 0x2A2C33, acc: 0x2F5BEA, white: 0xFAFAF8, rug: 0xDCE3F1, metal: 0xBFC3CC, globe: 0xF4F3F0 },
+          night: { bg: 0x0D0F14, floor: 0x24262D, wall: 0x2C2F37, wood: 0x6B5A46, dark: 0x121318, acc: 0x5B7CFF, white: 0x3A3D46, rug: 0x283252, metal: 0x4A4E58, globe: 0x2E3138 } },
+  tint: { day: { bg: 0xF6ECE3, floor: 0xF2D6C4, wall: 0xD5EBE3, wood: 0xF0B49C, dark: 0x3B3F5C, acc: 0xFFB547, white: 0xFFF8F0, rug: 0xFBE3A6, metal: 0xC9CDE8, globe: 0xFFF8F0 },
+          night: { bg: 0x13112A, floor: 0x2A2650, wall: 0x2F2A5B, wood: 0x6E4A7A, dark: 0x100E24, acc: 0xFFB547, white: 0x3D3770, rug: 0x3A3170, metal: 0x4C4778, globe: 0x3A3566 } },
+  line: { day: { bg: 0xF7F6F2, ink: 0x1E2230 }, night: { bg: 0x0E2A47, ink: 0xD6E6FF } }
+};
+// your pick: Tint by day, Clay by night
+PAL.mix = { day: PAL.tint.day, night: PAL.clay.night };
+
+const STYLE = 'mix'; let NIGHT = window.SiteTheme ? SiteTheme.get() === 'dark' : true;
+const ROLES = ['floor', 'wall', 'wood', 'dark', 'acc', 'white', 'rug', 'metal', 'globe'];
+const tFrom = {}, tTo = {}; let k = 1, CA = 1;
+function targets() {
+  const p = STYLE === 'line' ? null : PAL[STYLE][NIGHT ? 'night' : 'day'];
+  const L = PAL.line[NIGHT ? 'night' : 'day'];
+  ROLES.forEach(r => { tFrom[r] = M[r].color.clone(); tTo[r] = new THREE.Color(p ? p[r] : L.bg); });
+  tFrom.bg = BG.clone(); tTo.bg = new THREE.Color(NIGHT ? 0x0D0D0C : (p ? p.bg : L.bg));
+  ROLES.forEach(r => { M[r].emissive = M[r].emissive || new THREE.Color(); M[r].emissiveIntensity = STYLE === 'line' ? 1 : 0; if (STYLE === 'line') M[r].emissive.set(L.bg); });
+  sun.castShadow = STYLE !== 'line';
+  hemi.intensity = NIGHT ? .18 : .7; sun.intensity = NIGHT ? .35 : 2.2; sun.color.set(NIGHT ? 0x9DB4FF : 0xfff4e6);
+  if (LAMP) LAMP.intensity = NIGHT ? 10 : 3; if (BULB) BULB.emissiveIntensity = NIGHT ? 3 : 1.2;
+  M.acc.emissive.set(STYLE === 'line' ? L.bg : 0x000000); if (STYLE !== 'line') M.acc.emissiveIntensity = 0;
+  DOTS.forEach(d => { d.emissiveIntensity = NIGHT ? 1.4 : 0; });
+  pane.material = holeMat; tFrom.ca = CA; tTo.ca = 0;
+  ghost.setNight(NIGHT);
+  renderer.toneMappingExposure = NIGHT ? 1.25 : 1.05;
+  document.documentElement.dataset.night = NIGHT ? '1' : '0';
+  document.documentElement.style.setProperty('--bg', '#' + tTo.bg.getHexString());
+  document.documentElement.style.setProperty('--bgc', '#' + tTo.bg.getHexString());
+  document.documentElement.style.background = '#' + tTo.bg.getHexString();
+  k = reduce ? 1 : 0;
+}
+targets(); ROLES.forEach(r => M[r].color.copy(tTo[r])); BG.copy(tTo.bg); CA = tTo.ca; k = 1;
+if (window.SiteTheme) SiteTheme.onChange(m => { NIGHT = m === 'dark'; targets(); });
+
+if (NAMES[QS.get('open')]) go(QS.get('open'), QS.get('paper'));
+
+// render loop
+const clock = new THREE.Clock(); let t = 0;
+document.getElementById('loading').remove();
+renderer.setAnimationLoop(() => {
+  const dt = Math.min(.033, clock.getDelta()); t += dt;
+  if (travel < 1) { travel = Math.min(1, travel + dt * (reduce ? 10 : .9)); const e = travel < .5 ? 2 * travel * travel : 1 - Math.pow(-2 * travel + 2, 2) / 2; ghost.group.position.lerpVectors(from, goal, e); ghost.group.position.y = Math.sin(e * Math.PI) * .5; }
+  if (k < 1) { k = Math.min(1, k + dt / .7); const e = k * k * (3 - 2 * k); ROLES.forEach(r => M[r].color.copy(tFrom[r]).lerp(tTo[r], e)); BG.copy(tFrom.bg).lerp(tTo.bg, e); CA = tFrom.ca + (tTo.ca - tFrom.ca) * e; }
+  renderer.setClearColor(BG, CA);
+  ghost.update(dt, t);
+  const gl = stations.data.group.userData.globe; if (!reduce) gl.rotation.y += dt * .25;
+  { const fk = reduce ? 1 : 1 - Math.exp(-dt * 3.2), mob = innerWidth < 760;
+    VIEW.look.lerp(FOCUS.look, fk); VIEW.zoom += (FOCUS.zoom - VIEW.zoom) * fk;
+    const want = panel.classList.contains('on') ? (mob ? -innerHeight * .31 : (Math.min(420, innerWidth - 48) + 24) / 2) : 0;
+    VIEW.off += (want - VIEW.off) * fk;
+    const wpp = (cam.right - cam.left) / VIEW.zoom / innerWidth;
+    _r.setFromMatrixColumn(cam.matrixWorld, 0); _u.setFromMatrixColumn(cam.matrixWorld, 1);
+    _t.copy(VIEW.look).addScaledVector(mob ? _u : _r, VIEW.off * wpp);
+    const par = reduce ? 0 : 1 / VIEW.zoom;
+    cam.position.copy(_t).add(OFF0); cam.position.x += px * .35 * par; cam.position.y += py * .25 * par; cam.position.z -= px * .35 * par;
+    cam.lookAt(_t); if (Math.abs(cam.zoom - VIEW.zoom) > 1e-4) { cam.zoom = VIEW.zoom; cam.updateProjectionMatrix(); } }
+  renderer.render(scene, cam);
+});
 </script>
+<script src="assets/stars.js"></script>
 <script src="assets/nav.js"></script>
-<script data-goatcounter="https://bookhaali.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
