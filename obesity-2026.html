@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Obesity 2026, every country · Abdiwahab Ali</title>
+<meta name="description" content="Adult obesity from 1990 to 2022 in 200 countries and territories, one line per country. From the paper in Obesity (2026).">
+<meta name="theme-color" content="#08090B">
+<meta name="color-scheme" content="dark">
+<meta property="og:title" content="Obesity 2026, every country · Abdiwahab Ali">
+<meta property="og:description" content="Adult obesity, 1990 to 2022, one line per country.">
+<meta property="og:image" content="https://bookhaali.github.io/portfolio/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0D0C'/%3E%3Ccircle cx='32' cy='36' r='13' fill='none' stroke='%238DB0E4' stroke-width='3'/%3E%3Cline x1='32' y1='23' x2='32' y2='10' stroke='%23E8743B' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='42' y1='28' x2='49' y2='19' stroke='%238DB0E4' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='22' y1='28' x2='16' y2='21' stroke='%235FC9C0' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#08090B; --surface:#151513; --text:#ECEBE4; --muted:#9C9B91; --faint:#6E6D64;
+    --border:#2A2924; --accent:#8DB0E4; --accent-hi:#A6C4EE; --warm:#D98A6E;
+    --glass-bd:rgba(236,235,228,.1); --r-s:4px; --r-l:10px;
+    --font:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --spring:cubic-bezier(.16,1,.3,1);
+  }
+  html{background:var(--bg);scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+  body{background:radial-gradient(1000px 700px at 35% 40%, #11151C 0%, var(--bg) 70%) fixed;color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;line-height:1.6;animation:pgfade .75s ease both}
+  @keyframes pgfade{from{opacity:0}to{opacity:1}}
+  #stars{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.6}
+  a{color:var(--accent)}
+  button,input{font-family:inherit}
+  button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  header.site{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+    padding:1.1rem 1.9rem;background:rgba(8,9,11,.72);backdrop-filter:blur(14px) saturate(1.2);border-bottom:1px solid var(--glass-bd)}
+  .brand{text-decoration:none;color:var(--text)}
+  .brand .name{font-size:.92rem;font-weight:700}
+  .brand .role{font-size:.66rem;color:var(--muted);margin-top:.15rem}
+  nav.top{display:flex;gap:.6rem;align-items:center}
+  nav.top a{font-size:.66rem;letter-spacing:.04em;text-decoration:none;color:var(--muted);border:1px solid transparent;border-radius:var(--r-s);padding:8px 12px;transition:color .18s,border-color .18s}
+  nav.top a:hover,nav.top a.on{color:var(--text);border-color:var(--border)}
+  nav.top a.primary{background:var(--accent);color:#0D0D0C;font-weight:700;border:1px solid var(--accent)}
+  nav.top a.primary:hover{background:var(--accent-hi);border-color:var(--accent-hi)}
+
+  main{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:7rem 2rem 4rem}
+  .back{font-size:.8rem;text-decoration:none;color:var(--muted)}
+  .back:hover{color:var(--text)}
+  .eyebrow{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--warm);margin-top:1.2rem}
+  h1{font-size:clamp(1.4rem,2.6vw,1.9rem);line-height:1.3;font-weight:700;letter-spacing:-.01em;max-width:880px;margin-top:.6rem}
+  .cap{font-size:.85rem;color:var(--muted);margin-top:.7rem}
+  .cap b{color:var(--text);font-weight:600}
+  .controls{display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;margin-top:1.2rem}
+  .seg{display:flex;background:rgba(21,21,19,.8);border:1px solid var(--border);border-radius:99px;padding:3px}
+  .seg button{background:none;border:0;color:var(--muted);border-radius:99px;padding:8px 14px;font-size:.78rem;cursor:pointer;transition:background .3s,color .3s}
+  .seg button:hover{color:var(--text)}
+  .seg button[aria-pressed="true"]{background:var(--text);color:#0D0D0C;font-weight:700}
+  .find{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--muted)}
+  .find input{width:180px;background:rgba(21,21,19,.8);border:1px solid var(--border);border-radius:99px;padding:9px 14px;color:var(--text);font-size:.85rem}
+  .find input:focus{outline:none;border-color:var(--accent)}
+
+  .scene{display:grid;grid-template-columns:130px minmax(0,1fr) 290px;gap:0 1.6rem;margin-top:2rem;align-items:start}
+  .glabels{position:relative}
+  .glabels span{position:absolute;right:0;font-size:.7rem;text-align:right;line-height:1.2;transition:top 1s cubic-bezier(.65,0,.35,1),opacity .4s;white-space:nowrap}
+  .plot{position:relative;touch-action:pan-y;cursor:crosshair}
+  .ridge{position:absolute;left:0;right:0;top:-4px;height:90px;pointer-events:none;transition:transform 1s cubic-bezier(.65,0,.35,1)}
+  .ridge svg{display:block;width:100%;height:90px;overflow:visible}
+  .ridge polygon{pointer-events:visiblePainted;fill:#0B0D10;stroke:none;transition:fill .3s}
+  .ridge polyline{fill:none;stroke-width:1.1;stroke-opacity:.7;stroke-linejoin:round;pointer-events:none;transition:stroke-opacity .3s}
+  .plot.focusing .ridge polyline{stroke-opacity:.35}
+  .ridge.on polyline{stroke:#ECEBE4!important;stroke-width:2.2;stroke-opacity:1!important}
+  .ridge.on polygon{fill:#2A1C17}
+  .ridge.intro{animation:rise .9s var(--spring) both;animation-delay:var(--d)}
+  @keyframes rise{from{opacity:0;transform:translateY(calc(var(--y) + 24px))}to{opacity:1;transform:translateY(var(--y))}}
+  .cursor{position:absolute;top:0;bottom:24px;width:1px;pointer-events:none;z-index:1000;background:linear-gradient(180deg,transparent,rgba(217,138,110,.75) 15%,rgba(217,138,110,.75) 85%,transparent);opacity:0;transition:opacity .3s}
+  .plot.hovering .cursor{opacity:1}
+  .axis{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;font-size:.7rem;color:var(--faint)}
+
+  .side{position:sticky;top:6rem;display:flex;flex-direction:column;gap:1rem}
+  .card{background:rgba(18,18,17,.85);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:16px;padding:1.3rem;display:flex;flex-direction:column;gap:.6rem}
+  .card .rg{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase}
+  .card .nm{font-size:1.45rem;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+  .card .big{display:flex;align-items:baseline;gap:.6rem}
+  .card .big b{font-size:2.6rem;font-weight:800;letter-spacing:-.03em;color:var(--warm);font-variant-numeric:tabular-nums;line-height:1.1}
+  .card .big span{font-size:.8rem;color:var(--muted)}
+  .card svg{width:100%;height:auto;display:block}
+  .card .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem;border-top:1px solid var(--border);padding-top:.8rem}
+  .card .grid span{display:block;font-size:.68rem;color:var(--faint)}
+  .card .grid b{font-size:.88rem;font-variant-numeric:tabular-nums}
+  .card .yr{display:flex;align-items:center;gap:.6rem;font-size:.72rem;color:var(--muted)}
+  .card .yr input{flex:1;accent-color:var(--accent)}
+  .card .hint{font-size:.7rem;color:var(--faint)}
+  .note{font-size:.72rem;line-height:1.65;color:var(--faint)}
+  .note a{color:var(--muted)}
+  .btn{display:block;text-align:center;font-size:.8rem;font-weight:700;text-decoration:none;background:var(--accent);color:#0D0D0C;border-radius:var(--r-s);padding:12px 16px;transition:background .18s}
+  .btn:hover{background:var(--accent-hi)}
+
+  footer{position:relative;z-index:1;border-top:1px solid var(--border);margin-top:2rem;padding:1.6rem;display:flex;justify-content:center;gap:1.4rem;flex-wrap:wrap}
+  footer a{font-size:.7rem;color:var(--faint);text-decoration:none}
+  footer a:hover{color:var(--text)}
+
+  @media(max-width:980px){
+    .scene{grid-template-columns:96px minmax(0,1fr)}
+    .side{grid-column:1 / -1;position:static;margin-top:1.6rem;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}
+  }
+  @media(max-width:680px){
+    header.site{padding:.7rem .9rem}
+    .brand .role{display:none}
+    .brand .name{font-size:.82rem;white-space:nowrap}
+    main{padding:6rem 1rem 3rem}
+    .scene{grid-template-columns:minmax(0,1fr)}
+    .glabels{display:none}
+    .side{display:flex}
+    .find input{width:100%}
+    .find{flex:1}
+  }
+  @media (prefers-reduced-motion: reduce){body,.ridge.intro{animation:none}.ridge,.glabels span{transition:none}}
+
+  /* Hobby: the one playful button in the menu */
+  a.fun{position:relative;display:inline-flex!important;align-items:center;gap:.45rem;padding:7px 15px 7px 11px!important;border-radius:99px!important;border:1.5px solid transparent!important;color:#F6DDB4!important;font-weight:700!important;letter-spacing:.04em;text-decoration:none;
+    background:linear-gradient(#1A130E,#1A130E) padding-box,linear-gradient(110deg,#E8C9A0,#D98A6E,#B08DE4,#8DB0E4,#E8C9A0) border-box!important;background-size:100% 100%,300% 100%!important;animation:funBorder 7s linear infinite;
+    box-shadow:0 0 0 0 rgba(217,138,110,.0);transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .35s,color .2s!important}
+  a.fun svg{width:16px;height:16px;flex:none;overflow:visible;transition:transform .45s cubic-bezier(.34,1.56,.64,1)}
+  a.fun .pg{transform-box:fill-box;transform-origin:0% 50%;transition:transform .5s cubic-bezier(.65,0,.35,1)}
+  a.fun::after{content:'\2726';position:absolute;top:-7px;right:-4px;font-size:10px;color:#F2C14E;opacity:0;transform:scale(.4) rotate(-30deg);transition:opacity .3s,transform .45s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+  a.fun:hover,a.fun:focus-visible{transform:translateY(-2px) rotate(-2deg);box-shadow:0 8px 22px rgba(217,138,110,.35);color:#FFF1DA!important}
+  a.fun:hover svg,a.fun:focus-visible svg{transform:rotate(-10deg) scale(1.15)}
+  a.fun:hover .pg,a.fun:focus-visible .pg{transform:scaleX(-1)}
+  a.fun:hover::after,a.fun:focus-visible::after{opacity:1;transform:scale(1) rotate(0)}
+  a.fun.on{background:linear-gradient(110deg,#E8C9A0,#D98A6E) padding-box,linear-gradient(110deg,#E8C9A0,#D98A6E,#B08DE4,#8DB0E4,#E8C9A0) border-box!important;color:#1A130E!important}
+  @keyframes funBorder{to{background-position:0 0,300% 0}}
+  @media(max-width:640px){header.site nav.top a.fun{display:flex!important;justify-content:center;margin:2px 0}}
+  @media (prefers-reduced-motion: reduce){a.fun{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="stars" aria-hidden="true"></canvas>
+<header class="site">
+  <a class="brand" href="index.html"><div class="name">Abdiwahab Ali</div><div class="role">Health data analyst &middot; Doctoral researcher &middot; Taipei</div></a>
+  <nav class="top">
+    <a href="index.html" class="home">Journey</a>
+    <a href="research.html" class="on">Research</a>
+    <a href="reading.html" class="fun"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5C10 5 7 4.6 3.5 5v13c3.5-.4 6.5 0 8.5 1.5"/><path class="pg" d="M12 6.5c2-1.5 5-1.9 8.5-1.5v13c-3.5-.4-6.5 0-8.5 1.5z"/><path d="M12 6.5V19.5"/></svg><span>Hobby</span></a>
+    <a href="index.html#hire" class="primary">Hire me</a>
+  </nav>
+</header>
+
+<main>
+  <a class="back" href="research.html">&larr; Research</a>
+  <div class="eyebrow">Obesity &middot; 2026 &middot; first author</div>
+  <h1>Trends of obesity in early adulthood and later adulthood across 196 countries and territories, 1990-2022</h1>
+  <p class="cap"><b>One line per country, 1990 to 2022.</b> Hover a line to name it, click to pin it. Sort to see the pattern.</p>
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Sort the lines">
+      <button aria-pressed="true" data-sort="region">By region</button>
+      <button aria-pressed="false" data-sort="level">By level in 2022</button>
+      <button aria-pressed="false" data-sort="speed">By speed of rise</button>
+    </div>
+    <label class="find"><span>Find</span><input id="find" type="search" list="countries" placeholder="Country" autocomplete="off"></label>
+    <datalist id="countries"></datalist>
+  </div>
+
+  <div class="scene">
+    <div class="glabels" id="glabels" aria-hidden="true"></div>
+    <div class="plot" id="plot">
+      <div class="cursor" id="cursor"></div>
+      <div class="axis"><span>1990</span><span>2006</span><span>2022</span></div>
+    </div>
+    <aside class="side">
+      <div class="card" aria-live="polite">
+        <span class="rg" id="c-rg"></span>
+        <span class="nm" id="c-nm"></span>
+        <div class="big"><b id="c-val"></b><span id="c-yr"></span></div>
+        <svg viewBox="0 0 246 60" aria-hidden="true"><polyline id="c-spark" fill="none" stroke="#8DB0E4" stroke-width="2" stroke-linejoin="round"/><circle id="c-dot" r="4" fill="#D98A6E"/></svg>
+        <label class="yr"><span>Year</span><input id="c-range" type="range" min="0" max="32" value="32"></label>
+        <div class="grid">
+          <div><span>1990 to 2022</span><b id="c-span"></b></div>
+          <div><span>Average yearly change</span><b id="c-aapc" style="color:#8DB0E4"></b></div>
+          <div><span>Women, 2022</span><b id="c-w"></b></div>
+          <div><span>Men, 2022</span><b id="c-m"></b></div>
+        </div>
+        <span class="hint" id="c-hint"></span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.8rem">
+        <p class="note">Adults aged 20 and over, both sexes, modelled estimates from NCD-RisC. The paper compares early adulthood (20-49) with later adulthood (50+); the age split is in the paper.</p>
+        <a class="btn" href="https://doi.org/10.1002/oby.70290" target="_blank" rel="noopener">Read the paper &#8599;</a>
+        <p class="note">doi:10.1002/oby.70290</p>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer>
+  <a href="https://www.linkedin.com/in/bookhaali/" target="_blank" rel="noopener">LinkedIn</a>
+  <a href="https://orcid.org/0009-0007-4069-2282" target="_blank" rel="noopener">ORCID</a>
+  <a href="mailto:bookhaali@gmail.com">bookhaali@gmail.com</a>
+</footer>
+
+<script src="data/atlas.js"></script>
+<script src="data/studio.js"></script>
+<script>
+(function () {
+  const A = window.ATLAS_DATA, S = (window.STUDIO_DATA || {}).adult || { c: {} };
+  if (!A) return;
+  const REG = { 'African': ['Africa', '#D98A6E'], 'Americas': ['Americas', '#8DB0E4'], 'Eastern Mediterranean': ['Eastern Mediterranean', '#E8C9A0'], 'European': ['Europe', '#B08DE4'], 'South-East Asia': ['South-East Asia', '#5FC9C0'], 'Western Pacific': ['Western Pacific', '#C9A55F'], 'Other': ['Other territories', '#6E6D64'] };
+  const REG_ORDER = ['African', 'Americas', 'Eastern Mediterranean', 'European', 'South-East Asia', 'Western Pacific', 'Other'];
+  const C = Object.values(A.countries).filter(v => v.adult && v.adult.series && v.adult.series.length === 33).map(v => {
+    const sx = S.c[v.name];
+    return { name: v.name, region: REG[v.region] ? v.region : 'Other', s: v.adult.series, aapc: v.adult.aapc, w: sx ? sx.Women[32] : null, m: sx ? sx.Men[32] : null };
+  });
+  const N = C.length, STEP = 4, MAX = Math.ceil(Math.max(...C.flatMap(c => c.s))), AMP = 84;
+  const plot = document.getElementById('plot'), glabels = document.getElementById('glabels'), cursor = document.getElementById('cursor');
+  const H = (N - 1) * STEP + 90 + 28;
+  plot.style.height = H + 'px'; glabels.style.height = H + 'px';
+  const NS = 'http://www.w3.org/2000/svg';
+  const frag = document.createDocumentFragment();
+  C.forEach((c, i) => {
+    const d = document.createElement('div'); d.className = 'ridge';
+    const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', '0 0 700 90'); svg.setAttribute('preserveAspectRatio', 'none');
+    const pts = c.s.map((v, k) => (k / 32 * 700).toFixed(1) + ',' + (90 - v / MAX * AMP).toFixed(1)).join(' ');
+    const p = document.createElementNS(NS, 'polygon');
+    p.setAttribute('points', pts + ' 700,90 0,90');
+    const ln = document.createElementNS(NS, 'polyline');
+    ln.setAttribute('points', pts); ln.setAttribute('vector-effect', 'non-scaling-stroke');
+    ln.style.stroke = REG[c.region][1];
+    p.addEventListener('mouseenter', () => setHover(i));
+    p.addEventListener('click', () => pin(i));
+    svg.appendChild(p); svg.appendChild(ln); d.appendChild(svg); frag.appendChild(d); c.el = d;
+  });
+  plot.appendChild(frag);
+  const dl = document.getElementById('countries');
+  C.map(c => c.name).sort().forEach(n => { const o = document.createElement('option'); o.value = n; dl.appendChild(o); });
+
+  let sort = 'region', hov = -1, sel = -1, yi = 32, rank = [];
+  const egypt = Math.max(0, C.findIndex(c => c.name === 'Egypt'));
+  function order() {
+    const idx = C.map((_, i) => i);
+    if (sort === 'region') idx.sort((a, b) => REG_ORDER.indexOf(C[a].region) - REG_ORDER.indexOf(C[b].region) || C[b].s[32] - C[a].s[32]);
+    if (sort === 'level') idx.sort((a, b) => C[b].s[32] - C[a].s[32]);
+    if (sort === 'speed') idx.sort((a, b) => C[b].aapc - C[a].aapc);
+    rank = new Array(N); idx.forEach((ci, r) => { rank[ci] = r; });
+    C.forEach((c, i) => {
+      const y = rank[i] * STEP;
+      c.el.style.setProperty('--y', y + 'px');
+      c.el.style.transform = 'translateY(' + y + 'px)';
+      c.el.style.transitionDelay = (rank[i] * 3) + 'ms';
+      c.el.style.zIndex = c.el.classList.contains('on') ? 999 : rank[i];
+    });
+    glabels.innerHTML = '';
+    const lab = (text, top, color) => { const s = document.createElement('span'); s.textContent = text; s.style.top = top + 'px'; s.style.color = color; glabels.appendChild(s); };
+    if (sort === 'region') {
+      REG_ORDER.forEach(r => {
+        const m = C.map((c, i) => i).filter(i => C[i].region === r); if (!m.length) return;
+        const first = Math.min(...m.map(i => rank[i]));
+        lab(REG[r][0], first * STEP + m.length * STEP / 2 + 66, REG[r][1]);
+      });
+    } else {
+      lab(sort === 'level' ? 'Highest in 2022' : 'Fastest rise', 70, '#9C9B91');
+      lab(sort === 'level' ? 'Lowest' : 'Slowest', (N - 1) * STEP + 70, '#9C9B91');
+    }
+  }
+  function focusIdx() { return hov >= 0 ? hov : sel >= 0 ? sel : egypt; }
+  function paint() {
+    const f = focusIdx();
+    C.forEach((c, i) => { const on = (hov >= 0 || sel >= 0) && i === f; c.el.classList.toggle('on', on); c.el.style.zIndex = on ? 999 : rank[i]; });
+    plot.classList.toggle('focusing', hov >= 0 || sel >= 0);
+    const c = C[f], R = REG[c.region];
+    const max = Math.max(...c.s), sx = k => (k / 32 * 246), sy = v => (56 - v / max * 50);
+    document.getElementById('c-rg').textContent = R[0]; document.getElementById('c-rg').style.color = R[1];
+    document.getElementById('c-nm').textContent = c.name;
+    document.getElementById('c-val').textContent = c.s[yi].toFixed(1) + '%';
+    document.getElementById('c-yr').textContent = 'in ' + (1990 + yi);
+    document.getElementById('c-spark').setAttribute('points', c.s.map((v, k) => sx(k).toFixed(1) + ',' + sy(v).toFixed(1)).join(' '));
+    const dot = document.getElementById('c-dot'); dot.setAttribute('cx', sx(yi)); dot.setAttribute('cy', sy(c.s[yi]));
+    document.getElementById('c-span').textContent = c.s[0].toFixed(1) + '% → ' + c.s[32].toFixed(1) + '%';
+    document.getElementById('c-aapc').textContent = (c.aapc >= 0 ? '+' : '') + c.aapc.toFixed(2) + '%';
+    document.getElementById('c-w').textContent = c.w == null ? 'n/a' : c.w.toFixed(1) + '%';
+    document.getElementById('c-m').textContent = c.m == null ? 'n/a' : c.m.toFixed(1) + '%';
+    document.getElementById('c-hint').textContent = sel >= 0 ? 'Pinned. Click another line to change.' : 'Click a line to pin it.';
+    document.getElementById('c-range').value = yi;
+    cursor.style.left = (yi / 32 * 100) + '%';
+  }
+  function setHover(i) { if (hov !== i) { hov = i; paint(); } }
+  function pin(i) { sel = i; paint(); }
+  plot.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse') return;
+    const b = plot.getBoundingClientRect();
+    const k = Math.round(Math.max(0, Math.min(1, (e.clientX - b.left) / b.width)) * 32);
+    plot.classList.add('hovering');
+    if (k !== yi) { yi = k; paint(); }
+  });
+  plot.addEventListener('mouseleave', () => { hov = -1; yi = 32; plot.classList.remove('hovering'); paint(); });
+  document.getElementById('c-range').addEventListener('input', e => { yi = +e.target.value; paint(); });
+  document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+    sort = b.dataset.sort;
+    document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    order(); paint();
+  }));
+  document.getElementById('find').addEventListener('input', e => {
+    const q = e.target.value.trim().toLowerCase(); if (!q) return;
+    const m = C.findIndex(c => c.name.toLowerCase() === q);
+    const m2 = m >= 0 ? m : C.findIndex(c => c.name.toLowerCase().startsWith(q));
+    if (m2 >= 0) { sel = m2; paint(); }
+  });
+  order();
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce) C.forEach((c, i) => { c.el.style.setProperty('--d', (rank[i] * 4) + 'ms'); c.el.classList.add('intro'); c.el.addEventListener('animationend', () => c.el.classList.remove('intro'), { once: true }); });
+  paint();
+})();
+</script>
+<script src="assets/stars.js"></script>
+<script src="assets/nav.js"></script>
+<script data-goatcounter="https://bookhaali.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>

@@ -1034,7 +1034,7 @@ function openQuote() { qov.classList.add('show'); if (!document.body.classList.c
 function closeQuote() { qov.classList.remove('show'); if (!document.body.classList.contains('story-on')) document.body.style.overflow = ''; }
 document.getElementById('open-quote').addEventListener('click', openQuote);
 document.getElementById('yd-cta').addEventListener('click', openQuote);
-// deep link: research/dashboard/notes pages send people to index.html#hire
+// deep link: the other pages send people to index.html#hire
 if (location.hash === '#hire') { history.replaceState(null, '', location.pathname); openQuote(); }
 addEventListener('hashchange', () => { if (location.hash === '#hire') { history.replaceState(null, '', location.pathname); openQuote(); } });
 // in-sheet contact form (FormSubmit AJAX): for the majority with no desktop mail client
