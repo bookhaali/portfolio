@@ -142,6 +142,7 @@
   /* collaboration: no scope, no price; the same ways to get in touch */
   .collab-tick{display:flex;align-items:flex-start;gap:.8rem;padding:.9rem 1rem;margin-bottom:1.4rem;border:1px solid var(--border);border-radius:var(--r-s);cursor:pointer;transition:border-color .15s,background .15s}
   .collab-tick:hover{border-color:var(--muted)}
+  @media(min-width:721px){.collab-tick{margin-right:2.4rem}}   /* clear of the close button, which sits in that corner */
   .collab-tick input{position:absolute;opacity:0;pointer-events:none}
   .collab-tick .box{flex:none;width:18px;height:18px;margin-top:1px;border:1.5px solid var(--muted);border-radius:4px;display:flex;align-items:center;justify-content:center;transition:all .15s}
   .collab-tick input:checked+.box{background:var(--accent);border-color:var(--accent)}
@@ -373,6 +374,7 @@
   body:has(#intro:not(.gone)) .station,
   body:has(#intro:not(.gone)) .controls{opacity:0!important;visibility:hidden;transition:opacity .4s ease,visibility 0s linear .4s}
   .legend,.ui .hint{display:none!important}
+  .controls.empty{display:none!important}
 </style>
 <script>document.documentElement.classList.add('arriving');</script>
 <script>(function(){try{var c=document.createElement('canvas');if(c.getContext('webgl')||c.getContext('experimental-webgl'))document.documentElement.classList.add('webgl-ok');}catch(e){}})();</script>
@@ -394,7 +396,7 @@
   </div>
 </section>
 <h1 class="sr-only">Hey, I’m AB (Abdiwahab Ali), an epidemiology doctoral researcher in Taipei</h1>
-<p class="sr-only">An interactive 3D journey through fourteen data worlds: global obesity, burden and velocity, the early-onset shift, diet, obesity-related cancers, lag correlation, forecasts to 2050, causal diagrams, multivariable models, comorbidity networks, meta-analysis methods, Covexe (the systematic-review platform I built), publications, and data storytelling. Scroll to travel between worlds. Contact: bookhaali@gmail.com</p>
+<p class="sr-only">An interactive 3D journey through fourteen data worlds: global obesity, burden and velocity, the early-onset shift, diet, obesity-related cancers, lag correlation, forecasts to 2050, causal diagrams, multivariable models, comorbidity networks, meta-analysis methods, Covexe (my systematic-review project), publications, and data storytelling. Scroll to travel between worlds. Contact: bookhaali@gmail.com</p>
 <canvas id="space" role="img" aria-label="Interactive 3D data journey: fourteen worlds of public-health analysis. Scroll to travel."></canvas>
 <div id="scroll-space"></div>
 

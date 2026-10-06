@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 const OB = window.ATLAS_DATA, DIET = window.DIET_DATA, CAN = window.CANCER_DATA, CEN = window.ISO_CENTROIDS;
 const DEG = Math.PI / 180, R = 1;
@@ -178,18 +179,24 @@ function finishEarth() {
   if (arriveActive) { if (warpFade) warpFade.style.opacity = '1'; arriveT0 = performance.now(); try { scrollTo(0, 0); } catch (e) {} return; }
   introActive = true; introStart = performance.now(); try { scrollTo(0, 0); } catch (e) {}
 }
-// progressive earth: a 124 KB preview unblocks the loader fast; the 2.5 MB texture swaps in silently
+// progressive earth: a 124 KB preview unblocks the loader fast, a 244 KB 2048px texture follows
+// within a moment, and the full 5400px texture (1 MB WebP) swaps in last. Each step only ever
+// replaces a smaller one, so a slow connection never sees the globe get blurrier.
 new THREE.TextureLoader().load('assets/textures/earth_lo.jpg', loTex => {
   loTex.colorSpace = THREE.SRGBColorSpace; loTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
   renderer.initTexture(loTex);
   const earthMat = new THREE.MeshStandardMaterial({ map: loTex, roughness: 0.86, metalness: 0 });
   globe.add(new THREE.Mesh(new THREE.SphereGeometry(R, 96, 96), earthMat));
   finishEarth();
-  new THREE.TextureLoader().load('assets/textures/earth.jpg', hiTex => {
-    hiTex.colorSpace = THREE.SRGBColorSpace; hiTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-    renderer.initTexture(hiTex);
-    earthMat.map = hiTex; earthMat.needsUpdate = true; loTex.dispose();
+  let level = 0;
+  const swapIn = (url, lv) => new THREE.TextureLoader().load(url, tex => {
+    if (lv <= level) { tex.dispose(); return; }
+    tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    renderer.initTexture(tex);
+    const old = earthMat.map; earthMat.map = tex; earthMat.needsUpdate = true; level = lv; if (old) old.dispose();
   });
+  swapIn('assets/textures/earth_mid.webp', 1);
+  swapIn('assets/textures/earth.webp', 2);
 }, ev => { if (ev.lengthComputable) { const p = Math.round(ev.loaded / ev.total * 100); const el = document.getElementById('loader-txt'); if (el) el.textContent = 'loading earth ' + p + '%'; const fill = document.getElementById('loader-fill'); if (fill) fill.style.width = p + '%'; } });
 globe.add(atmosphere(R * 1.025, 0x9EC0EE, 2.4, 0.85));   // tight rim
 globe.add(atmosphere(R * 1.16, 0x4F86C6, 3.2, 0.9));      // soft halo
@@ -209,6 +216,12 @@ for (const iso in OB.countries) {
 // hottest-country live highlight (the leader changes as the years play)
 const hotMarker = new THREE.Mesh(new THREE.SphereGeometry(0.02, 16, 16), new THREE.MeshBasicMaterial({ color: 0xF5C16B })); hotMarker.visible = false; globe.add(hotMarker);
 const hotLabel = makeLabel(' ', { size: 0.075, color: '#E8743B' }); hotLabel.visible = false; globe.add(hotLabel);
+// some stops use none of the controls; the bar then hides instead of showing as an empty box
+{ const bar = document.querySelector('.controls');
+  if (bar && window.MutationObserver) {
+    const check = () => bar.classList.toggle('empty', ![...bar.children].some(c => getComputedStyle(c).display !== 'none'));
+    new MutationObserver(check).observe(bar, { subtree: true, attributes: true, attributeFilter: ['style', 'class'] }); check();
+  } }
 // the first screen is only Earth and the name: the "highest" label waits for the first scroll, like the rest of the data
 const introUp = () => { const el = document.getElementById('intro'); return !!el && !el.classList.contains('gone'); };
 // on a phone held upright the label cannot fit beside the globe and runs off the screen, so it stays hidden there
@@ -403,12 +416,42 @@ function refreshCancer() { if (cancerCursor) cancerCursor.position.x = cX(canIdx
 // ====================================================================
 // chart-plane helper (for lag + forecast)
 // ====================================================================
+// ---- cards with real depth: a dark glass slab behind each picture, a lit rim, and a gentle
+// tilt toward the pointer, so the panels read as objects floating in space ----
+const TILTS = [];
+function roundedShape(w, h, r) { const s = new THREE.Shape(), x = -w / 2, y = -h / 2; s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r); s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h); s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r); s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y); return s; }
+const SLAB_MAT = new THREE.MeshPhysicalMaterial({ color: 0x14130f, roughness: .3, metalness: .2, clearcoat: 1, clearcoatRoughness: .18 });
+const RIM_MAT = new THREE.LineBasicMaterial({ color: ACCENT, transparent: true, opacity: .55, blending: THREE.AdditiveBlending, depthWrite: false, fog: false });
+function slabify(face, w, h, r) {
+  const d = Math.min(w, h) * .075, b = d * .35;
+  const geo = new THREE.ExtrudeGeometry(roundedShape(w - b * 2, h - b * 2, Math.max(.01, r - b)), { depth: d, bevelEnabled: true, bevelThickness: b, bevelSize: b, bevelSegments: 4, curveSegments: 12 });
+  geo.translate(0, 0, -d - b - .01);   // the front of the slab sits just behind the picture
+  const slab = new THREE.Mesh(geo, SLAB_MAT); slab.raycast = () => {}; face.add(slab);
+  const rim = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(roundedShape(w - .012, h - .012, r).getPoints(80).map(p => new THREE.Vector3(p.x, p.y, .003))), RIM_MAT);
+  rim.raycast = () => {}; face.add(rim);
+  // glass sheen: a soft diagonal band of light, held inside the card's rounded shape, that slides as the card tilts
+  const band = document.createElement('canvas'); band.width = 512; band.height = 8; const bx = band.getContext('2d'), g = bx.createLinearGradient(0, 0, 512, 0);
+  g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(.42, 'rgba(255,255,255,0)'); g.addColorStop(.5, 'rgba(220,232,255,1)'); g.addColorStop(.58, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(255,255,255,0)'); bx.fillStyle = g; bx.fillRect(0, 0, 512, 8);
+  const bandTex = new THREE.CanvasTexture(band); bandTex.wrapS = THREE.RepeatWrapping; bandTex.repeat.set(.6, 1); bandTex.center.set(.5, .5); bandTex.rotation = -.5;
+  const mask = document.createElement('canvas'), MW = 256, MH = Math.max(8, Math.round(256 * h / w)); mask.width = MW; mask.height = MH; const mx = mask.getContext('2d');
+  mx.fillStyle = '#000'; mx.fillRect(0, 0, MW, MH); mx.fillStyle = '#fff'; roundRect(mx, 1, 1, MW - 2, MH - 2, r / w * MW); mx.fill();
+  const sheen = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: bandTex, alphaMap: new THREE.CanvasTexture(mask), transparent: true, opacity: .07, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+  sheen.position.z = .004; sheen.raycast = () => {}; face.add(sheen);
+  TILTS.push({ o: face, x: 0, y: 0, band: bandTex });
+}
+const _ptr = { x: 0, y: 0 };
+addEventListener('pointermove', e => { _ptr.x = e.clientX / innerWidth * 2 - 1; _ptr.y = e.clientY / innerHeight * 2 - 1; }, { passive: true });
+(function tilt() {
+  const k = .06;
+  for (const t of TILTS) { t.x += (_ptr.y * .16 - t.x) * k; t.y += (_ptr.x * .26 - t.y) * k; t.o.rotation.x = t.x; t.o.rotation.y = t.y; if (t.band) t.band.offset.x = -t.y * 1.6 + t.x * .6; }
+  requestAnimationFrame(tilt);
+})();
 function chartPlane(w, h, pos) {
   const DPR = 2.0, pxw = 1100, pxh = Math.round(pxw * h / w), cv = document.createElement('canvas'); cv.width = pxw * DPR; cv.height = pxh * DPR;
   const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
   const g = new THREE.Group(); g.position.copy(pos); scene.add(g);
-  g.add(new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex, transparent: true })));
-  return { cv, ctx: cv.getContext('2d'), tex, group: g, lw: pxw, lh: pxh, dpr: DPR };
+  const face = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex, transparent: true })); g.add(face); slabify(face, w, h, w * 18 / pxw);
+  return { cv, ctx: cv.getContext('2d'), tex, group: g, face, lw: pxw, lh: pxh, dpr: DPR, w, h };
 }
 function panelBg(ctx, W, H) { ctx.clearRect(0, 0, W, H); ctx.fillStyle = 'rgba(21,21,18,0.94)'; ctx.strokeStyle = '#2E2D28'; ctx.lineWidth = 2; roundRect(ctx, 4, 4, W - 8, H - 8, 18); ctx.fill(); ctx.stroke(); }
 function roundRect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
@@ -513,7 +556,7 @@ aboutNodes.forEach((nd, i) => {
 // ====================================================================
 // 8b. COLLABORATE (meta-analysis: forest + funnel)
 // ====================================================================
-function planeMesh(w, h) { const DPR = 2.0, pxw = 900, pxh = Math.round(pxw * h / w), cv = document.createElement('canvas'); cv.width = pxw * DPR; cv.height = pxh * DPR; const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = renderer.capabilities.getMaxAnisotropy(); const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex, transparent: true })); return { cv, ctx: cv.getContext('2d'), tex, mesh, lw: pxw, lh: pxh, dpr: DPR }; }
+function planeMesh(w, h) { const DPR = 2.0, pxw = 900, pxh = Math.round(pxw * h / w), cv = document.createElement('canvas'); cv.width = pxw * DPR; cv.height = pxh * DPR; const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = renderer.capabilities.getMaxAnisotropy(); const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex, transparent: true })); slabify(mesh, w, h, w * 18 / pxw); return { cv, ctx: cv.getContext('2d'), tex, mesh, lw: pxw, lh: pxh, dpr: DPR }; }
 const COLLAB = new THREE.Vector3(-8, 1, -222);
 const collabGroup = new THREE.Group(); collabGroup.position.copy(COLLAB); scene.add(collabGroup);
 const collabSpin = new THREE.Group(); collabGroup.add(collabSpin);
@@ -831,7 +874,7 @@ let finalPts = null;
 })();
 
 // ====================================================================
-// COVEXE (the platform I built) - a clean panel world, met just after the figures
+// COVEXE (his project) - a clean panel world, met just after the figures
 // ====================================================================
 const COVP = new THREE.Vector3(7, 0.8, -234);
 const covexe = chartPlane(6.6, 3.7, COVP);
@@ -846,11 +889,12 @@ function covPill(ctx, x, y, label, font) {
   ctx.fillStyle = '#ECEBE4'; ctx.textBaseline = 'middle'; ctx.textAlign = 'center'; ctx.fillText(label, x + w / 2, y + 1);
   ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left'; return w;
 }
+const COV_TILES = [];
 function drawCovexe() {
   const ctx = covexe.ctx, W = covexe.lw, H = covexe.lh, L = 72;
   ctx.setTransform(covexe.dpr, 0, 0, covexe.dpr, 0, 0); panelBg(ctx, W, H);
   ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-  ctx.fillStyle = '#8DB0E4'; ctx.font = '700 21px Open Sans'; ctx.letterSpacing = '3px'; ctx.fillText('THE PLATFORM I BUILT', L, 96); ctx.letterSpacing = '0px';
+  ctx.fillStyle = '#8DB0E4'; ctx.font = '700 21px Open Sans'; ctx.letterSpacing = '3px'; ctx.fillText('MY PROJECT', L, 96); ctx.letterSpacing = '0px';
   ctx.fillStyle = '#ECEBE4'; ctx.font = '700 62px Open Sans'; ctx.fillText('Covexe', L, 168);
   const wmW = ctx.measureText('Covexe').width;
   ctx.font = '600 24px Open Sans'; ctx.fillStyle = '#8DB0E4';
@@ -862,19 +906,42 @@ function drawCovexe() {
   const steps = ['Search', 'Screen', 'Extract', 'Meta-analysis', 'Report'], pf = '600 21px Open Sans', arrow = 32;
   ctx.font = pf; let total = arrow * (steps.length - 1); steps.forEach(s => total += ctx.measureText(s).width + 40);
   let x = (W - total) / 2; const y = 332;
-  steps.forEach((s, i) => {
-    x += covPill(ctx, x, y, s, pf);
-    if (i < steps.length - 1) {
-      ctx.strokeStyle = 'rgba(141,176,228,0.5)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x + 8, y); ctx.lineTo(x + arrow - 6, y); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(x + arrow - 6, y); ctx.lineTo(x + arrow - 14, y - 5); ctx.lineTo(x + arrow - 14, y + 5); ctx.closePath(); ctx.fillStyle = 'rgba(141,176,228,0.72)'; ctx.fill(); x += arrow;
-    }
-  });
+  COV_TILES.length = 0;
+  steps.forEach((s, i) => { const w = ctx.measureText(s).width + 40; COV_TILES.push({ s, cx: x + w / 2, cy: y, w, h: 50 }); x += w + (i < steps.length - 1 ? arrow : 0); });
   ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = '#9C9B91'; ctx.font = '400 23px Open Sans';
   ctx.fillText('40+ statistical methods, validated against R.', L, 446);
   ctx.fillText('AI assists, every value cites its source, and your data stays in the browser.', L, 488);
   covexe.tex.needsUpdate = true;
 }
 drawCovexe();
+(function raiseCovexeTiles() {
+  const W = covexe.lw, H = covexe.lh, sx = covexe.w / W, sy = covexe.h / H, Z = .16, pts = [];
+  const tileMat = new THREE.MeshPhysicalMaterial({ color: 0x111823, roughness: .4, metalness: .1, clearcoat: 1, clearcoatRoughness: .25, emissive: 0x0b1628, emissiveIntensity: .5 });
+  COV_TILES.forEach(t => {
+    const w = t.w * sx, h = t.h * sy, d = .1;
+    const tile = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 4, Math.min(w, h) * .2), tileMat); tile.raycast = () => {};
+    tile.position.set((t.cx - W / 2) * sx, (H / 2 - t.cy) * sy, Z); covexe.face.add(tile);
+    const c = document.createElement('canvas'), S = 4; c.width = Math.round(t.w * S); c.height = Math.round(t.h * S); const x = c.getContext('2d');
+    x.scale(S, S); x.strokeStyle = 'rgba(141,176,228,.7)'; x.lineWidth = 1.5; roundRect(x, 1, 1, t.w - 2, t.h - 2, 10); x.stroke();
+    x.fillStyle = '#ECEBE4'; x.font = '600 21px Open Sans'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(t.s, t.w / 2, t.h / 2 + 1);
+    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+    const lab = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })); lab.raycast = () => {};
+    lab.position.z = d / 2 + .002; tile.add(lab);
+    pts.push(new THREE.Vector3(tile.position.x, tile.position.y, Z));
+  });
+  // light runs from step to step along a thin line
+  const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: ACCENT, transparent: true, opacity: .45 }));
+  line.position.z = -.02; line.raycast = () => {}; covexe.face.add(line);
+  const pulse = new THREE.Sprite(new THREE.SpriteMaterial({ map: nebulaTexture(ACCENT), color: 0xbcd4f5, transparent: true, opacity: .9, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+  pulse.scale.set(.5, .5, 1); covexe.face.add(pulse);
+  const total = pts.reduce((a, p, i) => a + (i ? p.distanceTo(pts[i - 1]) : 0), 0);
+  (function run(now) {
+    const u = (now / 2600) % 1, dd = u * total; let acc = 0;
+    for (let i = 1; i < pts.length; i++) { const seg = pts[i].distanceTo(pts[i - 1]); if (acc + seg >= dd) { pulse.position.lerpVectors(pts[i - 1], pts[i], (dd - acc) / seg); pulse.position.z = Z + .06; break; } acc += seg; }
+    pulse.material.opacity = .9 * Math.sin(u * Math.PI);
+    requestAnimationFrame(run);
+  })(0);
+})();
 // the panel is a live link to covexe.com (reuses the journey's built-in userData.url click handling)
 const covexeLink = new THREE.Mesh(new THREE.PlaneGeometry(6.6, 3.7), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
 covexeLink.position.set(0, 0, 0.05); covexeLink.userData.url = 'https://covexe.com'; covexe.group.add(covexeLink);
@@ -895,7 +962,7 @@ const STATIONS = [
   { name: 'Multivariable model', cap: '<b>Many inputs, one outcome.</b> A live OLS fit, residuals shown.', spin: regSpin, picks: () => [], camPos: off(REGP, 0, 0.5, 10.0), camTarget: off(REGP, 0, 0.1, 0), spinIdle: 0.0016 },
   { name: 'Networks', cap: '<b>Disease rarely travels alone.</b> Edges are comorbidity ties.', spin: netSpin, picks: () => netPicks, camPos: off(NETP, 0, 0.9, 11), camTarget: off(NETP, 0, 0.8, 0), spinIdle: 0.0012 },
   { name: 'Collaborate', cap: '<b>Forest, funnel, survival, ROC. Computed live.</b>', spin: collabSpin, picks: () => [], camPos: off(COLLAB, 0, 1.25, 9.2), camTarget: off(COLLAB, 0, 1.15, 0), wide: 1.5 },
-  { name: 'Covexe', cap: '<b>The platform I built.</b> One place for the whole systematic review.', spin: covexe.group, picks: () => [covexeLink], camPos: off(COVP, 0, 0.35, 9.3), camTarget: off(COVP, 0, 0.15, 0), wide: 1.18 },
+  { name: 'Covexe', cap: '<b>My project.</b> One place for the whole systematic review.', spin: covexe.group, picks: () => [covexeLink], camPos: off(COVP, 0, 0.35, 9.3), camTarget: off(COVP, 0, 0.15, 0), wide: 1.18 },
   { name: 'The analyst', cap: '<b>Five global datasets. Peer-reviewed work on obesity, diet and cancer.</b>', spin: aboutSpin, picks: () => aboutPicks, camPos: off(ABP, 0, 0, 7.2), camTarget: ABP.clone(), spinIdle: 0.0015 },
   { name: 'The research library', cap: '<b>Step inside the research library.</b>', spin: storySpin, picks: () => [], camPos: off(STORYP, 0, 0.5, 7), camTarget: off(STORYP, 0, 0.5, 0) }
 ];
