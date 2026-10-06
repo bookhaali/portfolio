@@ -97,7 +97,7 @@
   .gs .num{border:1px solid currentColor;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;line-height:1;opacity:.85}
   .gs .mk{width:42%;aspect-ratio:1;display:flex}
   .stage3d{perspective:1700px;perspective-origin:50% 40%}
-  .stage3d .b3{position:relative;cursor:grab;transition:none;will-change:transform}
+  .stage3d .b3{position:relative;cursor:grab;transition:none}   /* no will-change here: Safari would flatten the 3D book */
   .stage3d .b3:active{cursor:grabbing}
   .tag{position:absolute;font-family:var(--hand);font-size:1.05rem;color:var(--ink);transform:rotate(-4deg);pointer-events:none;white-space:nowrap}
 
@@ -138,9 +138,9 @@
   .hp{position:absolute;left:-9999px}
 
   /* reader */
-  .reader{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:5rem 1.5rem 2rem}
+  .reader{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:5rem 1.5rem 2rem;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
   .reader[hidden]{display:none}
-  .reader .bg{position:absolute;inset:0;will-change:opacity;background:rgba(6,5,4,.8);backdrop-filter:blur(6px);animation:pgfade .35s both}
+  .reader .bg{position:fixed;inset:0;background:rgba(6,5,4,.8);backdrop-filter:blur(6px);animation:pgfade .35s both}
   .reader .sheet{position:relative;display:flex;gap:2.6rem;align-items:center;max-width:860px;width:100%;flex-wrap:wrap;justify-content:center}
   .reader .fig{flex:none}
   .reader .fig img{display:block;border-radius:3px;box-shadow:0 30px 60px rgba(0,0,0,.6)}
@@ -171,7 +171,10 @@
     main{padding:6rem 1rem 3rem}
     .case{padding:10px}
     .shelf + .board{margin:0 -10px}
-    .reader .sheet{gap:1.4rem}
+    .reader{align-items:flex-start;padding:4.2rem 1.2rem calc(1.6rem + env(safe-area-inset-bottom))}
+    .reader .sheet{gap:1rem;margin:auto 0}
+    .reader .info{gap:.45rem}
+    .reader .ab{font-size:.9rem;line-height:1.6}
     .reader h3{font-size:1.6rem}
   }
   @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
@@ -518,7 +521,7 @@
     opener = btn; btn.classList.add('out');
     fig.innerHTML = '';
     const stage = el('div', 'stage3d', fig);
-    const H = Math.min(innerHeight * 0.58, 460);
+    const H = Math.min(innerHeight * (innerWidth < 680 ? 0.36 : 0.58), 460);
     const { box, c } = book3d(b, H / b.h);
     stage.style.width = (c + 60) + 'px'; stage.style.height = H + 'px'; stage.style.display = 'flex'; stage.style.justifyContent = 'center';
     stage.appendChild(box);
