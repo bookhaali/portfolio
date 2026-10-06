@@ -174,6 +174,8 @@
   .pinbar .pb-go{font-size:.7rem;color:var(--muted)}
   html[data-theme="light"] .pinbar{background:rgba(255,248,240,.96);box-shadow:0 14px 34px rgba(30,34,48,.14)}
   @media (min-width:900px){.pinbar{display:none}}
+  .t-short{display:none}
+  @media(max-width:640px){.t-full{display:none}.t-short{display:inline}}
 </style>
 </head>
 <body>
@@ -191,7 +193,7 @@
 <main>
   <a class="back" href="research.html">&larr; Research</a>
   <div class="eyebrow">Obesity &middot; 2026 &middot; first author</div>
-  <h1>Trends of obesity in early adulthood and later adulthood across 196 countries and territories, 1990-2022</h1>
+  <h1><span class="t-full">Trends of obesity in early adulthood and later adulthood across 196 countries and territories, 1990-2022</span><span class="t-short">Obesity in early and later adulthood, 196 countries</span></h1>
   <p class="cap"><b>One line per country, 1990 to 2022.</b> <span class="on-mouse">Hover a line to name it, click to pin it.</span><span class="on-touch">Tap a line to see the country.</span> Sort to see the pattern.</p>
   <div class="controls">
     <div class="seg" role="group" aria-label="Sort the lines">

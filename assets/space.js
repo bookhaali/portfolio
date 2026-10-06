@@ -952,18 +952,18 @@ covexeLink.position.set(0, 0, 0.05); covexeLink.userData.url = 'https://covexe.c
 const off = (p, dx, dy, dz) => p.clone().add(new THREE.Vector3(dx, dy, dz));
 const STATIONS = [
   { name: 'Earth', cap: '<b>Each spike is a country.</b> Press play to run 35 years.', spin: globe, picks: () => spikes, camPos: new THREE.Vector3(0, 0.35, 3.7), camTarget: new THREE.Vector3(0, 0, 0), pop: 1, time: 1, spinIdle: 0.0006 },
-  { name: 'Burden / velocity', cap: '<b>High, and still rising.</b>', spin: scatterSpin, picks: () => scatterPoints, camPos: off(SCATTER, 0, 1.8, 10.5), camTarget: SCATTER.clone(), pop: 1 },
-  { name: 'Early-onset shift', cap: '<b>Cancer is striking earlier.</b>', spin: rankSpin, picks: () => [], camPos: off(RANK, 0, 3.6, 9.5), camTarget: off(RANK, 0, 0.9, 0) },
-  { name: 'Diet', cap: '<b>Protective foods shrink, risk foods grow.</b>', spin: dietSpin, picks: () => dietFoods, camPos: off(DIETP, 0, 0.35, 10.6), camTarget: off(DIETP, 0, 0.3, 0), time: 1 },
+  { name: 'Burden / velocity', cap: '<b>High, and still rising.</b>', spin: scatterSpin, picks: () => scatterPoints, camPos: off(SCATTER, 0, 1.8, 10.5), camTarget: SCATTER.clone(), pop: 1, wide: 1.2 },
+  { name: 'Early-onset shift', cap: '<b>Cancer is striking earlier.</b>', spin: rankSpin, picks: () => [], camPos: off(RANK, 0, 3.6, 9.5), camTarget: off(RANK, 0, 0.9, 0), wide: 1.35 },
+  { name: 'Diet', cap: '<b>Protective foods shrink, risk foods grow.</b>', spin: dietSpin, picks: () => dietFoods, camPos: off(DIETP, 0, 0.35, 10.6), camTarget: off(DIETP, 0, 0.3, 0), time: 1, wide: 1.3 },
   { name: 'Cancer', cap: '<b>13 obesity-linked cancers.</b> Warm ridges are rising.', spin: cancerSpin, picks: () => cancerLines, camPos: off(CANP, -1.4, 4.2, 16.5), camTarget: off(CANP, 0, -0.2, -0.6), time: 1, csex: 1 },
-  { name: 'Obesity drives cancer', cap: '<b>Obesity today, cancer tomorrow.</b> Slide the lag.', spin: lagPlane.group, picks: () => [], camPos: off(LAGP, 0, 0, 6.4), camTarget: LAGP.clone(), pop: 1, wide: 1.75, aux: { label: 'lag', min: 0, max: 15, on: v => { lag = v; drawLag(); document.getElementById('aux-val').textContent = v + ' yr'; } } },
-  { name: 'Forecast', cap: '<b>On course for ~22% of youth by 2050.</b>', spin: fcPlane.group, picks: () => [], camPos: off(FCP, 0, 0, 6.4), camTarget: FCP.clone(), pop: 1, wide: 1.75 },
+  { name: 'Obesity drives cancer', cap: '<b>Obesity today, cancer tomorrow.</b> Slide the lag.', spin: lagPlane.group, picks: () => [], camPos: off(LAGP, 0, 0, 6.4), camTarget: LAGP.clone(), pop: 1, wide: 1.75, aux: { label: 'lag', min: 0, max: 15, on: v => { lag = v; drawLag(); document.getElementById('aux-val').textContent = v + ' yr'; } }, capM: 1 },
+  { name: 'Forecast', cap: '<b>On course for ~22% of youth by 2050.</b>', spin: fcPlane.group, picks: () => [], camPos: off(FCP, 0, 0, 6.4), camTarget: FCP.clone(), pop: 1, wide: 1.75, capM: 1 },
   { name: 'Causal thinking', cap: '<b>Backdoor paths, closed before estimating.</b>', spin: dagSpin, picks: () => dagPicks, camPos: off(DAGP, 0, 0.4, 9.6), camTarget: off(DAGP, 0, 0.2, 0) },
   { name: 'Multivariable model', cap: '<b>Many inputs, one outcome.</b> A live OLS fit, residuals shown.', spin: regSpin, picks: () => [], camPos: off(REGP, 0, 0.5, 10.0), camTarget: off(REGP, 0, 0.1, 0), spinIdle: 0.0016 },
   { name: 'Networks', cap: '<b>Disease rarely travels alone.</b> Edges are comorbidity ties.', spin: netSpin, picks: () => netPicks, camPos: off(NETP, 0, 0.9, 11), camTarget: off(NETP, 0, 0.8, 0), spinIdle: 0.0012 },
-  { name: 'Collaborate', cap: '<b>Forest, funnel, survival, ROC. Computed live.</b>', spin: collabSpin, picks: () => [], camPos: off(COLLAB, 0, 1.25, 9.2), camTarget: off(COLLAB, 0, 1.15, 0), wide: 1.5 },
-  { name: 'Covexe', cap: '<b>My project.</b> One place for the whole systematic review.', spin: covexe.group, picks: () => [covexeLink], camPos: off(COVP, 0, 0.35, 9.3), camTarget: off(COVP, 0, 0.15, 0), wide: 1.18 },
-  { name: 'The analyst', cap: '<b>Five global datasets. Peer-reviewed work on obesity, diet and cancer.</b>', spin: aboutSpin, picks: () => aboutPicks, camPos: off(ABP, 0, 0, 7.2), camTarget: ABP.clone(), spinIdle: 0.0015 },
+  { name: 'Collaborate', cap: '<b>Forest, funnel, survival, ROC. Computed live.</b>', spin: collabSpin, picks: () => [], camPos: off(COLLAB, 0, 1.25, 9.2), camTarget: off(COLLAB, 0, 1.15, 0), wide: 1.5, capM: 1 },
+  { name: 'Covexe', cap: '<b>My project.</b> One place for the whole systematic review.', spin: covexe.group, picks: () => [covexeLink], camPos: off(COVP, 0, 0.35, 9.3), camTarget: off(COVP, 0, 0.15, 0), wide: 1.18, capM: 1 },
+  { name: 'The analyst', cap: '<b>Five global datasets. Peer-reviewed work on obesity, diet and cancer.</b>', spin: aboutSpin, picks: () => aboutPicks, camPos: off(ABP, 0, 0, 7.2), camTarget: ABP.clone(), spinIdle: 0.0015, wide: 1.22 },
   { name: 'The research library', cap: '<b>Step inside the research library.</b>', spin: storySpin, picks: () => [], camPos: off(STORYP, 0, 0.5, 7), camTarget: off(STORYP, 0, 0.5, 0) }
 ];
 const N = STATIONS.length;
@@ -1034,6 +1034,7 @@ function onStation(i) {
   document.getElementById('st-idx').textContent = String(i + 1).padStart(2, '0') + ' / ' + String(N).padStart(2, '0');
   document.getElementById('st-name').textContent = s.name;
   document.getElementById('st-cap').innerHTML = s.cap;
+  document.body.classList.toggle('cap-m', !!s.capM);   // phones: the card text is too small, so show the one-line takeaway
   // choreographed arrival: title first, caption a beat later
   const stEl = document.getElementById('station'); stEl.style.animation = 'none'; void stEl.offsetWidth; stEl.style.animation = 'fadein .5s cubic-bezier(.16,1,.3,1)';
   const lg = document.getElementById('legend'); lg.innerHTML = s.cap; lg.style.animation = 'none'; void lg.offsetWidth; lg.style.animation = 'fadein .55s cubic-bezier(.16,1,.3,1) .08s both';
