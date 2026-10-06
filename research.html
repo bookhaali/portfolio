@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Research · Abdiwahab Ali</title>
+<title>Research · AB</title>
 <meta name="description" content="Research in obesity, diet and cancer epidemiology: published papers with DOIs, studies in progress and field research in Hargeisa.">
 <meta name="theme-color" content="#0D0D0C">
 <meta name="color-scheme" content="dark">
-<meta property="og:title" content="Research · Abdiwahab Ali">
+<meta property="og:title" content="Research · AB">
 <meta property="og:description" content="Obesity, diet and cancer epidemiology. Published papers, studies in progress and field research.">
 <meta property="og:image" content="https://bookhaali.github.io/portfolio/assets/og.jpg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0D0C'/%3E%3Ccircle cx='32' cy='36' r='13' fill='none' stroke='%238DB0E4' stroke-width='3'/%3E%3Cline x1='32' y1='23' x2='32' y2='10' stroke='%23E8743B' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='42' y1='28' x2='49' y2='19' stroke='%238DB0E4' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='22' y1='28' x2='16' y2='21' stroke='%235FC9C0' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
@@ -71,6 +71,8 @@
   .chips button:hover{border-color:var(--ink)}
   .chips button[aria-pressed="true"]{background:var(--ink);color:var(--bgc,#fff);border-color:var(--ink)}
   html[data-night="1"] .chips button[aria-pressed="true"]{color:#111}
+  /* a phone on its side: little height, so the intro keeps only its heading */
+  @media (max-height:500px) and (orientation:landscape){.lede p{display:none}.lede h1{font-size:26px}.lede{bottom:84px}}
   .lede{transition:opacity .4s ease}
   html.pon .lede{opacity:0;pointer-events:none}
   .hl{animation:hl 1.6s ease}@keyframes hl{0%,40%{background:rgba(47,91,234,.1)}100%{background:transparent}}
@@ -94,6 +96,9 @@
   .list{position:relative;z-index:2;max-width:760px;margin:0 auto;padding:110px 24px 80px}
   .list h1{font-size:44px;font-weight:600;letter-spacing:-.035em}.list h2{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-top:44px}
   .list .sub{font-size:15px;color:var(--muted);margin-top:8px}
+  /* words for the kind of pointer: 'Click' with a mouse, 'Tap' on a touch screen */
+  .on-touch{display:none}
+  @media (hover:none){.on-touch{display:inline}.on-mouse{display:none}}
   .loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--m);font-size:13px;color:var(--muted);z-index:1}
   @media(max-width:760px){header.site{left:16px;right:16px;top:14px}.brand .role{display:none}.lede{bottom:auto;top:84px;left:20px;right:20px}.lede h1{font-size:28px}.chips{left:12px;right:12px;bottom:16px}.panel{top:auto;height:62vh;right:12px;left:12px;width:auto;transform:translateY(calc(100% + 40px))}}
 </style>
@@ -102,7 +107,7 @@
 <body>
 <div class="loading" id="loading">setting up the lab…</div>
 <header class="site">
-  <a class="brand" href="index.html"><div class="name">Abdiwahab Ali</div><div class="role">Health data analyst &middot; Doctoral researcher &middot; Taipei</div></a>
+  <a class="brand" href="index.html"><div class="name">AB</div><div class="role">Doctoral researcher &middot; Taipei</div></a>
   <nav class="top">
     <a href="index.html" class="home">Journey</a>
     <a href="research.html" class="on" aria-current="page">Research</a>
@@ -110,7 +115,7 @@
     <a href="index.html#hire" class="primary">Hire me</a>
   </nav>
 </header>
-<section class="lede"><h1>Step into<br>the lab.</h1><p>Obesity, diet and cancer epidemiology. Click anything in the room and the guide will show you around.</p></section>
+<section class="lede"><h1>Step into<br>the lab.</h1><p>Obesity, diet and cancer epidemiology. <span class="on-mouse">Click</span><span class="on-touch">Tap</span> anything in the room and the guide will show you around.</p></section>
 <div class="chips" id="chips" role="group" aria-label="Parts of the lab"></div>
 
 <div class="sky" aria-hidden="true"><canvas id="stars"></canvas></div>
@@ -151,7 +156,8 @@ await Promise.all([document.fonts.load('600 40px "' + FONT + '"'), document.font
 let renderer;
 try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); }
 catch (e) { listView(); throw e; } renderer.setClearColor(0x000000, 0);
-renderer.setPixelRatio(Math.min(2, devicePixelRatio)); renderer.setSize(innerWidth, innerHeight);
+const PHONE = Math.min(innerWidth, innerHeight) < 760;
+renderer.setPixelRatio(Math.min(PHONE ? 1.75 : 2, devicePixelRatio)); renderer.setSize(innerWidth, innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.prepend(renderer.domElement);
@@ -161,11 +167,15 @@ scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnviron
 // camera: isometric, a little parallax with the pointer
 const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, .1, 100);
 const SHIFT = new THREE.Vector3(-.8, 0, .8), CAM0 = new THREE.Vector3(10, 8.6, 10).add(SHIFT), LOOK = new THREE.Vector3(0, 1.1, 0).add(SHIFT);
-function fit() { const a = innerWidth / innerHeight, h = innerWidth < 760 ? 11 : 8.2; cam.left = -h * a / 2; cam.right = h * a / 2; cam.top = h / 2; cam.bottom = -h / 2; cam.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); }
+function fit() { const a = innerWidth / innerHeight, h = Math.max(innerWidth < 760 ? 11 : 8.2, 12.6 / a, innerHeight < 500 ? 10.5 : 0); cam.left = -h * a / 2; cam.right = h * a / 2; cam.top = h / 2; cam.bottom = -h / 2; cam.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); }
 fit(); addEventListener('resize', fit);
 cam.position.copy(CAM0); cam.lookAt(LOOK);
 // camera focus: glides and zooms to whatever was clicked, and frames it beside the panel
-const OFF0 = CAM0.clone().sub(LOOK), FOCUS = { look: LOOK.clone(), zoom: 1 }, VIEW = { look: LOOK.clone(), zoom: 1, off: 0 };
+// where the camera rests: on a wide screen the room sits right of the intro text; on a phone held
+// upright there is no text beside it, so the room is centred
+const LOOK_UPRIGHT = new THREE.Vector3(-.15, 1.3, -.15), HOME = () => (innerHeight > innerWidth * 1.25 ? LOOK_UPRIGHT : LOOK);
+const OFF0 = CAM0.clone().sub(LOOK), FOCUS = { look: HOME().clone(), zoom: 1 }, VIEW = { look: HOME().clone(), zoom: 1, off: 0 };
+addEventListener('resize', () => { if (!panel.classList.contains('on')) FOCUS.look.copy(HOME()); });
 const ZOOM = { papers: 2.1, progress: 2.0, data: 2.2, field: 2.3, tools: 2.6 };
 const AIM = { papers: [-1.9, 1.55, -3.0], progress: [-3.9, 2.0, .5], data: [1.9, 1.3, -2.6], field: [-.1, 2.45, -3.9], tools: [2.6, 1.0, .9] };
 const _r = new THREE.Vector3(), _u = new THREE.Vector3(), _t = new THREE.Vector3();
@@ -174,7 +184,7 @@ const _r = new THREE.Vector3(), _u = new THREE.Vector3(), _t = new THREE.Vector3
 const hemi = new THREE.HemisphereLight(0xffffff, 0xd8d2c8, .7); scene.add(hemi);
 let LAMP = null, BULB = null; const DOTS = [];
 const sun = new THREE.DirectionalLight(0xfff4e6, 2.2); sun.position.set(6, 10, 4); sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7 }); sun.shadow.radius = 4; sun.shadow.bias = -.0005; scene.add(sun);
+sun.shadow.mapSize.set(PHONE ? 1024 : 2048, PHONE ? 1024 : 2048); Object.assign(sun.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7 }); sun.shadow.radius = 4; sun.shadow.bias = -.0005; scene.add(sun);
 
 // materials: soft clay, one blue accent
 const clay = c => new THREE.MeshStandardMaterial({ color: c, roughness: .85 });
@@ -310,7 +320,7 @@ let pane = null;
   station('tools', g, [1.8, 0, 1.6], [2.7, 1.0, .9]); }
 
 // the guide
-const ghost = createGhost(THREE, { camera: cam, canvas: renderer.domElement }); ghost.group.position.set(.4, 0, .9); ghost.group.rotation.y = Math.PI / 4; ghost.group.scale.setScalar(1.45); scene.add(ghost.group);
+const ghost = createGhost(THREE, { camera: cam, canvas: renderer.domElement, px: PHONE ? 256 : 400 }); ghost.group.position.set(.4, 0, .9); ghost.group.rotation.y = Math.PI / 4; ghost.group.scale.setScalar(1.45); scene.add(ghost.group);
 let goal = ghost.group.position.clone(), from = goal.clone(), travel = 1;
 
 // the papers panel
@@ -337,7 +347,7 @@ function go(id, pid) {
   if (id === 'papers' && pid) { const el = pc.querySelector('[data-p="' + pid + '"]'); if (el) { el.classList.add('hl'); el.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' }); } } chips.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === id ? 'true' : 'false'));
   setTimeout(() => ghost.wave(), 700);
 }
-document.getElementById('px').onclick = () => { panel.classList.remove('on'); FOCUS.look.copy(LOOK); FOCUS.zoom = 1; ghost.lookAt(null); chips.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', 'false')); };
+document.getElementById('px').onclick = () => { panel.classList.remove('on'); FOCUS.look.copy(HOME()); FOCUS.zoom = 1; ghost.lookAt(null); chips.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', 'false')); };
 addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('px').click(); });
 new MutationObserver(() => document.documentElement.classList.toggle('pon', panel.classList.contains('on'))).observe(panel, { attributes: true, attributeFilter: ['class'] });
 
@@ -407,7 +417,8 @@ renderer.setAnimationLoop(() => {
   const gl = stations.data.group.userData.globe; if (!reduce) gl.rotation.y += dt * .25;
   { const fk = reduce ? 1 : 1 - Math.exp(-dt * 3.2), mob = innerWidth < 760;
     VIEW.look.lerp(FOCUS.look, fk); VIEW.zoom += (FOCUS.zoom - VIEW.zoom) * fk;
-    const want = panel.classList.contains('on') ? (mob ? -innerHeight * .31 : (Math.min(420, innerWidth - 48) + 24) / 2) : 0;
+    const tall = innerHeight > innerWidth * 1.25;   // a phone held upright: the room sits a little low, clear of the intro text
+    const want = panel.classList.contains('on') ? (mob ? -innerHeight * .31 : (Math.min(420, innerWidth - 48) + 24) / 2) : (mob && tall ? innerHeight * .085 : 0);
     VIEW.off += (want - VIEW.off) * fk;
     const wpp = (cam.right - cam.left) / VIEW.zoom / innerWidth;
     _r.setFromMatrixColumn(cam.matrixWorld, 0); _u.setFromMatrixColumn(cam.matrixWorld, 1);

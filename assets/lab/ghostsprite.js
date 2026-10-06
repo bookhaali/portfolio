@@ -5,7 +5,7 @@
 export function createGhost(THREE, opts = {}) {
   const B = window.BotAvatars, cam = opts.camera, canvasEl = opts.canvas;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const PX = 400, O = B.OVERSCAN, RISE = B.RISE;
+  const PX = opts.px || 400, O = B.OVERSCAN, RISE = B.RISE;   // texture size: smaller on phones
   const preset = B.botAvatarPresets.ghost;
   let night = false;
   const cfgFor = () => {

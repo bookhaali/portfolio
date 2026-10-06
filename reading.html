@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Hobby · Abdiwahab Ali</title>
+<title>Hobby · AB</title>
 <meta name="description" content="The books I have read this year and the ones on the way. Suggest one.">
 <meta name="theme-color" content="#0B0A09">
 <meta name="color-scheme" content="dark">
-<meta property="og:title" content="Hobby · Abdiwahab Ali">
+<meta property="og:title" content="Hobby · AB">
 <meta property="og:description" content="The books I have read this year and the ones on the way.">
 <meta property="og:image" content="https://bookhaali.github.io/portfolio/assets/og.jpg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230D0D0C'/%3E%3Ccircle cx='32' cy='36' r='13' fill='none' stroke='%238DB0E4' stroke-width='3'/%3E%3Cline x1='32' y1='23' x2='32' y2='10' stroke='%23E8743B' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='42' y1='28' x2='49' y2='19' stroke='%238DB0E4' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='22' y1='28' x2='16' y2='21' stroke='%235FC9C0' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
@@ -233,12 +233,16 @@
     /* the mobile menu from nav.js is dark; give it the light surface */
     html[data-theme="light"] header.site nav.top{background:rgba(255,248,240,.98);border-color:rgba(30,34,48,.12);box-shadow:0 18px 40px rgba(60,40,20,.16)}
   }
+
+  /* words for the kind of pointer: 'Click' with a mouse, 'Tap' on a touch screen */
+  .on-touch{display:none}
+  @media (hover:none){.on-touch{display:inline}.on-mouse{display:none}}
 </style>
 </head>
 <body>
 <div class="dust" id="dust" aria-hidden="true"></div>
 <header class="site">
-  <a class="brand" href="index.html"><div class="name">Abdiwahab Ali</div><div class="role">Health data analyst &middot; Doctoral researcher &middot; Taipei</div></a>
+  <a class="brand" href="index.html"><div class="name">AB</div><div class="role">Doctoral researcher &middot; Taipei</div></a>
   <nav class="top">
     <a href="index.html" class="home">Journey</a>
     <a href="research.html">Research</a>
@@ -250,7 +254,7 @@
 <main>
   <div class="kicker">Hobby · reading</div>
   <h1>My bookshelf</h1>
-  <p class="cap"><b>What I read this year, and what is next.</b> Click a book to take it out. Know one I should read? Pin it on the card.</p>
+  <p class="cap"><b>What I read this year, and what is next.</b> <span class="on-mouse">Click</span><span class="on-touch">Tap</span> a book to take it out. Know one I should read? Pin it on the card.</p>
   <div class="tally" aria-label="Reading so far">
     <div class="big"><b id="t-read">0</b><span>books read in <span id="t-year"></span> so far</span></div>
     <div class="small"><b id="t-arr">0</b><span>arriving in October</span></div>
@@ -263,7 +267,7 @@
         <div id="shelves"></div>
       </div>
       <div class="plinth"></div>
-      <p class="hint">Click a book to take it off the shelf and turn it.</p>
+      <p class="hint"><span class="on-mouse">Click a book to take it off the shelf and turn it.</span><span class="on-touch">Tap a book to take it off the shelf. Drag it to turn it.</span></p>
     </div>
 
     <div class="side">
@@ -435,7 +439,7 @@
     rows.forEach(r => {
       r.row.style.width = avail + 'px';
       r.row.style.height = (r.maxH + (r.tags ? 60 : 34)) + 'px';
-      r.row.querySelectorAll('[data-tag]').forEach(t => { t.style.bottom = (r.maxH + 6) + 'px'; });
+      r.row.querySelectorAll('[data-tag]').forEach(t => { t.style.bottom = (r.maxH + 6) + 'px'; const room = avail - PAD - 14 - t.offsetWidth; if (parseFloat(t.style.left) > room) t.style.left = Math.max(PAD, room) + 'px'; });
       r.row.querySelectorAll('.bookend').forEach(b => { b.style.height = Math.round(r.maxH * 0.55) + 'px'; });
     });
     return rows;

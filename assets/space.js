@@ -211,7 +211,10 @@ const hotMarker = new THREE.Mesh(new THREE.SphereGeometry(0.02, 16, 16), new THR
 const hotLabel = makeLabel(' ', { size: 0.075, color: '#E8743B' }); hotLabel.visible = false; globe.add(hotLabel);
 // the first screen is only Earth and the name: the "highest" label waits for the first scroll, like the rest of the data
 const introUp = () => { const el = document.getElementById('intro'); return !!el && !el.classList.contains('gone'); };
-{ const el = document.getElementById('intro'); if (el && window.MutationObserver) new MutationObserver(() => { if (hotSpike) hotMarker.visible = hotLabel.visible = !introUp(); }).observe(el, { attributes: true, attributeFilter: ['class'] }); }
+// on a phone held upright the label cannot fit beside the globe and runs off the screen, so it stays hidden there
+const hotFits = () => innerWidth >= 640 || innerWidth > innerHeight;
+addEventListener('resize', () => { if (hotSpike) hotMarker.visible = hotLabel.visible = !introUp() && hotFits(); });
+{ const el = document.getElementById('intro'); if (el && window.MutationObserver) new MutationObserver(() => { if (hotSpike) hotMarker.visible = hotLabel.visible = !introUp() && hotFits(); }).observe(el, { attributes: true, attributeFilter: ['class'] }); }
 let hotSpike = null, hotIso = null;
 const _spikeCol = new THREE.Color();
 function refreshSpikes() {
@@ -222,7 +225,7 @@ function refreshSpikes() {
     spikeColor(clamp(v / cmax, 0, 1), _spikeCol); m.userData.mat0.color.copy(_spikeCol);
     if (v > maxV) { maxV = v; maxM = m; maxIso = m.userData.iso; }
   }
-  if (maxM) { hotSpike = maxM; hotIso = maxIso; hotMarker.visible = hotLabel.visible = !introUp(); hotLabel.userData.set('highest  ' + OB.countries[maxIso].name + ' ' + maxV.toFixed(0) + '% · ' + (pop === 'adol' ? 'ages 5-19' : 'ages 20+')); }
+  if (maxM) { hotSpike = maxM; hotIso = maxIso; hotMarker.visible = hotLabel.visible = !introUp() && hotFits(); hotLabel.userData.set('highest  ' + OB.countries[maxIso].name + ' ' + maxV.toFixed(0) + '% · ' + (pop === 'adol' ? 'ages 5-19' : 'ages 20+')); }
 }
 const moon = new THREE.Mesh(new THREE.SphereGeometry(0.27, 48, 48), new THREE.MeshStandardMaterial({ color: 0x9a9893, roughness: 0.95 })); moon.position.set(3.4, 1.9, -7); moon.add(atmosphere(0.302, 0x9EC0EE, 3.2, 0.22)); scene.add(moon);
 
