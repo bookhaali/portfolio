@@ -78,10 +78,18 @@
   .b3 .sp::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.22) 0%,rgba(255,255,255,.05) 22%,rgba(255,255,255,0) 50%,rgba(0,0,0,.16) 100%);pointer-events:none}
   .b3 .cv{left:var(--t);top:0;width:var(--c);height:var(--h);transform-origin:0 50%;transform:rotateY(90deg);background:#333 center/100% 100% no-repeat;border-radius:0 3px 3px 0}
   .b3 .cv::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.35),rgba(255,255,255,.08) 3%,rgba(0,0,0,0) 7%)}
-  .b3 .bc{left:calc(var(--c) * -1);top:0;width:var(--c);height:var(--h);transform-origin:100% 50%;transform:rotateY(-90deg);background:var(--bc,#1c1c1c);border-radius:3px 0 0 3px}
+  .b3 .bc{left:calc(var(--c) * -1);top:0;width:var(--c);height:var(--h);transform-origin:100% 50%;transform:rotateY(-90deg);border-radius:3px 0 0 3px;
+    background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,.12) 8%,rgba(0,0,0,.18)),var(--bc,#1c1c1c)}
+  /* the back cover: a few lines of blurb and a barcode, so a turned book reads as a real one */
+  .b3 .bc::before{content:'';position:absolute;left:16%;right:16%;top:16%;height:30%;opacity:.5;
+    background:repeating-linear-gradient(180deg,rgba(255,255,255,.55) 0 2px,transparent 2px 9px);mix-blend-mode:overlay}
+  .b3 .bc::after{content:'';position:absolute;right:12%;bottom:7%;width:28%;height:8%;border-radius:2px;border:solid #fff;border-width:4px 6px 10px;box-sizing:border-box;opacity:.92;
+    background:repeating-linear-gradient(90deg,#111 0 1px,#fff 1px 2px,#111 2px 4px,#fff 4px 5px,#111 5px 6px,#fff 6px 8px)}
   .b3 .pg{left:0;top:0;width:var(--t);height:var(--h);transform:translateZ(calc(var(--c) * -1)) rotateY(180deg);background:repeating-linear-gradient(90deg,#EDE6D6 0 2px,#D9D0BC 2px 3px)}
   .b3 .tp{left:0;top:0;width:var(--t);height:var(--c);transform-origin:50% 0;transform:rotateX(-90deg);backface-visibility:visible;background:repeating-linear-gradient(90deg,#EDE6D6 0 2px,#D3C9B4 2px 3px)}
-  .row .b3 .cv,.row .b3 .bc,.row .b3 .pg,.row .b3 .tp{opacity:0;transition:opacity .2s}
+  /* the underside of the page block, so the book is closed from every angle */
+  .b3 .bt{left:0;top:calc(var(--h) - var(--c));width:var(--t);height:var(--c);transform-origin:50% 100%;transform:rotateX(90deg);backface-visibility:visible;background:repeating-linear-gradient(90deg,#E2DACA 0 2px,#C9BFAA 2px 3px)}
+  .row .b3 .cv,.row .b3 .bc,.row .b3 .pg,.row .b3 .tp,.row .b3 .bt{opacity:0;transition:opacity .2s}
   .row .b3:hover,.row .b3:focus-visible{transform:translate3d(0,-10px,0);z-index:60}
   .row .b3:hover .sp,.row .b3:focus-visible .sp{box-shadow:inset -3px 0 6px rgba(0,0,0,.35),0 14px 20px rgba(0,0,0,.55)}
   .row .b3.out{opacity:0;transition:none}
@@ -375,7 +383,7 @@
     const sp = el('span', 'fc sp', box);
     drawnSpine(sp, b, t, h);
     const cv = el('span', 'fc cv', box); cv.style.backgroundImage = 'url(' + COVER(b) + ')';
-    el('span', 'fc bc', box); el('span', 'fc pg', box); el('span', 'fc tp', box);
+    el('span', 'fc bc', box); el('span', 'fc pg', box); el('span', 'fc tp', box); el('span', 'fc bt', box);
     return { box, t, h, c };
   }
 
