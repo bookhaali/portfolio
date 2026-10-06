@@ -1002,11 +1002,12 @@ function stopTour(instant) {
     camera.up.set(0, 1, 0); rollCur = 0; camera.fov = BF(); camera.updateProjectionMatrix();
     if (demoStreaks) { demoStreaks.visible = false; demoStreaks.material.opacity = 0; }
   }
+  btn.dataset.tip = 'Auto tour'; btn.setAttribute('aria-label', 'Auto tour');
   if (!demoActive) { btn.classList.remove('on'); return; }
   demoActive = false; btn.classList.remove('on');
   const cur = clamp(Math.round(curStation < 0 ? 0 : curStation), 0, N - 1); scrollTo(0, cur / (N - 1) * (document.body.scrollHeight - innerHeight));
 }
-function startTour() { if (demoActive) { stopTour(); return; } demoActive = true; document.getElementById('tour').classList.add('on'); demoStart = performance.now(); }
+function startTour() { if (demoActive) { stopTour(); return; } demoActive = true; const b = document.getElementById('tour'); b.classList.add('on'); b.dataset.tip = 'Stop tour'; b.setAttribute('aria-label', 'Stop tour'); demoStart = performance.now(); }
 // ---- cinematic demo camera state ----
 const demoPos = new THREE.Vector3(), demoTgt = new THREE.Vector3(); let demoRoll = 0, demoFov = 42, demoEnding = false, rollCur = 0;
 const _up0 = new THREE.Vector3(0, 1, 0);

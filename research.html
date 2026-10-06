@@ -67,7 +67,7 @@
   .hints{position:fixed;inset:0;z-index:4;pointer-events:none;transition:opacity .4s ease}
   html.pon .hints{opacity:0}html.pon .hints *{pointer-events:none!important}
   .hint{position:absolute;left:0;top:0;pointer-events:auto;cursor:pointer;will-change:transform;margin:0;padding:0;border:0;background:none;font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
-  .hint.tag{padding:6px 11px;border-radius:99px;font:500 12.5px var(--f);white-space:nowrap;color:var(--ink);background:var(--chip);border:1px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  .hint.tag{padding:6px 11px;border-radius:99px;font:500 12.5px var(--f);white-space:nowrap;color:var(--ink);background:var(--card);border:1px solid var(--line);
     transform:translate(-50%,-100%);transition:background .2s,color .2s,border-color .2s,box-shadow .2s}
   .hint.tag::after{content:'';position:absolute;left:50%;top:100%;width:1px;height:10px;background:var(--line)}
   .hint.tag.on{background:var(--ink);color:var(--bgc,#fff);border-color:var(--ink);box-shadow:0 6px 18px rgba(0,0,0,.25)}
@@ -325,7 +325,7 @@ let pane = null;
   station('tools', g, [1.8, 0, 1.6], [2.7, 1.0, .9]); }
 
 // the guide
-const ghost = createGhost(THREE, { camera: cam, canvas: renderer.domElement, px: PHONE ? 256 : 400 }); ghost.group.position.set(.4, 0, .9); ghost.group.rotation.y = Math.PI / 4; ghost.group.scale.setScalar(1.45); scene.add(ghost.group);
+const ghost = createGhost(THREE, { camera: cam, canvas: renderer.domElement, px: PHONE ? 256 : 320 }); ghost.group.position.set(.4, 0, .9); ghost.group.rotation.y = Math.PI / 4; ghost.group.scale.setScalar(1.45); scene.add(ghost.group);
 let goal = ghost.group.position.clone(), from = goal.clone(), travel = 1;
 
 // the papers panel
@@ -349,13 +349,13 @@ const hintEls = {};
   Object.keys(HINT_AT).forEach(id => {
     const el = document.createElement('button'); el.type = 'button'; el.className = 'hint tag'; el.textContent = NAMES[id];
     el.onclick = () => go(id);
-    el.onmouseenter = () => { el.classList.add('on'); stations[id].group.scale.setScalar(1.035); };
-    el.onmouseleave = () => { el.classList.remove('on'); if (hovered !== id) stations[id].group.scale.setScalar(1); };
+    el.onmouseenter = () => { el.classList.add('on'); el._over = true; HOVER_S[id] = 1.035; };
+    el.onmouseleave = () => { el.classList.remove('on'); el._over = false; if (hovered !== id) HOVER_S[id] = 1; };
     box.appendChild(el); hintEls[id] = { el, p: new THREE.Vector3(...HINT_AT[id]) };
   }); }
 const _hp = new THREE.Vector3();
 function placeHints() {
-  for (const id in hintEls) { const h = hintEls[id]; _hp.copy(h.p).project(cam); h.el.style.transform = 'translate(' + ((_hp.x + 1) / 2 * innerWidth).toFixed(1) + 'px,' + ((1 - _hp.y) / 2 * innerHeight).toFixed(1) + 'px)' + ' translate(-50%,calc(-100% - 10px))'; h.el.classList.toggle('on', hovered === id || h.el.matches(':hover')); }
+  for (const id in hintEls) { const h = hintEls[id]; _hp.copy(h.p).project(cam); h.el.style.transform = 'translate(' + ((_hp.x + 1) / 2 * innerWidth).toFixed(1) + 'px,' + ((1 - _hp.y) / 2 * innerHeight).toFixed(1) + 'px)' + ' translate(-50%,calc(-100% - 10px))'; h.el.classList.toggle('on', hovered === id || !!h.el._over); }
 }
 const panel = document.getElementById('panel'), pc = document.getElementById('pc'), chips = document.getElementById('chips');
 Object.keys(NAMES).forEach(id => { const b = document.createElement('button'); b.textContent = NAMES[id]; b.dataset.id = id; b.setAttribute('aria-pressed', 'false'); b.onclick = () => go(id); chips.appendChild(b); });
@@ -373,18 +373,26 @@ new MutationObserver(() => document.documentElement.classList.toggle('pon', pane
 
 // pointer: hover highlights, click goes to a station or pokes the guide
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), tip = document.getElementById('tip');
-let hovered = null, hoverPaper = null, px = 0, py = 0;
-renderer.domElement.addEventListener('pointermove', e => {
-  ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight * 2 - 1)); px = ndc.x; py = ndc.y;
+let hovered = null, hoverPaper = null, px = 0, py = 0, SPX = 0, SPY = 0;   // SPX/SPY: the pointer, eased, for the gentle parallax
+// the pointer is only recorded here; what is under it is worked out once per frame (pickHover),
+// however many move events the mouse sends
+let ptrDirty = false, ptrX = 0, ptrY = 0;
+renderer.domElement.addEventListener('pointermove', e => { ptrX = e.clientX; ptrY = e.clientY; ndc.set(ptrX / innerWidth * 2 - 1, -(ptrY / innerHeight * 2 - 1)); px = ndc.x; py = ndc.y; ptrDirty = true; });
+const HOVER_S = {};   // each object's target size: 1, or a touch larger while hovered
+function pickHover() {
+  if (!ptrDirty) return; ptrDirty = false;
   ray.setFromCamera(ndc, cam);
   const hit = ray.intersectObjects([ghost.group, ...Object.values(stations).map(s => s.group)], true)[0];
   hoverPaper = hit && hit.object.userData.paper || null;
   const id = hit ? (hit.object.userData.station || (ghost.group.getObjectById(hit.object.id) ? 'ghost' : null)) : null;
-  if (id !== hovered) { if (hovered && stations[hovered]) stations[hovered].group.scale.setScalar(1); hovered = id; if (id && stations[id]) stations[id].group.scale.setScalar(1.035); }
+  if (id !== hovered) { if (hovered && stations[hovered]) HOVER_S[hovered] = 1; hovered = id; if (id && stations[id]) HOVER_S[id] = 1.035; }
   renderer.domElement.style.cursor = id ? 'pointer' : '';
-  if (id && id !== 'ghost') { tip.textContent = hoverPaper ? JNAME[hoverPaper] + ' · ' + P.find(p => p.id === hoverPaper).year : NAMES[id]; tip.style.left = e.clientX + 'px'; tip.style.top = e.clientY + 'px'; tip.style.opacity = 1; } else tip.style.opacity = 0;
+  if (id && id !== 'ghost') { tip.textContent = hoverPaper ? JNAME[hoverPaper] + ' · ' + P.find(p => p.id === hoverPaper).year : NAMES[id]; tip.style.left = ptrX + 'px'; tip.style.top = ptrY + 'px'; tip.style.opacity = 1; } else tip.style.opacity = 0;
+}
+renderer.domElement.addEventListener('click', e => {
+  ptrX = e.clientX; ptrY = e.clientY; ndc.set(ptrX / innerWidth * 2 - 1, -(ptrY / innerHeight * 2 - 1)); ptrDirty = true; pickHover();   // a tap may come with no move before it
+  if (hovered === 'ghost') ghost.poke(); else if (hovered) go(hovered, hoverPaper);
 });
-renderer.domElement.addEventListener('click', () => { if (hovered === 'ghost') ghost.poke(); else if (hovered) go(hovered, hoverPaper); });
 
 // styles and day/night
 const PAL = {
@@ -443,8 +451,11 @@ renderer.setAnimationLoop(() => {
     _r.setFromMatrixColumn(cam.matrixWorld, 0); _u.setFromMatrixColumn(cam.matrixWorld, 1);
     _t.copy(VIEW.look).addScaledVector(mob ? _u : _r, VIEW.off * wpp);
     const par = reduce ? 0 : 1 / VIEW.zoom;
-    cam.position.copy(_t).add(OFF0); cam.position.x += px * .35 * par; cam.position.y += py * .25 * par; cam.position.z -= px * .35 * par;
+    cam.position.copy(_t).add(OFF0); SPX += (px - SPX) * Math.min(1, dt * 4); SPY += (py - SPY) * Math.min(1, dt * 4);
+    cam.position.x += SPX * .35 * par; cam.position.y += SPY * .25 * par; cam.position.z -= SPX * .35 * par;
     cam.lookAt(_t); if (Math.abs(cam.zoom - VIEW.zoom) > 1e-4) { cam.zoom = VIEW.zoom; cam.updateProjectionMatrix(); } }
+  pickHover();
+  for (const id in stations) { const g = stations[id].group, to = HOVER_S[id] || 1, s = g.scale.x; if (Math.abs(to - s) > .0005) g.scale.setScalar(s + (to - s) * Math.min(1, dt * 14)); }
   placeHints();
   renderer.render(scene, cam);
 });

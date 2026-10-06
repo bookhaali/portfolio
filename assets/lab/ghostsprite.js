@@ -70,10 +70,13 @@ export function createGhost(THREE, opts = {}) {
   }
   paint();
 
+  // drawing the ghost is the most expensive thing in the room (a 2D plastic-shaded render, then a
+  // texture upload), so it is redrawn 30 times a second; its motion is slow enough not to show it
+  let since = 1;
   function update(dt, t) {
     aim();
     if (!reduce) { sim.update(Math.min(dt, .05)); bob.position.y = Math.sin(t * 1.5) * .04; shadow.scale.setScalar(1 - Math.sin(t * 1.5) * .06); }
-    paint();
+    since += dt; if (since >= 1 / 31) { since = 0; paint(); }
   }
   return {
     group, update, sprite,

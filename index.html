@@ -60,6 +60,9 @@
   .station .idx{font-size:.64rem;color:var(--faint);letter-spacing:.18em}
   .station .nm{font-size:.72rem;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-top:.25rem}
   .station .cap{display:none}
+  /* no stop number or name ("01 / 14 EARTH"): the scene says where you are */
+  .station .idx,.station .nm{display:none!important}
+  .station{pointer-events:none!important}
   .stlist{position:fixed;top:5.6rem;--stl:1;left:50%;transform:translateX(-50%) translateY(-6px);z-index:30;display:flex;flex-direction:column;gap:2px;
     background:var(--glass);backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--glass-bd);border-radius:var(--r-s);padding:.4rem;
     opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s var(--spring);max-height:62vh;overflow:auto}
@@ -219,7 +222,12 @@
   .yd-cta:hover{background:var(--accent);box-shadow:0 8px 30px rgba(141,176,228,.3)}
 
   /* guided tour button */
-  .tour{position:fixed;left:1.9rem;bottom:2.2rem;z-index:12;background:var(--glass);backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--border);border-radius:var(--r-s);color:var(--muted);font-family:var(--mono);font-size:.7rem;padding:9px 15px;cursor:pointer;letter-spacing:.06em;transition:border-color .18s,color .18s}
+  /* auto tour: a small round play button; it shows pause while the tour runs */
+  .tour{position:fixed;left:1.9rem;bottom:2.2rem;z-index:12;width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;background:var(--glass);backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--border);border-radius:50%;color:var(--muted);cursor:pointer;transition:border-color .18s,color .18s}
+  .tour .i-pause{display:none}.tour.on .i-play{display:none}.tour.on .i-pause{display:block}
+  .tour::after{content:attr(data-tip);position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);white-space:nowrap;font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;color:var(--muted);opacity:0;pointer-events:none;transition:opacity .18s}
+  .tour:hover::after,.tour:focus-visible::after{opacity:1}
+  .tour:focus-visible{border-radius:50%}
   .tour:hover{border-color:var(--accent);color:var(--text)}
   .tour.on{border-color:var(--accent);color:var(--accent)}
 
@@ -321,9 +329,16 @@
     .panel{width:170px;bottom:calc(8.6rem + env(safe-area-inset-bottom));left:1rem;padding:.7rem .8rem}
     .p-name{font-size:.86rem}
     .p-val{font-size:1.3rem}
-    .controls{flex-wrap:wrap;justify-content:center;gap:.5rem;bottom:calc(.7rem + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);padding:.55rem .6rem;max-width:calc(100vw - 1.4rem)}
-    .ds button{padding:10px 11px;font-size:.64rem}
-    #scrub{width:108px}
+    /* phones: one slim row with no box; play runs the years, so the thin year slider is left out */
+    .controls{flex-wrap:nowrap;justify-content:center;gap:.45rem;bottom:calc(.9rem + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);padding:0;max-width:calc(100vw - 1.4rem);
+      background:none;border:0;backdrop-filter:none;-webkit-backdrop-filter:none;opacity:1}
+    .controls .ds,.controls .play{background:rgba(13,13,12,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+    .controls .ds{border-radius:99px}
+    .ds button{padding:8px 11px;font-size:.62rem;white-space:nowrap}
+    .aux b{min-width:0;white-space:nowrap}
+    .play{width:34px;height:34px;border-radius:50%}
+    .timeline{gap:.45rem}
+    #scrub{display:none}
     .aux input[type=range]{width:90px}
     .tour{display:none}
     .methods{left:1rem;right:1rem;transform:none;bottom:calc(1rem + env(safe-area-inset-bottom));justify-content:center;gap:.5rem}
@@ -369,7 +384,7 @@
   @media (prefers-reduced-motion: reduce){a.fun{animation:none}}
 
   /* a minimal first screen: while the title is up (before the first scroll) only Earth, the name, the
-     tagline, the menu, Demo flight and the scroll cue show; the data fades in once the visitor explores */
+     tagline, the menu, the auto-tour button and the scroll cue show; the data fades in once the visitor explores */
   .ui .brand,.datahint,.station,.controls{transition:opacity .8s ease,visibility 0s linear 0s}
   body:has(#intro:not(.gone)) .ui .brand,
   body:has(#intro:not(.gone)) .datahint,
@@ -411,7 +426,7 @@
   <div class="intro-cue">scroll to explore</div>
 </div>
 
-<button class="tour" id="tour">&#9654; Demo flight</button>
+<button class="tour" id="tour" aria-label="Auto tour" data-tip="Auto tour"><svg class="i-play" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg><svg class="i-pause" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="5.5" width="4" height="13" rx="1" fill="currentColor"/><rect x="13.5" y="5.5" width="4" height="13" rx="1" fill="currentColor"/></svg></button>
 <button class="story-trigger" id="story-trigger">Enter the research library &rarr;</button>
 <div id="warp-fade"></div>
 
