@@ -112,7 +112,7 @@
     <a href="index.html" class="home">Journey</a>
     <a href="research.html" class="on" aria-current="page">Research</a>
     <a href="reading.html" class="fun"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5C10 5 7 4.6 3.5 5v13c3.5-.4 6.5 0 8.5 1.5"/><path class="pg" d="M12 6.5c2-1.5 5-1.9 8.5-1.5v13c-3.5-.4-6.5 0-8.5 1.5z"/><path d="M12 6.5V19.5"/></svg><span>Hobby</span></a>
-    <a href="index.html#hire" class="primary">Hire me</a>
+    <a href="index.html#hire" class="primary">Contact / collab</a>
   </nav>
 </header>
 <section class="lede"><h1>Step into<br>the lab.</h1><p>Obesity, diet and cancer epidemiology. <span class="on-mouse">Click</span><span class="on-touch">Tap</span> anything in the room and the guide will show you around.</p></section>
@@ -330,7 +330,7 @@ const papersList = () => P.map(p => '<div class="item" data-p="' + p.id + '"><di
 // panel content
 const P = RS.papers, doi = d => '<a href="' + RS.doiUrl(d) + '" target="_blank" rel="noopener">doi:' + d + '</a>';
 const CONTENT = {
-  papers: { k: 'desk · published', h: 'Published papers', sub: 'Peer-reviewed, newest first. First author on three.', body: papersList },
+  papers: { k: 'desk · published', h: 'Published papers', sub: 'Peer-reviewed, newest first.', body: papersList },
   progress: { k: 'whiteboard · in progress', h: 'Working on', sub: 'Results stay private until each study is published.', body: () => RS.studies.map(s => '<div class="item"><div class="t">' + s.title + '<span class="tag">' + s.status.toLowerCase() + '</span></div><div class="m">' + s.about + ' ' + s.method + '.</div></div>').join('') },
   data: { k: 'globe · data', h: 'Every country, one dot', sub: 'Adult obesity in 2022 for 200 countries and territories, from the data behind the Obesity paper. Red is highest.', body: () => '<a class="go" href="obesity-2026.html">Explore every country →</a>' },
   field: { k: 'postcard · fieldwork', h: 'Hargeisa', sub: 'Paid field researcher on two school oral-health studies. Not an author on either.', body: () => RS.field.map(f => '<div class="item"><div class="t">' + f.title + '</div><div class="m"><i>' + f.journal + '</i> ' + f.where + '.</div>' + doi(f.doi) + '</div>').join('') },

@@ -651,7 +651,7 @@ function drawStoryTable() {
   ctx.fillStyle = '#8DB0E4'; ctx.font = '700 19px Open Sans'; ctx.fillText('THE RESEARCH LIBRARY', 40, 62);
   ctx.fillStyle = '#ECEBE4'; ctx.font = '700 38px Open Sans'; ctx.fillText('Step inside.', 40, 122);
   ctx.fillStyle = '#9C9B91'; ctx.font = '400 22px Open Sans';
-  ctx.fillText('Five active studies. Four published papers.', 40, 178);
+  ctx.fillText('Published work and studies in progress.', 40, 178);
   ctx.fillText('Every figure rebuilt to explore.', 40, 212);
   const cols = ['#E0A24A', '#E0728F', '#D98A6E', '#6FC8A3', '#6FB1E0', '#9B8DE4'];
   cols.forEach((c, i) => { ctx.fillStyle = c; ctx.fillRect(40 + i * 30, H - 64, 18, 38); });
@@ -896,7 +896,7 @@ const STATIONS = [
   { name: 'Networks', cap: '<b>Disease rarely travels alone.</b> Edges are comorbidity ties.', spin: netSpin, picks: () => netPicks, camPos: off(NETP, 0, 0.9, 11), camTarget: off(NETP, 0, 0.8, 0), spinIdle: 0.0012 },
   { name: 'Collaborate', cap: '<b>Forest, funnel, survival, ROC. Computed live.</b>', spin: collabSpin, picks: () => [], camPos: off(COLLAB, 0, 1.25, 9.2), camTarget: off(COLLAB, 0, 1.15, 0), wide: 1.5 },
   { name: 'Covexe', cap: '<b>The platform I built.</b> One place for the whole systematic review.', spin: covexe.group, picks: () => [covexeLink], camPos: off(COVP, 0, 0.35, 9.3), camTarget: off(COVP, 0, 0.15, 0), wide: 1.18 },
-  { name: 'The analyst', cap: '<b>Five global datasets. Four peer-reviewed papers.</b>', spin: aboutSpin, picks: () => aboutPicks, camPos: off(ABP, 0, 0, 7.2), camTarget: ABP.clone(), spinIdle: 0.0015 },
+  { name: 'The analyst', cap: '<b>Five global datasets. Peer-reviewed work on obesity, diet and cancer.</b>', spin: aboutSpin, picks: () => aboutPicks, camPos: off(ABP, 0, 0, 7.2), camTarget: ABP.clone(), spinIdle: 0.0015 },
   { name: 'The research library', cap: '<b>Step inside the research library.</b>', spin: storySpin, picks: () => [], camPos: off(STORYP, 0, 0.5, 7), camTarget: off(STORYP, 0, 0.5, 0) }
 ];
 const N = STATIONS.length;
@@ -1048,11 +1048,12 @@ const qform = document.getElementById('qform');
 if (qform) qform.addEventListener('submit', e => {
   e.preventDefault();
   const btn = qform.querySelector('.qf-send'), ok = qform.querySelector('.qf-ok'), fd = new FormData(qform);
-  const scope = ['need', 'data', 'time'].map(k => { const el = document.querySelector(`[data-q=${k}] .opt.on`); return el ? el.textContent : ''; }).join(' / ');
+  const collab = !!(qCollab && qCollab.checked);
+  const scope = collab ? 'Research collaboration' : ['need', 'data', 'time'].map(k => { const el = document.querySelector(`[data-q=${k}] .opt.on`); return el ? el.textContent : ''; }).join(' / ');
   btn.disabled = true; btn.textContent = 'Sending…';
   fetch('https://formsubmit.co/ajax/bookhaali@gmail.com', {
     method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    body: JSON.stringify({ name: fd.get('name') || '(no name)', email: fd.get('email'), message: fd.get('message'), _subject: 'Portfolio inquiry: ' + scope, scope, price_shown: document.getElementById('q-num').textContent })
+    body: JSON.stringify({ name: fd.get('name') || '(no name)', email: fd.get('email'), message: fd.get('message'), _subject: (collab ? 'Collaboration: ' : 'Portfolio inquiry: ') + scope, scope, price_shown: collab ? 'none (collaboration)' : document.getElementById('q-num').textContent })
   }).then(r => r.ok ? r.json() : Promise.reject()).then(() => {
     qform.querySelectorAll('input,textarea,.qf-send').forEach(el => el.style.display = 'none');
     ok.hidden = false;
@@ -1296,8 +1297,14 @@ document.getElementById('sh-start').addEventListener('click', openQuote);
 const BASE = { '1': [400, 900], '2': [1500, 4000], '3': [3000, 8000], '5': [12000, 40000], '6': [20000, 60000] }; // NT$, Taiwan market
 const INC = { '1': 'One submission-ready figure, one revision.', '2': 'Full analysis, clean code, a results summary.', '3': 'Analysis plus every figure, two revisions.', '5': 'Cleaning through to a manuscript-ready study.', '6': 'A custom interactive dashboard like this one.' };
 const TURN = { '1': [2, 4], '2': [4, 9], '3': [5, 12], '5': [14, 35], '6': [12, 30] };   // days
-const qSel = { need: '3', data: '1', time: '1.15', cur: 'usd' };   // anchor on the real typical engagement, not the cheapest item
+const qSel = { need: '3', data: '1', time: '1.15', cur: 'usd' };
+const qCollab = document.getElementById('q-collab');
+if (qCollab) qCollab.addEventListener('change', () => { document.querySelector('#quote-overlay .builder').classList.toggle('collab', qCollab.checked); document.getElementById('q-cta').textContent = qCollab.checked ? 'Email me about it' : 'Email me this scope'; quoteUpdate(); });   // anchor on the real typical engagement, not the cheapest item
 function quoteUpdate() {
+  if (qCollab && qCollab.checked) {   // a collaboration: no price, a different subject line
+    document.getElementById('q-cta').href = 'mailto:bookhaali@gmail.com?subject=' + encodeURIComponent('Research collaboration');
+    return;
+  }
   const b = BASE[qSel.need], mult = parseFloat(qSel.data) * parseFloat(qSel.time);
   const lo = b[0] * mult, hi = b[1] * mult; let sym, lov, hiv;
   if (qSel.cur === 'usd') { sym = 'US$'; lov = Math.round(lo / 31.5 / 5) * 5; hiv = Math.round(hi / 31.5 / 5) * 5; }

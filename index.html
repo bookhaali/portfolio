@@ -139,6 +139,20 @@
   .opt:hover{border-color:var(--faint);color:var(--text)}
   .opt.on{background:var(--accent-soft);border-color:var(--accent);color:var(--text)}
   .estimate{border-top:1px solid var(--border);padding-top:1.3rem;margin-top:.4rem}
+  /* collaboration: no scope, no price; the same ways to get in touch */
+  .collab-tick{display:flex;align-items:flex-start;gap:.8rem;padding:.9rem 1rem;margin-bottom:1.4rem;border:1px solid var(--border);border-radius:var(--r-s);cursor:pointer;transition:border-color .15s,background .15s}
+  .collab-tick:hover{border-color:var(--muted)}
+  .collab-tick input{position:absolute;opacity:0;pointer-events:none}
+  .collab-tick .box{flex:none;width:18px;height:18px;margin-top:1px;border:1.5px solid var(--muted);border-radius:4px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .collab-tick input:checked+.box{background:var(--accent);border-color:var(--accent)}
+  .collab-tick input:checked+.box::after{content:'';width:5px;height:9px;border:solid #0D0D0C;border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg)}
+  .collab-tick input:focus-visible+.box{outline:2px solid var(--accent);outline-offset:2px}
+  .collab-tick b{font-size:.82rem;color:var(--text)}.collab-tick small{font-size:.7rem;color:var(--muted)}
+  .collab-msg{display:none;font-size:.86rem;line-height:1.6;color:var(--text);margin-bottom:.9rem}
+  .builder.collab .q,.builder.collab #q-sub,.builder.collab .estimate .lab,.builder.collab .estimate .num,.builder.collab .estimate .inc,.builder.collab .estimate .turn,.builder.collab .estimate .note{display:none}
+  .builder.collab .collab-msg{display:block}
+  .builder.collab .estimate{border-top:0;padding-top:0;margin-top:0}
+  .builder.collab .collab-tick{border-color:var(--accent);background:rgba(141,176,228,.06)}
   .estimate .lab{font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
   .estimate .num{font-family:var(--disp);font-size:1.9rem;font-weight:700;color:var(--accent);margin:.3rem 0;font-variant-numeric:tabular-nums}
   .estimate .inc{font-size:.78rem;color:var(--muted);line-height:1.6}
@@ -390,7 +404,6 @@
 
 <div class="intro" id="intro">
   <div class="intro-name">Hey, I’m AB</div>
-  <div class="intro-tag">I make data move</div>
   <div class="intro-cue">scroll to explore</div>
 </div>
 
@@ -449,7 +462,7 @@
   <div class="top-right">
     <a class="ghost" href="research.html" id="nav-research">Research</a>
     <a class="ghost fun" href="reading.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5C10 5 7 4.6 3.5 5v13c3.5-.4 6.5 0 8.5 1.5"/><path class="pg" d="M12 6.5c2-1.5 5-1.9 8.5-1.5v13c-3.5-.4-6.5 0-8.5 1.5z"/><path d="M12 6.5V19.5"/></svg><span>Hobby</span></a>
-    <button id="open-quote" class="primary">Hire me</button>
+    <button id="open-quote" class="primary">Contact / collab</button>
   </div>
 
   <div class="station" id="station">
@@ -499,15 +512,15 @@
 </div>
 
 <!-- hire / scope builder -->
-<div class="overlay" id="quote-overlay" role="dialog" aria-modal="true" aria-label="Work with me">
+<div class="overlay" id="quote-overlay" role="dialog" aria-modal="true" aria-label="Contact or collaborate">
   <div class="sheet sheet-wide" style="position:relative">
     <button class="x" id="close-quote" aria-label="Close">&times;</button>
     <div class="sheet-grid">
     <aside class="pitch">
-      <div class="pitch-k">Work with me</div>
+      <div class="pitch-k">Contact / collab</div>
       <h2>Turn your data into something people remember.</h2>
       <ul class="pitch-list">
-        <li>Four peer-reviewed papers: <i>Obesity</i>, <i>Public Health</i>, <i>Blood Cell Therapy</i>, <i>ecancermedicalscience</i> (2025-26)</li>
+        <li>Peer-reviewed papers in <i>Obesity</i>, <i>Public Health</i>, <i>Blood Cell Therapy</i> and <i>ecancermedicalscience</i></li>
         <li>Built <i>Covexe</i>, a systematic-review and evidence-synthesis platform</li>
         <li>Fluent in GBD, GLOBOCAN, NCD-RisC and WHO data</li>
         <li>R, Python, Stata, SPSS, Joinpoint</li>
@@ -520,7 +533,8 @@
       </div>
     </aside>
     <div class="builder">
-    <div class="sub">Pick a scope for an indicative price. No commitment.</div>
+    <label class="collab-tick"><input type="checkbox" id="q-collab"><span class="box" aria-hidden="true"></span><span><b>This is a research collaboration</b><br><small>Collaborations are free. Hired work has a price.</small></span></label>
+    <div class="sub" id="q-sub">Pick a scope for an indicative price. No commitment.</div>
     <div class="q" data-q="need">
       <div class="ql">What do you need</div>
       <div class="opts">
@@ -554,6 +568,7 @@
       </div>
     </div>
     <div class="estimate">
+      <div class="collab-msg" id="q-collab-msg">No fee. Tell me about the project: the question, the data, and who is involved.</div>
       <div class="lab">Indicative range</div>
       <div class="num" id="q-num">US$110 - 290</div>
       <div class="inc" id="q-inc"></div>
@@ -563,7 +578,7 @@
         <button class="cta-ghost" id="q-copy">Copy email</button>
       </div>
       <form class="qform" id="qform">
-        <div class="qf-head">No mail app? Write to me right here; the scope above comes attached.</div>
+        <div class="qf-head">No mail app? Write to me right here.</div>
         <div class="qf-row">
           <input type="text" name="name" placeholder="your name" autocomplete="name">
           <input type="email" name="email" placeholder="your email" required autocomplete="email">
